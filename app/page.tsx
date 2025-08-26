@@ -58,7 +58,7 @@ export default function HomePage() {
       icon: BarChart3,
       title: 'Benchmarks & Résultats',
       description: 'Comparaison des performances des modèles IA',
-      href: '/benchmarks',
+      href: '/benchmark',
       color: 'text-blue-600',
       bgColor: 'bg-blue-50',
     },
