@@ -14,6 +14,7 @@ interface ModelStats {
   displayName: string
   totalTests: number
   successfulTests: number
+  validResponseTimeTests: number // Compteur pour les tests avec temps de réponse valide
   avgResponseTime: number
   avgTokensPerSecond: number
   avgUserRating: number
@@ -75,6 +76,7 @@ export default function BenchmarkRanking({ benchmarks, onSelectBenchmark }: Benc
             displayName: modelInfo.displayName || modelName,
             totalTests: 0,
             successfulTests: 0,
+            validResponseTimeTests: 0, // Nouveau compteur pour les tests avec temps valide
             avgResponseTime: 0,
             avgTokensPerSecond: 0,
             avgUserRating: 0,
@@ -97,7 +99,11 @@ export default function BenchmarkRanking({ benchmarks, onSelectBenchmark }: Benc
           
           if (questionData.success) {
             stats[modelName].successfulTests++
-            stats[modelName].avgResponseTime += questionData.responseTime || 0
+            // N'ajouter le temps de réponse que si ce n'est pas un timeout
+            if (questionData.responseTime !== null && !questionData.isTimeout) {
+              stats[modelName].avgResponseTime += questionData.responseTime || 0
+              stats[modelName].validResponseTimeTests++
+            }
             stats[modelName].avgTokensPerSecond += questionData.tokensPerSecond || 0
           }
 
@@ -122,8 +128,10 @@ export default function BenchmarkRanking({ benchmarks, onSelectBenchmark }: Benc
 
     // Calculer les moyennes
     Object.values(stats).forEach(stat => {
+      if (stat.validResponseTimeTests > 0) {
+        stat.avgResponseTime = stat.avgResponseTime / stat.validResponseTimeTests
+      }
       if (stat.successfulTests > 0) {
-        stat.avgResponseTime = stat.avgResponseTime / stat.successfulTests
         stat.avgTokensPerSecond = stat.avgTokensPerSecond / stat.successfulTests
       }
       if (stat.totalRatings > 0) {

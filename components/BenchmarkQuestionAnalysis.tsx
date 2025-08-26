@@ -3,6 +3,20 @@
 import { useState, useMemo } from 'react'
 import { Trophy, Clock, Zap, Target, TrendingUp, BarChart3, Medal, Star } from 'lucide-react'
 
+// Fonction pour formater les temps de réponse (affiche en ms si < 1s, sinon en format minute:seconde)
+const formatResponseTime = (milliseconds: number) => {
+  if (milliseconds < 1000) {
+    return `${milliseconds}ms`
+  } else if (milliseconds < 60000) {
+    return `${(milliseconds / 1000).toFixed(1)}s`
+  } else {
+    const seconds = Math.round(milliseconds / 1000)
+    const minutes = Math.floor(seconds / 60)
+    const remainingSeconds = seconds % 60
+    return remainingSeconds === 0 ? `${minutes}min` : `${minutes}min ${remainingSeconds}s`
+  }
+}
+
 interface BenchmarkQuestionAnalysisProps {
   benchmarks: any[]
 }
@@ -242,7 +256,7 @@ export default function BenchmarkQuestionAnalysis({ benchmarks }: BenchmarkQuest
             <div>
               <p className="text-sm font-medium text-gray-600">Temps moyen</p>
               <p className="text-2xl font-bold text-gray-900">
-                {Math.round(questionStats.reduce((sum, q) => sum + q.averageTime, 0) / questionStats.length)}ms
+                {formatResponseTime(Math.round(questionStats.reduce((sum, q) => sum + q.averageTime, 0) / questionStats.length))}
               </p>
             </div>
             <Clock className="w-8 h-8 text-orange-500" />
@@ -289,7 +303,7 @@ export default function BenchmarkQuestionAnalysis({ benchmarks }: BenchmarkQuest
               {/* Statistiques globales de la question */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                 <div className="text-center p-3 bg-gray-50 rounded-lg">
-                  <div className="text-lg font-semibold text-gray-900">{Math.round(questionStat.averageTime)}ms</div>
+                  <div className="text-lg font-semibold text-gray-900">{formatResponseTime(Math.round(questionStat.averageTime))}</div>
                   <div className="text-xs text-gray-500">Temps moyen</div>
                 </div>
                 <div className="text-center p-3 bg-gray-50 rounded-lg">
@@ -323,7 +337,7 @@ export default function BenchmarkQuestionAnalysis({ benchmarks }: BenchmarkQuest
                         <span className="font-medium text-blue-900">Plus rapide</span>
                       </div>
                       <div className="text-sm text-blue-800">{fastestModel.modelName}</div>
-                      <div className="text-xs text-blue-600">{fastestModel.responseTime}ms</div>
+                      <div className="text-xs text-blue-600">{formatResponseTime(fastestModel.responseTime)}</div>
                     </div>
                   )}
 

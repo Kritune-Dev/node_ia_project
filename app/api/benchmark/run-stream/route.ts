@@ -1,11 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { OLLAMA_CONFIG } from '@/lib/config'
 
 interface BenchmarkQuestion {
   id: string
   question: string
   category: string
-  expectedType: string
-  difficulty: 'easy' | 'medium' | 'hard'
+  expectedType?: string
+  difficulty?: 'easy' | 'medium' | 'hard'
+  expectedKeywords?: string[]
+}
+
+interface CustomQuestion {
+  id: string
+  question: string
+  category: string
+  expectedKeywords?: string[]
+  createdAt: string
 }
 
 // Questions de benchmark prédéfinies
@@ -93,7 +103,12 @@ function getServiceUrlForModel(model: string): string {
   }
 }
 
-async function testModel(model: string, question: BenchmarkQuestion, writeFunction: (data: string) => Promise<void>) {
+async function testModel(
+  model: string, 
+  question: BenchmarkQuestion, 
+  writeFunction: (data: string) => Promise<void>,
+  params: { temperature: number, seed: number | null, timeout: number }
+) {
   const serviceUrl = getServiceUrlForModel(model)
   const startTime = Date.now()
   
@@ -115,9 +130,13 @@ async function testModel(model: string, question: BenchmarkQuestion, writeFuncti
       body: JSON.stringify({
         model: model,
         prompt: question.question,
-        stream: false
+        stream: false,
+        options: {
+          temperature: params.temperature,
+          seed: params.seed
+        }
       }),
-      signal: AbortSignal.timeout(30000) // Timeout de 30 secondes
+      signal: AbortSignal.timeout(params.timeout)
     })
 
     if (!response.ok) {
@@ -139,7 +158,8 @@ async function testModel(model: string, question: BenchmarkQuestion, writeFuncti
       question: question.question,
       category: question.category,
       difficulty: question.difficulty,
-      service_url: serviceUrl
+      service_url: serviceUrl,
+      isTimeout: false // Succès = pas de timeout
     }
 
     // Envoyer le résultat
@@ -154,17 +174,21 @@ async function testModel(model: string, question: BenchmarkQuestion, writeFuncti
   } catch (error: any) {
     const endTime = Date.now()
     const responseTime = endTime - startTime
+    
+    // Déterminer si c'est un timeout
+    const isTimeout = error.name === 'AbortError' || error.message.includes('timeout')
 
     const result = {
       success: false,
       error: error.message || 'Erreur inconnue',
-      responseTime,
+      responseTime: isTimeout ? null : responseTime, // Ne pas compter le temps pour les timeouts
       tokensGenerated: 0,
       tokensPerSecond: 0,
       question: question.question,
       category: question.category,
       difficulty: question.difficulty,
-      service_url: serviceUrl
+      service_url: serviceUrl,
+      isTimeout: isTimeout // Marquer comme timeout
     }
 
     // Envoyer l'erreur
@@ -181,14 +205,25 @@ async function testModel(model: string, question: BenchmarkQuestion, writeFuncti
 
 export async function POST(request: NextRequest) {
   try {
-    const { models, questionIds } = await request.json()
+    const { models, questionIds, customQuestions, customParams } = await request.json()
 
     if (!models || !Array.isArray(models) || models.length === 0) {
       return NextResponse.json({ error: 'Liste de modèles requise' }, { status: 400 })
     }
 
-    if (!questionIds || !Array.isArray(questionIds) || questionIds.length === 0) {
-      return NextResponse.json({ error: 'Liste de questions requise' }, { status: 400 })
+    // Vérifier qu'on a soit des questionIds soit des customQuestions
+    const hasPredefQuestions = questionIds && Array.isArray(questionIds) && questionIds.length > 0
+    const hasCustomQuestions = customQuestions && Array.isArray(customQuestions) && customQuestions.length > 0
+    
+    if (!hasPredefQuestions && !hasCustomQuestions) {
+      return NextResponse.json({ error: 'Liste de questions requise (prédéfinies ou personnalisées)' }, { status: 400 })
+    }
+
+    // Paramètres par défaut ou personnalisés
+    const benchmarkParams = {
+      temperature: customParams?.temperature || 0.8,
+      seed: customParams?.seed || null,
+      timeout: customParams?.timeout || OLLAMA_CONFIG.TIMEOUT
     }
 
     // Créer un stream pour les Server-Sent Events
@@ -202,7 +237,24 @@ export async function POST(request: NextRequest) {
 
         try {
           const benchmarkId = `benchmark_${Date.now()}`
-          const questions = BENCHMARK_QUESTIONS.filter(q => questionIds.includes(q.id))
+          
+          // Déterminer les questions à utiliser
+          let questions: BenchmarkQuestion[] = []
+          if (hasCustomQuestions) {
+            // Convertir les questions personnalisées au format BenchmarkQuestion
+            questions = customQuestions.map((q: CustomQuestion) => ({
+              id: q.id,
+              question: q.question,
+              category: q.category,
+              expectedType: 'custom',
+              difficulty: 'medium' as const,
+              expectedKeywords: q.expectedKeywords
+            }))
+          } else {
+            // Utiliser les questions prédéfinies
+            questions = BENCHMARK_QUESTIONS.filter(q => questionIds.includes(q.id))
+          }
+          
           const results: any = {}
           let completedTests = 0
           const totalTests = models.length * questions.length
@@ -227,9 +279,13 @@ export async function POST(request: NextRequest) {
             }
 
             for (const question of questions) {
-              const result = await testModel(model, question, write)
+              const result = await testModel(model, question, write, benchmarkParams)
               results[model].questions[question.id] = result
-              results[model].total_response_time += result.responseTime
+              
+              // N'ajouter le temps de réponse que si ce n'est pas un timeout
+              if (result.responseTime !== null && !result.isTimeout) {
+                results[model].total_response_time += result.responseTime
+              }
               
               completedTests++
               
@@ -244,19 +300,24 @@ export async function POST(request: NextRequest) {
 
             // Calculer les statistiques du modèle
             const modelQuestions = Object.values(results[model].questions) as any[]
-            results[model].average_response_time = results[model].total_response_time / modelQuestions.length
+            const validResponses = modelQuestions.filter((q: any) => q.responseTime !== null && !q.isTimeout)
+            results[model].average_response_time = validResponses.length > 0 ? results[model].total_response_time / validResponses.length : 0
             results[model].average_tokens_per_second = modelQuestions.reduce((sum: number, q: any) => sum + (q.tokensPerSecond || 0), 0) / modelQuestions.length
             results[model].success_rate = (modelQuestions.filter((q: any) => q.success).length / modelQuestions.length) * 100
           }
 
           // Calculer le résumé global
           const allTests = Object.values(results).flatMap((model: any) => Object.values(model.questions))
+          const validTests = allTests.filter((test: any) => test.responseTime !== null && !test.isTimeout)
+          const timeoutTests = allTests.filter((test: any) => test.isTimeout)
+          
           const summary = {
             total_tests: allTests.length,
             successful_tests: allTests.filter((test: any) => test.success).length,
             failed_tests: allTests.filter((test: any) => !test.success).length,
-            average_response_time: allTests.reduce((sum: number, test: any) => sum + test.responseTime, 0) / allTests.length,
-            total_duration: allTests.reduce((sum: number, test: any) => sum + test.responseTime, 0)
+            timeout_tests: timeoutTests.length,
+            average_response_time: validTests.length > 0 ? validTests.reduce((sum: number, test: any) => sum + test.responseTime, 0) / validTests.length : 0,
+            total_duration: validTests.reduce((sum: number, test: any) => sum + test.responseTime, 0)
           }
 
           const finalResult = {

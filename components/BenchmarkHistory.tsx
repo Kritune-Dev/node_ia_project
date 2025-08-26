@@ -3,6 +3,20 @@
 import { useState, useEffect } from 'react'
 import { Calendar, Clock, TrendingUp, Eye, Trash2, Search, Filter, ChevronDown, ChevronRight, AlertCircle, CheckCircle, XCircle, Copy, ExternalLink, Star } from 'lucide-react'
 
+// Fonction pour formater les temps de réponse (affiche en ms si < 1s, sinon en format minute:seconde)
+const formatResponseTime = (milliseconds: number) => {
+  if (milliseconds < 1000) {
+    return `${milliseconds}ms`
+  } else if (milliseconds < 60000) {
+    return `${(milliseconds / 1000).toFixed(1)}s`
+  } else {
+    const seconds = Math.round(milliseconds / 1000)
+    const minutes = Math.floor(seconds / 60)
+    const remainingSeconds = seconds % 60
+    return remainingSeconds === 0 ? `${minutes}min` : `${minutes}min ${remainingSeconds}s`
+  }
+}
+
 interface BenchmarkHistoryProps {
   benchmarks: any[]
   onSelectBenchmark: (benchmark: any) => void
@@ -171,7 +185,7 @@ function TestDetail({ test, modelName, questionId, benchmarkId, isExpanded, onTo
               <span className={`px-2 py-1 text-xs font-medium rounded-full ${getDifficultyColor(test.difficulty)}`}>
                 {test.difficulty}
               </span>
-              <span>{test.responseTime}ms</span>
+              <span>{formatResponseTime(test.responseTime)}</span>
               {test.tokensPerSecond > 0 && (
                 <span>{test.tokensPerSecond.toFixed(1)} tok/s</span>
               )}
@@ -279,7 +293,7 @@ function TestDetail({ test, modelName, questionId, benchmarkId, isExpanded, onTo
             <h4 className="font-medium text-gray-900 mb-2">Métriques de performance :</h4>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <div className="bg-white p-3 rounded border border-gray-200 text-center">
-                <div className="text-lg font-semibold text-gray-900">{test.responseTime}ms</div>
+                <div className="text-lg font-semibold text-gray-900">{formatResponseTime(test.responseTime)}</div>
                 <div className="text-xs text-gray-500">Temps de réponse</div>
               </div>
               <div className="bg-white p-3 rounded border border-gray-200 text-center">

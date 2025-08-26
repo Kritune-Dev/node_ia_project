@@ -2,7 +2,7 @@
 export const OLLAMA_CONFIG = {
   BASE_URL: process.env.OLLAMA_BASE_URL || 'http://localhost:11434',
   TRANSLATOR_URL: process.env.TRANSLATOR_BASE_URL || 'http://localhost:11435',
-  TIMEOUT: 30000, // 30 secondes
+  TIMEOUT: 90000, // 90 secondes (augmenté pour les questions longues)
 } as const
 
 // Modèles médicaux disponibles

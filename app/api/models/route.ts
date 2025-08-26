@@ -1,6 +1,175 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-// Helper function pour tester et récupérer les modèles d'un service
+// Helper function pour extraire les paramètres du modèle depuis le nom
+function extractModelParameters(modelName: string, size: number): string {
+  // Extraire depuis le nom du modèle
+  const name = modelName.toLowerCase()
+  
+  // Patterns pour extraire les paramètres
+  const parameterPatterns = [
+    /(\d+\.?\d*)[b]/i,  // 7b, 3b, 1.5b, etc.
+    /(\d+\.?\d*)[m]/i,  // 400m, 1.1m, etc.
+    /:(\d+\.?\d*[bm])/i, // après les deux points
+  ]
+  
+  for (const pattern of parameterPatterns) {
+    const match = name.match(pattern)
+    if (match) {
+      return match[1] + (match[0].includes('m') ? 'M' : 'B')
+    }
+  }
+  
+  // Si pas trouvé dans le nom, estimer depuis la taille
+  if (size > 0) {
+    const sizeInGB = Math.round(size / (1024 * 1024 * 1024))
+    // Estimation approximative : 1GB ≈ 1-2B paramètres, 4GB ≈ 7B, etc.
+    if (sizeInGB < 1) return '1B'
+    if (sizeInGB < 2) return '1-2B'
+    if (sizeInGB < 4) return '3B'
+    if (sizeInGB < 6) return '7B'
+    if (sizeInGB < 10) return '8B'
+    if (sizeInGB < 20) return '13B'
+    if (sizeInGB < 40) return '30B'
+    return '70B+'
+  }
+  
+  return 'N/A'
+}
+
+// Helper function pour résoudre les versions "latest" vers leur vraie version
+function resolveLatestVersion(modelName: string, modelInfo: any): string {
+  const baseName = modelName.split(':')[0]
+  const tag = modelName.includes(':') ? modelName.split(':')[1] : 'latest'
+  
+  if (tag !== 'latest') {
+    return tag
+  }
+  
+  // Mapping des modèles latest vers leur vraie version
+  const latestMappings: { [key: string]: string } = {
+    'llama3.2': '3b',
+    'llama3.1': '8b', 
+    'llama3': '8b',
+    'phi3': 'mini',
+    'qwen2': '7b',
+    'qwen2.5': '7b',
+    'qwen3': '7b',
+    'mistral': '7b',
+    'gemma2': '9b',
+    'gemma': '7b',
+    'gemma3': '7b',
+    'tinyllama': '1.1b',
+    'deepseek-r1': '7b',
+    'deepseek': '7b',
+    'codegemma': '7b',
+    'codellama': '7b',
+    'meditron': '7b',
+    'medllama2': '7b',
+    'medgemma': '7b',
+    'biomistral': '7b',
+    'orca2': '7b',
+    'solar': '10.7b',
+    'starling-lm': '7b',
+    'lastmass': '7b',
+    'lastmass/qwen3_medical_grpo': '7b',
+    'qwen3_medical_grpo': '7b'
+  }
+  
+  // Vérifier si on a un mapping pour ce modèle
+  const resolvedVersion = latestMappings[baseName] || latestMappings[baseName.replace(/[-_]/g, '')]
+  
+  if (resolvedVersion) {
+    return resolvedVersion
+  }
+  
+  // Si pas de mapping trouvé, essayer d'extraire depuis les métadonnées ou la taille
+  if (modelInfo && modelInfo.size) {
+    const params = extractModelParameters(modelName, modelInfo.size)
+    if (params !== 'N/A') {
+      return params.toLowerCase()
+    }
+  }
+  
+  return 'latest'
+}
+
+// Helper function pour récupérer les scores de benchmark d'un modèle
+async function getModelBenchmarkScores(modelName: string): Promise<any> {
+  try {
+    const fs = require('fs')
+    const path = require('path')
+    
+    const historyFile = path.join(process.cwd(), 'benchmark_results', 'history.json')
+    
+    if (!fs.existsSync(historyFile)) {
+      return null
+    }
+    
+    const historyData = JSON.parse(fs.readFileSync(historyFile, 'utf-8'))
+    const benchmarks = historyData.benchmarks || []
+    
+    // Trouver les benchmarks contenant ce modèle
+    const modelBenchmarks = benchmarks.filter((b: any) => 
+      b.results && b.results[modelName]
+    )
+    
+    if (modelBenchmarks.length === 0) {
+      return null
+    }
+    
+    // Calculer les scores moyens
+    let totalTests = 0
+    let successfulTests = 0
+    let validResponseTimeTests = 0 // Nouveau compteur pour les tests avec temps de réponse valide
+    let totalResponseTime = 0
+    let totalTokensPerSecond = 0
+    let totalRating = 0
+    let ratedTests = 0
+    
+    modelBenchmarks.forEach((benchmark: any) => {
+      const modelResult = benchmark.results[modelName]
+      if (modelResult) {
+        const questions = Object.values(modelResult.questions || {}) as any[]
+        
+        questions.forEach((test: any) => {
+          totalTests++
+          if (test.success) {
+            successfulTests++
+            // N'ajouter le temps de réponse que si ce n'est pas un timeout
+            if (test.responseTime !== null && !test.isTimeout) {
+              totalResponseTime += test.responseTime || 0
+              validResponseTimeTests++
+            }
+            totalTokensPerSecond += test.tokensPerSecond || 0
+          }
+          
+          if (test.user_rating && test.user_rating > 0) {
+            totalRating += test.user_rating
+            ratedTests++
+          }
+        })
+      }
+    })
+    
+    if (totalTests === 0) {
+      return null
+    }
+    
+    return {
+      successRate: Math.round((successfulTests / totalTests) * 100),
+      averageResponseTime: Math.round(totalResponseTime / validResponseTimeTests || 0),
+      averageTokensPerSecond: Math.round((totalTokensPerSecond / successfulTests || 0) * 10) / 10,
+      averageRating: ratedTests > 0 ? Math.round((totalRating / ratedTests) * 10) / 10 : null,
+      totalTests,
+      successfulTests,
+      validResponseTimeTests, // Ajouter cette info
+      lastTested: modelBenchmarks[0]?.timestamp
+    }
+  } catch (error) {
+    console.error('Erreur lors de la récupération des scores:', error)
+    return null
+  }
+}
 async function getModelsFromService(url: string, serviceName: string): Promise<{ models: any[], serviceName: string, url: string } | null> {
   try {
     const response = await fetch(`${url}/api/tags`, {
@@ -162,7 +331,82 @@ export async function GET() {
           license: 'Custom Microsoft License',
           type: 'general',
           specialties: ['Raisonnement', 'Step-by-step thinking', 'Logique']
+        },
+        'qwen3': {
+          fullName: 'Qwen 3',
+          creator: 'Alibaba',
+          description: 'Dernière génération de la série Qwen avec des améliorations significatives',
+          github: 'https://github.com/QwenLM/Qwen3',
+          website: 'https://qwenlm.github.io/',
+          license: 'Apache 2.0',
+          type: 'general',
+          specialties: ['Multilingue', 'Mathématiques', 'Code', 'Raisonnement']
+        },
+        'deepseek': {
+          fullName: 'DeepSeek',
+          creator: 'DeepSeek',
+          description: 'Modèle de raisonnement avancé développé par DeepSeek (entreprise chinoise)',
+          github: 'https://github.com/deepseek-ai',
+          website: 'https://www.deepseek.com/',
+          license: 'MIT',
+          type: 'general',
+          specialties: ['Raisonnement', 'Code', 'Mathématiques', 'Logique']
+        },
+        'medgemma': {
+          fullName: 'MedGemma',
+          creator: 'Google (fork de Gemma)',
+          description: 'Fork médical de Gemma spécialisé dans les applications médicales',
+          github: 'https://github.com/google-deepmind/gemma',
+          website: 'https://ai.google.dev/gemma',
+          license: 'Gemma Terms of Use',
+          type: 'medical',
+          specialties: ['Médecine', 'Diagnostic', 'Recherche médicale']
+        },
+        'gemma3': {
+          fullName: 'Gemma 3',
+          creator: 'Google',
+          description: 'Troisième génération du modèle Gemma de Google',
+          github: 'https://github.com/google-deepmind/gemma',
+          website: 'https://ai.google.dev/gemma',
+          license: 'Gemma Terms of Use',
+          type: 'general',
+          specialties: ['Sécurité', 'Raisonnement', 'Multilingue', 'Performance']
+        },
+        'lastmass': {
+          fullName: 'Lastmass/Qwen3 Medical GRPO',
+          creator: 'Lastmass (fork de Qwen3)',
+          description: 'Fork médical de Qwen3 spécialisé pour les applications médicales',
+          github: 'https://github.com/QwenLM/Qwen3',
+          website: 'https://huggingface.co/lastmass',
+          license: 'Apache 2.0',
+          type: 'medical',
+          specialties: ['Médecine', 'GRPO', 'Diagnostic médical', 'Recherche clinique']
+        },
+        'lastmass/qwen3_medical_grpo': {
+          fullName: 'Lastmass/Qwen3 Medical GRPO',
+          creator: 'Lastmass (fork de Qwen3)',
+          description: 'Fork médical de Qwen3 spécialisé pour les applications médicales',
+          github: 'https://github.com/QwenLM/Qwen3',
+          website: 'https://huggingface.co/lastmass',
+          license: 'Apache 2.0',
+          type: 'medical',
+          specialties: ['Médecine', 'GRPO', 'Diagnostic médical', 'Recherche clinique']
+        },
+        'qwen3_medical_grpo': {
+          fullName: 'Lastmass/Qwen3 Medical GRPO',
+          creator: 'Lastmass (fork de Qwen3)',
+          description: 'Fork médical de Qwen3 spécialisé pour les applications médicales',
+          github: 'https://github.com/QwenLM/Qwen3',
+          website: 'https://huggingface.co/lastmass',
+          license: 'Apache 2.0',
+          type: 'medical',
+          specialties: ['Médecine', 'GRPO', 'Diagnostic médical', 'Recherche clinique']
         }
+      }
+
+      // Recherche spécifique pour lastmass (priorité haute)
+      if (cleanName.includes('lastmass') && cleanName.includes('qwen3') && cleanName.includes('medical')) {
+        return modelDatabase['lastmass/qwen3_medical_grpo']
       }
 
       // Recherche par nom partiel
@@ -170,6 +414,30 @@ export async function GET() {
         if (cleanName.includes(key) || key.includes(cleanName.replace(/[_-]/g, ''))) {
           return metadata
         }
+      }
+
+      // Recherche spéciale pour les modèles avec des slashes ou des underscores
+      const simplifiedName = cleanName.replace(/[\/\-_]/g, '').toLowerCase()
+      for (const [key, metadata] of Object.entries(modelDatabase)) {
+        const simplifiedKey = key.replace(/[\/\-_]/g, '').toLowerCase()
+        if (simplifiedName.includes(simplifiedKey) || simplifiedKey.includes(simplifiedName)) {
+          return metadata
+        }
+      }
+
+      // Recherche par mots-clés dans le nom
+      if (cleanName.includes('medical') || cleanName.includes('med')) {
+        if (cleanName.includes('qwen') || cleanName.includes('lastmass')) {
+          return modelDatabase['lastmass/qwen3_medical_grpo']
+        }
+        if (cleanName.includes('gemma')) {
+          return modelDatabase['medgemma']
+        }
+      }
+
+      // Recherche spécifique pour lastmass (priorité haute)
+      if (cleanName.includes('lastmass') && cleanName.includes('qwen3') && cleanName.includes('medical')) {
+        return modelDatabase['lastmass/qwen3_medical_grpo']
       }
 
       // Valeurs par défaut si non trouvé
@@ -191,9 +459,24 @@ export async function GET() {
       const metadata = getModelMetadata(model.name)
       const sizeInGB = model.size ? (model.size / (1024 * 1024 * 1024)).toFixed(1) : 'N/A'
       
+      // Résoudre la version "latest" vers la vraie version
+      const originalTag = model.name.includes(':') ? model.name.split(':')[1] : 'latest'
+      const resolvedTag = resolveLatestVersion(model.name, model)
+      
+      // Extraire les paramètres du modèle
+      const parameters = extractModelParameters(model.name, model.size)
+      
+      // Créer le nom d'affichage avec les paramètres au lieu de "latest"
+      let displayName = metadata.fullName
+      if (originalTag === 'latest' && resolvedTag !== 'latest') {
+        displayName = `${metadata.fullName} (${resolvedTag.toUpperCase()})`
+      } else if (originalTag !== 'latest') {
+        displayName = `${metadata.fullName} (${originalTag.toUpperCase()})`
+      }
+      
       return {
         name: model.name,
-        displayName: metadata.fullName,
+        displayName: displayName,
         creator: metadata.creator,
         description: metadata.description,
         github: metadata.github,
@@ -204,6 +487,9 @@ export async function GET() {
         type: metadata.type,
         size: model.size,
         sizeFormatted: `${sizeInGB} GB`,
+        parameters: parameters, // Nouveau : afficher les paramètres au lieu du poids
+        originalTag: originalTag,
+        resolvedTag: resolvedTag,
         modified: model.modified_at,
         modifiedFormatted: model.modified_at ? new Date(model.modified_at).toLocaleDateString('fr-FR') : 'N/A',
         digest: model.digest || '',
@@ -297,6 +583,17 @@ export async function GET() {
     })
 
     const availableModels = Array.from(modelMap.values())
+    
+    // Ajouter les scores de benchmark à chaque modèle
+    for (const model of availableModels) {
+      try {
+        model.benchmarkScores = await getModelBenchmarkScores(model.name)
+      } catch (error) {
+        console.warn(`Erreur lors de la récupération des scores pour ${model.name}:`, error)
+        model.benchmarkScores = null
+      }
+    }
+    
     const modelFamilies = Array.from(modelFamilyMap.values())
     
     // Trier les variantes par taille
@@ -478,7 +775,6 @@ export async function POST(request: NextRequest) {
     const services = [
       { url: process.env.NATIVE_OLLAMA_URL || 'http://localhost:11436', name: 'Ollama Natif', type: 'native' },
       { url: process.env.OLLAMA_BASE_URL || 'http://localhost:11434', name: 'Docker Ollama Medical', type: 'docker' },
-      { url: process.env.TRANSLATOR_BASE_URL || 'http://localhost:11435', name: 'Docker Ollama Translator', type: 'docker' }
     ]
     
     // Tester quel service est disponible (priorité au natif)

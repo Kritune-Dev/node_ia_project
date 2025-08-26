@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Play, Square, RefreshCw, CheckCircle, XCircle, Settings, AlertCircle, Zap, Info, ArrowUpDown } from 'lucide-react'
 import ModelDetailModal from './ModelDetailModal'
+import CustomQuestions, { CustomQuestion } from './CustomQuestions'
 
 interface BenchmarkQuestion {
   id: string
@@ -22,6 +23,28 @@ export default function BenchmarkRunner({ onBenchmarkComplete, onDataUpdate }: B
   const [questions, setQuestions] = useState<BenchmarkQuestion[]>([])
   const [selectedQuestions, setSelectedQuestions] = useState<string[]>([])
   const [isRunning, setBenchmarkRunning] = useState(false)
+  
+  // Paramètres avancés
+  const [showAdvancedSettings, setShowAdvancedSettings] = useState(false)
+  const [temperature, setTemperature] = useState(0.8)
+  const [seed, setSeed] = useState<number | null>(null)
+  const [customTimeout, setCustomTimeout] = useState(90)
+  const [useCustomParams, setUseCustomParams] = useState(false)
+
+  // Fonction utilitaire pour formater le temps
+  const formatTime = (seconds: number): string => {
+    if (seconds < 60) {
+      return `${seconds}s`
+    } else {
+      const minutes = Math.floor(seconds / 60)
+      const remainingSeconds = seconds % 60
+      if (remainingSeconds === 0) {
+        return `${minutes}min`
+      } else {
+        return `${minutes}min ${remainingSeconds}s`
+      }
+    }
+  }
   const [progress, setProgress] = useState({ 
     current: 0, 
     total: 0, 
@@ -37,6 +60,11 @@ export default function BenchmarkRunner({ onBenchmarkComplete, onDataUpdate }: B
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
   const [selectedModelDetail, setSelectedModelDetail] = useState<any>(null)
   const [showModelModal, setShowModelModal] = useState(false)
+  
+  // États pour les questions personnalisées
+  const [customQuestions, setCustomQuestions] = useState<CustomQuestion[]>([])
+  const [useCustomQuestions, setUseCustomQuestions] = useState(false)
+  const [showCustomQuestions, setShowCustomQuestions] = useState(false)
 
   useEffect(() => {
     loadModels()
@@ -75,6 +103,11 @@ export default function BenchmarkRunner({ onBenchmarkComplete, onDataUpdate }: B
     } finally {
       setLoading(false)
     }
+  }
+
+  // Fonction pour gérer les questions personnalisées
+  const handleCustomQuestionsChange = (questions: CustomQuestion[]) => {
+    setCustomQuestions(questions)
   }
 
   const handleModelSelection = (modelName: string) => {
@@ -162,12 +195,18 @@ export default function BenchmarkRunner({ onBenchmarkComplete, onDataUpdate }: B
   }
 
   const runBenchmark = async () => {
-    if (selectedModels.length === 0 || selectedQuestions.length === 0) {
-      alert('Veuillez sélectionner au moins un modèle et une question')
+    const questionsToUse = useCustomQuestions ? customQuestions.map(q => q.id) : selectedQuestions
+    
+    if (selectedModels.length === 0 || questionsToUse.length === 0) {
+      if (useCustomQuestions && customQuestions.length === 0) {
+        alert('Veuillez créer au moins une question personnalisée ou utiliser les questions prédéfinies')
+      } else {
+        alert('Veuillez sélectionner au moins un modèle et une question')
+      }
       return
     }
 
-    await runBenchmarkWithProgress(selectedModels, selectedQuestions)
+    await runBenchmarkWithProgress(selectedModels, questionsToUse)
   }
 
   const runBenchmarkWithProgress = async (modelsToTest: string[], questionsToTest: string[]) => {
@@ -192,7 +231,14 @@ export default function BenchmarkRunner({ onBenchmarkComplete, onDataUpdate }: B
         },
         body: JSON.stringify({
           models: modelsToTest,
-          questionIds: questionsToTest
+          questionIds: useCustomQuestions ? [] : questionsToTest,
+          customQuestions: useCustomQuestions ? customQuestions : [],
+          // Paramètres personnalisés
+          customParams: useCustomParams ? {
+            temperature: temperature,
+            seed: seed,
+            timeout: customTimeout * 1000 // Convertir en millisecondes
+          } : null
         })
       })
 
@@ -358,6 +404,212 @@ export default function BenchmarkRunner({ onBenchmarkComplete, onDataUpdate }: B
         <div className="flex items-center gap-2 mb-4">
           <Settings className="w-5 h-5 text-gray-600" />
           <h2 className="text-xl font-semibold">Configuration du Benchmark</h2>
+        </div>
+
+        {/* Paramètres avancés */}
+        <div className="mb-6 border rounded-lg p-4 bg-gray-50">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Settings className="w-4 h-4 text-orange-600" />
+              <h3 className="text-sm font-medium text-gray-700">Paramètres avancés</h3>
+            </div>
+            <button
+              onClick={() => setShowAdvancedSettings(!showAdvancedSettings)}
+              className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800"
+            >
+              {showAdvancedSettings ? 'Masquer' : 'Afficher'}
+              <Settings className="w-3 h-3" />
+            </button>
+          </div>
+
+          {showAdvancedSettings && (
+            <div className="space-y-4 pt-3 border-t">
+              <div className="flex items-center gap-3 mb-4">
+                <input
+                  type="checkbox"
+                  id="useCustomParams"
+                  checked={useCustomParams}
+                  onChange={(e) => setUseCustomParams(e.target.checked)}
+                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                />
+                <label htmlFor="useCustomParams" className="text-sm font-medium text-gray-700">
+                  Utiliser des paramètres personnalisés
+                </label>
+              </div>
+
+              {useCustomParams && (
+                <div className="space-y-4">
+                  {/* Présets rapides */}
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Présets rapides
+                    </label>
+                    <div className="flex gap-2 flex-wrap">
+                      <button
+                        onClick={() => {
+                          setTemperature(0.1)
+                          setSeed(42)
+                          setCustomTimeout(60)
+                        }}
+                        className="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200"
+                      >
+                        Déterministe
+                      </button>
+                      <button
+                        onClick={() => {
+                          setTemperature(0.8)
+                          setSeed(null)
+                          setCustomTimeout(90)
+                        }}
+                        className="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-full hover:bg-green-200"
+                      >
+                        Standard
+                      </button>
+                      <button
+                        onClick={() => {
+                          setTemperature(1.2)
+                          setSeed(null)
+                          setCustomTimeout(120)
+                        }}
+                        className="px-3 py-1 text-xs bg-orange-100 text-orange-700 rounded-full hover:bg-orange-200"
+                      >
+                        Créatif
+                      </button>
+                      <button
+                        onClick={() => {
+                          setTemperature(0.8)
+                          setSeed(null)
+                          setCustomTimeout(300)
+                        }}
+                        className="px-3 py-1 text-xs bg-purple-100 text-purple-700 rounded-full hover:bg-purple-200"
+                      >
+                        Test long
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-white rounded-lg border">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Température
+                        <span className="text-xs text-gray-500 ml-1">(0.0 - 2.0)</span>
+                      </label>
+                      <input
+                        type="number"
+                        value={temperature}
+                        onChange={(e) => setTemperature(parseFloat(e.target.value))}
+                        min="0"
+                        max="2"
+                        step="0.1"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
+                      />
+                      <div className="flex justify-between text-xs text-gray-400 mt-1">
+                        <span>Précis</span>
+                        <span>Créatif</span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Seed
+                        <span className="text-xs text-gray-500 ml-1">(optionnel)</span>
+                      </label>
+                      <input
+                        type="number"
+                        value={seed || ''}
+                        onChange={(e) => setSeed(e.target.value ? parseInt(e.target.value) : null)}
+                        placeholder="Aléatoire"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Pour des résultats reproductibles
+                      </p>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Timeout
+                        <span className="text-xs text-gray-500 ml-1">(secondes)</span>
+                      </label>
+                      <input
+                        type="number"
+                        value={customTimeout}
+                        onChange={(e) => setCustomTimeout(parseInt(e.target.value))}
+                        min="30"
+                        max="600"
+                        step="30"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
+                      />
+                      <div className="flex justify-between text-xs text-gray-400 mt-1">
+                        <span>30s</span>
+                        <span>10min</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {!useCustomParams && (
+                <div className="text-sm text-gray-600 p-3 bg-blue-50 rounded-lg">
+                  <strong>Paramètres par défaut :</strong> Température: 0.8, Seed: aléatoire, Timeout: 90s
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Configuration des questions */}
+        <div className="mb-6 border rounded-lg p-4 bg-gray-50">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-blue-600" />
+              <h3 className="text-sm font-medium text-gray-700">Type de questions</h3>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex items-center gap-4">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="questionType"
+                  checked={!useCustomQuestions}
+                  onChange={() => setUseCustomQuestions(false)}
+                  className="text-blue-600"
+                />
+                <span className="text-sm font-medium">Questions prédéfinies</span>
+                <span className="text-xs text-gray-500">({selectedQuestions.length} sélectionnées)</span>
+              </label>
+              
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="questionType"
+                  checked={useCustomQuestions}
+                  onChange={() => setUseCustomQuestions(true)}
+                  className="text-blue-600"
+                />
+                <span className="text-sm font-medium">Questions personnalisées</span>
+                <span className="text-xs text-gray-500">({customQuestions.length} créées)</span>
+              </label>
+            </div>
+
+            {useCustomQuestions && (
+              <div className="mt-3">
+                <button
+                  onClick={() => setShowCustomQuestions(!showCustomQuestions)}
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm"
+                >
+                  {showCustomQuestions ? 'Masquer' : 'Gérer'} les questions personnalisées
+                </button>
+                {customQuestions.length === 0 && (
+                  <p className="text-sm text-orange-600 mt-2">
+                    Aucune question personnalisée créée. Cliquez sur "Gérer" pour en créer.
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Sélection des modèles */}
@@ -656,13 +908,13 @@ export default function BenchmarkRunner({ onBenchmarkComplete, onDataUpdate }: B
               </div>
               <div className="bg-gray-50 p-3 rounded-lg text-center">
                 <div className="text-lg font-semibold text-gray-900">
-                  {progress.startTime > 0 ? Math.round((Date.now() - progress.startTime) / 1000) : 0}s
+                  {progress.startTime > 0 ? formatTime(Math.round((Date.now() - progress.startTime) / 1000)) : '0s'}
                 </div>
                 <div className="text-xs text-gray-500">Temps écoulé</div>
               </div>
               <div className="bg-gray-50 p-3 rounded-lg text-center">
                 <div className="text-lg font-semibold text-gray-900">
-                  {progress.estimatedTimeRemaining > 0 ? Math.round(progress.estimatedTimeRemaining / 1000) : '?'}s
+                  {progress.estimatedTimeRemaining > 0 ? formatTime(Math.round(progress.estimatedTimeRemaining / 1000)) : '?'}
                 </div>
                 <div className="text-xs text-gray-500">Temps restant</div>
               </div>
@@ -685,7 +937,12 @@ export default function BenchmarkRunner({ onBenchmarkComplete, onDataUpdate }: B
               <div className="text-sm text-blue-600">Tests réussis</div>
             </div>
             <div className="bg-green-50 p-4 rounded-lg">
-              <div className="text-2xl font-bold text-green-600">{Math.round(results.summary.average_response_time)}ms</div>
+              <div className="text-2xl font-bold text-green-600">
+                {results.summary.average_response_time >= 1000 
+                  ? formatTime(Math.round(results.summary.average_response_time / 1000))
+                  : `${Math.round(results.summary.average_response_time)}ms`
+                }
+              </div>
               <div className="text-sm text-green-600">Temps moyen</div>
             </div>
             <div className="bg-purple-50 p-4 rounded-lg">
@@ -698,6 +955,11 @@ export default function BenchmarkRunner({ onBenchmarkComplete, onDataUpdate }: B
             <p className="text-gray-600">Consultez l'onglet "Résultats" pour analyser en détail les performances.</p>
           </div>
         </div>
+      )}
+
+      {/* Questions personnalisées */}
+      {showCustomQuestions && (
+        <CustomQuestions onQuestionsChange={handleCustomQuestionsChange} />
       )}
 
       {/* Modale de détails du modèle */}
