@@ -1,14 +1,14 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Play, Clock, Trophy, BarChart3, FileText, Plus, Search, Filter } from 'lucide-react'
+import { Play, Clock, Trophy, BarChart3, FileText, Plus, Search, Filter, Target } from 'lucide-react'
 import BenchmarkRunner from '../../components/BenchmarkRunner'
 import BenchmarkHistory from '../../components/BenchmarkHistory'
 import BenchmarkRanking from '../../components/BenchmarkRanking'
-import BenchmarkResults from '../../components/BenchmarkResults'
+import BenchmarkQuestionAnalysis from '../../components/BenchmarkQuestionAnalysis'
 
 interface BenchmarkPageState {
-  activeTab: 'run' | 'history' | 'ranking' | 'results'
+  activeTab: 'run' | 'history' | 'ranking' | 'questions'
   selectedBenchmark?: any
 }
 
@@ -39,14 +39,14 @@ export default function BenchmarkPage() {
 
   const handleBenchmarkComplete = (result: any) => {
     setBenchmarkData(prev => [result, ...prev])
-    setState(prev => ({ ...prev, activeTab: 'results', selectedBenchmark: result }))
+    setState(prev => ({ ...prev, activeTab: 'history', selectedBenchmark: result }))
   }
 
   const tabs = [
     { id: 'run', label: 'Nouveau Benchmark', icon: Play },
-    { id: 'history', label: 'Historique', icon: Clock },
+    { id: 'history', label: 'Historique & Résultats', icon: Clock },
     { id: 'ranking', label: 'Classement', icon: Trophy },
-    { id: 'results', label: 'Résultats', icon: BarChart3 }
+    { id: 'questions', label: 'Analyse par question', icon: Target }
   ]
 
   return (
@@ -110,11 +110,10 @@ export default function BenchmarkPage() {
         {state.activeTab === 'history' && (
           <BenchmarkHistory 
             benchmarks={benchmarkData}
-            onSelectBenchmark={(benchmark) => setState(prev => ({ 
-              ...prev, 
-              activeTab: 'results', 
-              selectedBenchmark: benchmark 
-            }))}
+            onSelectBenchmark={(benchmark) => {
+              // Pas besoin de changer d'onglet, l'historique peut tout afficher
+              console.log('Benchmark sélectionné:', benchmark)
+            }}
             onDataUpdate={loadBenchmarkData}
           />
         )}
@@ -122,19 +121,16 @@ export default function BenchmarkPage() {
         {state.activeTab === 'ranking' && (
           <BenchmarkRanking 
             benchmarks={benchmarkData}
-            onSelectBenchmark={(benchmark) => setState(prev => ({ 
-              ...prev, 
-              activeTab: 'results', 
-              selectedBenchmark: benchmark 
-            }))}
+            onSelectBenchmark={(benchmark) => {
+              // Rediriger vers l'historique avec ce benchmark
+              setState(prev => ({ ...prev, activeTab: 'history', selectedBenchmark: benchmark }))
+            }}
           />
         )}
         
-        {state.activeTab === 'results' && (
-          <BenchmarkResults 
-            benchmark={state.selectedBenchmark}
-            onBack={() => setState(prev => ({ ...prev, activeTab: 'history' }))}
-            onDataUpdate={loadBenchmarkData}
+        {state.activeTab === 'questions' && (
+          <BenchmarkQuestionAnalysis 
+            benchmarks={benchmarkData}
           />
         )}
       </div>

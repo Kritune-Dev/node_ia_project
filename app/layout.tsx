@@ -1,6 +1,7 @@
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import { Metadata } from 'next'
+import GlobalLayout from '@/components/GlobalLayout'
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -71,9 +72,9 @@ export default function RootLayout({
   return (
     <html lang="fr" className={`${inter.variable} ${jetbrainsMono.variable}`}>
       <body className={inter.className}>
-        <div className="min-h-screen bg-background">
+        <GlobalLayout>
           {children}
-        </div>
+        </GlobalLayout>
       </body>
     </html>
   )

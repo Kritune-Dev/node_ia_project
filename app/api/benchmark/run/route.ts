@@ -10,6 +10,22 @@ interface BenchmarkQuestion {
 
 // Questions de benchmark prédéfinies
 const BENCHMARK_QUESTIONS: BenchmarkQuestion[] = [
+  // Tests de base
+  {
+    id: 'basic_1',
+    question: 'Peux-tu me dire si tu fonctionnes correctement ? Réponds simplement par "Oui, je fonctionne correctement".',
+    category: 'basic',
+    expectedType: 'confirmation',
+    difficulty: 'easy'
+  },
+  {
+    id: 'basic_2',
+    question: 'Peux-tu me parler en français ? Écris une phrase simple en français pour confirmer que tu comprends cette langue.',
+    category: 'basic',
+    expectedType: 'french_response',
+    difficulty: 'easy'
+  },
+  // Tests médicaux
   {
     id: 'medical_1',
     question: 'Quels sont les symptômes principaux de l\'hypertension artérielle ?',
@@ -31,6 +47,7 @@ const BENCHMARK_QUESTIONS: BenchmarkQuestion[] = [
     expectedType: 'detailed_explanation',
     difficulty: 'hard'
   },
+  // Tests généraux
   {
     id: 'general_1',
     question: 'Résumez les causes principales du réchauffement climatique.',
@@ -68,7 +85,7 @@ const BENCHMARK_QUESTIONS: BenchmarkQuestion[] = [
   }
 ]
 
-async function testModelResponse(modelName: string, question: string, serviceUrl: string) {
+async function testModelResponse(modelName: string, prompt: string, serviceUrl: string = 'http://localhost:11434') {
   const startTime = Date.now()
   
   try {
@@ -79,22 +96,29 @@ async function testModelResponse(modelName: string, question: string, serviceUrl
       },
       body: JSON.stringify({
         model: modelName,
-        prompt: question,
-        stream: false,
-        options: {
-          temperature: 0.7,
-          top_p: 0.9,
-          max_tokens: 1000
-        }
-      }),
-      signal: AbortSignal.timeout(60000) // 60 secondes timeout
+        prompt: prompt,
+        stream: false
+      })
     })
 
     const endTime = Date.now()
     const responseTime = endTime - startTime
 
     if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+      return {
+        success: false,
+        error: `HTTP ${response.status}: ${response.statusText}`,
+        responseTime,
+        tokensGenerated: 0,
+        tokensPerSecond: 0,
+        service_url: serviceUrl,
+        full_url: `${serviceUrl}/api/generate`,
+        request_payload: {
+          model: modelName,
+          prompt: prompt,
+          stream: false
+        }
+      }
     }
 
     const result = await response.json()
@@ -104,7 +128,9 @@ async function testModelResponse(modelName: string, question: string, serviceUrl
       response: result.response || result.message || '',
       responseTime,
       tokensGenerated: result.eval_count || 0,
-      tokensPerSecond: result.eval_count ? (result.eval_count / (responseTime / 1000)) : 0
+      tokensPerSecond: result.eval_count ? (result.eval_count / (responseTime / 1000)) : 0,
+      service_url: serviceUrl,
+      full_url: `${serviceUrl}/api/generate`
     }
   } catch (error) {
     const endTime = Date.now()
@@ -115,7 +141,14 @@ async function testModelResponse(modelName: string, question: string, serviceUrl
       error: error instanceof Error ? error.message : 'Erreur inconnue',
       responseTime,
       tokensGenerated: 0,
-      tokensPerSecond: 0
+      tokensPerSecond: 0,
+      service_url: serviceUrl,
+      full_url: `${serviceUrl}/api/generate`,
+      request_payload: {
+        model: modelName,
+        prompt: prompt,
+        stream: false
+      }
     }
   }
 }
@@ -158,6 +191,54 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Détecter le service approprié pour chaque modèle
+    const getServiceUrlForModel = async (modelName: string): Promise<string> => {
+      // Essayer d'abord le service natif (performances optimales)
+      try {
+        const nativeResponse = await fetch('http://localhost:11436/api/tags')
+        if (nativeResponse.ok) {
+          const nativeData = await nativeResponse.json()
+          const nativeModels = nativeData.models?.map((m: any) => m.name) || []
+          if (nativeModels.includes(modelName)) {
+            return 'http://localhost:11436'
+          }
+        }
+      } catch (error) {
+        // Service natif non disponible
+      }
+
+      // Essayer le service Docker medical
+      try {
+        const dockerResponse = await fetch('http://localhost:11434/api/tags')
+        if (dockerResponse.ok) {
+          const dockerData = await dockerResponse.json()
+          const dockerModels = dockerData.models?.map((m: any) => m.name) || []
+          if (dockerModels.includes(modelName)) {
+            return 'http://localhost:11434'
+          }
+        }
+      } catch (error) {
+        // Service Docker non disponible
+      }
+
+      // Essayer le service Docker translator en dernier recours
+      try {
+        const translatorResponse = await fetch('http://localhost:11435/api/tags')
+        if (translatorResponse.ok) {
+          const translatorData = await translatorResponse.json()
+          const translatorModels = translatorData.models?.map((m: any) => m.name) || []
+          if (translatorModels.includes(modelName)) {
+            return 'http://localhost:11435'
+          }
+        }
+      } catch (error) {
+        // Service translator non disponible
+      }
+
+      // Retourner le service par défaut si aucun service ne contient le modèle
+      return defaultServiceUrl
+    }
+
     const defaultServiceUrl = process.env.NATIVE_OLLAMA_URL || process.env.OLLAMA_BASE_URL || 'http://localhost:11434'
     let totalResponseTime = 0
     let totalTokensPerSecond = 0
@@ -166,7 +247,7 @@ export async function POST(request: NextRequest) {
     // Tester chaque modèle
     for (const model of models) {
       const modelName = typeof model === 'string' ? model : model.name
-      const serviceUrl = serviceUrls?.[modelName] || defaultServiceUrl
+      const serviceUrl = serviceUrls?.[modelName] || await getServiceUrlForModel(modelName)
       
       results.results[modelName] = {
         model_name: modelName,

@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Trophy, Medal, Award, TrendingUp, Clock, Zap, Target } from 'lucide-react'
+import { Trophy, Medal, Award, TrendingUp, Clock, Zap, Target, Info, ArrowUpDown } from 'lucide-react'
+import ModelDetailModal from './ModelDetailModal'
 
 interface BenchmarkRankingProps {
   benchmarks: any[]
@@ -10,6 +11,7 @@ interface BenchmarkRankingProps {
 
 interface ModelStats {
   name: string
+  displayName: string
   totalTests: number
   successfulTests: number
   avgResponseTime: number
@@ -19,16 +21,43 @@ interface ModelStats {
   categories: { [key: string]: number }
   lastTested: string
   bestBenchmark: any
+  hasNative: boolean
+  type: string
+  size: number
+  sizeFormatted: string
 }
 
 export default function BenchmarkRanking({ benchmarks, onSelectBenchmark }: BenchmarkRankingProps) {
   const [rankingMode, setRankingMode] = useState<'overall' | 'speed' | 'accuracy' | 'user_rating'>('overall')
   const [categoryFilter, setCategoryFilter] = useState<string>('all')
   const [modelStats, setModelStats] = useState<ModelStats[]>([])
+  const [models, setModels] = useState<any[]>([])
+  const [sortBy, setSortBy] = useState<'name' | 'size' | 'score'>('score')
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
+  const [selectedModelDetail, setSelectedModelDetail] = useState<any>(null)
+  const [showModelModal, setShowModelModal] = useState(false)
 
   useEffect(() => {
-    calculateModelStats()
-  }, [benchmarks])
+    loadModels()
+  }, [])
+
+  useEffect(() => {
+    if (models.length > 0) {
+      calculateModelStats()
+    }
+  }, [benchmarks, models])
+
+  const loadModels = async () => {
+    try {
+      const response = await fetch('/api/models')
+      if (response.ok) {
+        const data = await response.json()
+        setModels(data.models?.all || [])
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des modèles:', error)
+    }
+  }
 
   const calculateModelStats = () => {
     const stats: { [key: string]: ModelStats } = {}
@@ -38,8 +67,12 @@ export default function BenchmarkRanking({ benchmarks, onSelectBenchmark }: Benc
 
       Object.entries(benchmark.results).forEach(([modelName, data]: [string, any]) => {
         if (!stats[modelName]) {
+          // Trouver les informations du modèle
+          const modelInfo = models.find(m => m.name === modelName) || {}
+          
           stats[modelName] = {
             name: modelName,
+            displayName: modelInfo.displayName || modelName,
             totalTests: 0,
             successfulTests: 0,
             avgResponseTime: 0,
@@ -48,7 +81,11 @@ export default function BenchmarkRanking({ benchmarks, onSelectBenchmark }: Benc
             totalRatings: 0,
             categories: {},
             lastTested: benchmark.timestamp,
-            bestBenchmark: benchmark
+            bestBenchmark: benchmark,
+            hasNative: modelInfo.hasNative || false,
+            type: modelInfo.type || 'general',
+            size: modelInfo.size || 0,
+            sizeFormatted: modelInfo.sizeFormatted || 'N/A'
           }
         }
 
@@ -106,22 +143,68 @@ export default function BenchmarkRanking({ benchmarks, onSelectBenchmark }: Benc
     return (successRate * 0.4) + (speedScore * 0.3) + (userScore * 0.3)
   }
 
-  const sortedModels = [...modelStats].sort((a, b) => {
+  const handleModelDetail = (modelName: string) => {
+    const model = models.find(m => m.name === modelName)
+    if (model) {
+      setSelectedModelDetail(model)
+      setShowModelModal(true)
+    }
+  }
+
+  const handleSort = (newSortBy: 'name' | 'size' | 'score') => {
+    if (sortBy === newSortBy) {
+      setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')
+    } else {
+      setSortBy(newSortBy)
+      setSortOrder(newSortBy === 'score' ? 'desc' : 'asc')
+    }
+  }
+
+  const getSortedModels = () => {
+    let sorted = [...modelStats]
+    
+    // D'abord filtrer par mode de ranking
     switch (rankingMode) {
       case 'overall':
-        return getOverallScore(b) - getOverallScore(a)
+        sorted = sorted.sort((a, b) => getOverallScore(b) - getOverallScore(a))
+        break
       case 'speed':
-        return b.avgTokensPerSecond - a.avgTokensPerSecond
+        sorted = sorted.sort((a, b) => b.avgTokensPerSecond - a.avgTokensPerSecond)
+        break
       case 'accuracy':
-        const aAccuracy = a.totalTests > 0 ? (a.successfulTests / a.totalTests) * 100 : 0
-        const bAccuracy = b.totalTests > 0 ? (b.successfulTests / b.totalTests) * 100 : 0
-        return bAccuracy - aAccuracy
+        sorted = sorted.sort((a, b) => {
+          const aAccuracy = a.totalTests > 0 ? (a.successfulTests / a.totalTests) * 100 : 0
+          const bAccuracy = b.totalTests > 0 ? (b.successfulTests / b.totalTests) * 100 : 0
+          return bAccuracy - aAccuracy
+        })
+        break
       case 'user_rating':
-        return b.avgUserRating - a.avgUserRating
-      default:
-        return 0
+        sorted = sorted.sort((a, b) => b.avgUserRating - a.avgUserRating)
+        break
     }
-  })
+
+    // Ensuite trier selon le critère choisi
+    if (sortBy !== 'score') {
+      sorted = sorted.sort((a, b) => {
+        let comparison = 0
+        
+        switch (sortBy) {
+          case 'name':
+            comparison = a.displayName.localeCompare(b.displayName)
+            break
+          case 'size':
+            comparison = a.size - b.size
+            break
+        }
+        
+        return sortOrder === 'desc' ? -comparison : comparison
+      })
+    }
+
+    return sorted
+  }
+
+  const sortedModels = getSortedModels()
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
@@ -160,7 +243,7 @@ export default function BenchmarkRanking({ benchmarks, onSelectBenchmark }: Benc
             <h2 className="text-lg font-semibold">Classement des Modèles</h2>
           </div>
           
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <select
               value={rankingMode}
               onChange={(e) => setRankingMode(e.target.value as any)}
@@ -171,6 +254,37 @@ export default function BenchmarkRanking({ benchmarks, onSelectBenchmark }: Benc
               <option value="accuracy">Précision</option>
               <option value="user_rating">Note utilisateur</option>
             </select>
+            
+            <div className="flex items-center gap-1">
+              <span className="text-sm text-gray-500">Trier par:</span>
+              <button
+                onClick={() => handleSort('score')}
+                className={`flex items-center gap-1 px-2 py-1 text-sm rounded ${
+                  sortBy === 'score' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                Score
+                {sortBy === 'score' && <ArrowUpDown className="w-3 h-3" />}
+              </button>
+              <button
+                onClick={() => handleSort('name')}
+                className={`flex items-center gap-1 px-2 py-1 text-sm rounded ${
+                  sortBy === 'name' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                Nom
+                {sortBy === 'name' && <ArrowUpDown className="w-3 h-3" />}
+              </button>
+              <button
+                onClick={() => handleSort('size')}
+                className={`flex items-center gap-1 px-2 py-1 text-sm rounded ${
+                  sortBy === 'size' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                Taille
+                {sortBy === 'size' && <ArrowUpDown className="w-3 h-3" />}
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -188,7 +302,14 @@ export default function BenchmarkRanking({ benchmarks, onSelectBenchmark }: Benc
               <div key={model.name} className={`${height} ${bgColor} rounded-lg p-3 flex flex-col items-center justify-end min-w-32`}>
                 <div className="text-center mb-2">
                   {getRankIcon(rank)}
-                  <div className="font-medium text-sm mt-1">{model.name}</div>
+                  <div className="flex items-center justify-center gap-1 mt-1">
+                    <span className="font-medium text-sm">{model.displayName}</span>
+                    {model.hasNative && (
+                      <div title="Optimisé natif">
+                        <Zap className="w-3 h-3 text-yellow-500" />
+                      </div>
+                    )}
+                  </div>
                   <div className="text-xs text-gray-600">
                     {rankingMode === 'overall' && `${Math.round(getOverallScore(model))}%`}
                     {rankingMode === 'speed' && `${Math.round(model.avgTokensPerSecond)} t/s`}
@@ -223,11 +344,34 @@ export default function BenchmarkRanking({ benchmarks, onSelectBenchmark }: Benc
                     </div>
                     
                     <div className="flex-1">
-                      <h4 className="font-medium text-lg">{model.name}</h4>
-                      <div className="text-sm text-gray-600">
-                        Dernier test: {formatDate(model.lastTested)}
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-medium text-lg">{model.displayName}</h4>
+                        {model.hasNative && (
+                          <div title="Optimisé natif">
+                            <Zap className="w-4 h-4 text-yellow-500" />
+                          </div>
+                        )}
+                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                          model.type === 'medical' 
+                            ? 'bg-blue-100 text-blue-800' 
+                            : 'bg-gray-100 text-gray-800'
+                        }`}>
+                          {model.type === 'medical' ? 'Médical' : 'Général'}
+                        </span>
+                      </div>
+                      <div className="text-sm text-gray-600 flex items-center gap-4">
+                        <span>Dernier test: {formatDate(model.lastTested)}</span>
+                        <span>Taille: {model.sizeFormatted}</span>
                       </div>
                     </div>
+
+                    <button
+                      onClick={() => handleModelDetail(model.name)}
+                      className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
+                      title="Voir les détails du modèle"
+                    >
+                      <Info className="w-4 h-4" />
+                    </button>
                   </div>
 
                   <div className="grid grid-cols-4 gap-6 text-center">
@@ -277,6 +421,13 @@ export default function BenchmarkRanking({ benchmarks, onSelectBenchmark }: Benc
           })}
         </div>
       </div>
+
+      {/* Modale de détails du modèle */}
+      <ModelDetailModal
+        model={selectedModelDetail}
+        isVisible={showModelModal}
+        onClose={() => setShowModelModal(false)}
+      />
     </div>
   )
 }
