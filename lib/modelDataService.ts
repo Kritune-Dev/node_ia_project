@@ -1,12 +1,17 @@
 // Note: Ce service est conçu pour fonctionner côté serveur uniquement
 // Pour le côté client, nous utiliserons l'API
 
+import fs from 'fs'
+
+// Définir le chemin du fichier d'historique des benchmarks
+const HISTORY_FILE = './data/benchmarkHistory.json'
+
 export interface ModelCompleteData {
   // Informations statiques
   name: string
   displayName: string
   description?: string
-  type: 'medical' | 'general'
+  type: 'medical' | 'general' | 'rapide'
   size: number
   sizeFormatted: string
   parameters: string

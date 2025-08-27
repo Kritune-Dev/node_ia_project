@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Play, Square, RefreshCw, CheckCircle, XCircle, Settings, AlertCircle, Zap, Info, ArrowUpDown } from 'lucide-react'
-import ModelDetailModal from './ModelDetailModal'
+import ModelDetailModal from '../ModelDetailModal'
 import CustomQuestions, { CustomQuestion } from './CustomQuestions'
 
 interface BenchmarkQuestion {

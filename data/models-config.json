@@ -93,7 +93,7 @@
     "gemma3:270m": {
       "displayName": "Gemma3 270M",
       "description": "Modèle ultra-léger de Google, idéal pour les applications à contraintes de ressources.",
-      "type": "general",
+      "type": "rapide",
       "specialties": ["Ultra-léger", "Edge computing", "IoT", "Applications mobiles"],
       "parameters": "270M",
       "github": "https://github.com/google-deepmind/gemma",
@@ -103,7 +103,7 @@
     "gemma3:1b": {
       "displayName": "Gemma3 1B",
       "description": "Version légère de Gemma3 adaptée aux applications mobiles et de prototypage.",
-      "type": "general",
+      "type": "rapide",
       "specialties": ["Prototypage", "Applications mobiles", "Tests rapides"],
       "parameters": "1B",
       "notes": "Bon compromis entre performance et taille pour les usages mobiles."
@@ -119,7 +119,7 @@
     "tinyllama:1.1b": {
       "displayName": "TinyLlama 1.1B",
       "description": "Version compacte de Llama, parfaite pour l'expérimentation et les applications légères.",
-      "type": "general",
+      "type": "rapide",
       "specialties": ["Apprentissage", "Prototypage", "Tests rapides", "Développement"],
       "parameters": "1.1B",
       "github": "https://github.com/jzhang38/TinyLlama",
@@ -137,7 +137,7 @@
     "qwen3:1.7b": {
       "displayName": "Qwen3 1.7B",
       "description": "Version compacte de Qwen3 adaptée à des usages mobiles et légers.",
-      "type": "general",
+      "type": "rapide",
       "specialties": ["Raisonnement léger", "Analyse texte", "Applications mobiles"],
       "parameters": "1.7B",
       "notes": "Idéal pour prototypage rapide et usage léger."
@@ -145,7 +145,7 @@
     "qwen3:0.6b": {
       "displayName": "Qwen3 600M",
       "description": "Version ultra-compacte de Qwen3 pour des usages très légers.",
-      "type": "general",
+      "type": "rapide",
       "specialties": ["Raisonnement ultra-léger", "Applications embarquées", "Tests rapides"],
       "parameters": "0.6B",
       "notes": "Pour usage minimal sur appareils limités."
@@ -153,7 +153,7 @@
     "deepseek-r1:1.5b": {
       "displayName": "DeepSeek R1 1.5B",
       "description": "Version compacte de DeepSeek R1 pour tâches nécessitant moins de ressources.",
-      "type": "general",
+      "type": "rapide",
       "specialties": ["Raisonnement léger", "Résolution rapide", "Tests"],
       "parameters": "1.5B",
       "notes": "Pour environnements avec contraintes de ressources."
@@ -207,6 +207,11 @@
       "label": "Général",
       "description": "Modèles polyvalents pour usage général",
       "color": "blue"
+    },
+    "rapide": {
+      "label": "Rapide",
+      "description": "Modèles optimisés pour des performances rapides",
+      "color": "yellow"
     }
   },
   "specialties": [
@@ -247,7 +252,7 @@
     "Créativité"
   ],
   "config": {
-    "version": "1.1.0",
+    "version": "1.2.0",
     "lastUpdated": "2025-08-27T12:00:00Z",
     "description": "Configuration des modèles LLM avec métadonnées enrichies et tous modèles listés"
   }

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Trophy, Medal, Award, TrendingUp, Clock, Zap, Target, Info, ArrowUpDown } from 'lucide-react'
-import ModelDetailModal from './ModelDetailModal'
+import ModelDetailModal from '../ModelDetailModal'
 
 interface BenchmarkRankingProps {
   benchmarks: any[]
