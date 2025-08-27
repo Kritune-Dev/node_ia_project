@@ -1,18 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import fs from 'fs'
-import path from 'path'
-
-// Fonction pour charger la configuration des modèles
-async function loadModelsConfig() {
-  try {
-    const configPath = path.join(process.cwd(), 'data', 'models-config.json')
-    const configData = fs.readFileSync(configPath, 'utf8')
-    return JSON.parse(configData)
-  } catch (error) {
-    console.warn('Configuration des modèles non trouvée, utilisation des valeurs par défaut')
-    return null
-  }
-}
 
 // Helper function pour extraire les paramètres du modèle depuis le nom
 function extractModelParameters(modelName: string, size: number): string {
@@ -110,6 +96,9 @@ function resolveLatestVersion(modelName: string, modelInfo: any): string {
 // Helper function pour récupérer les scores de benchmark d'un modèle
 async function getModelBenchmarkScores(modelName: string): Promise<any> {
   try {
+    const fs = require('fs')
+    const path = require('path')
+    
     const historyFile = path.join(process.cwd(), 'benchmark_results', 'history.json')
     
     if (!fs.existsSync(historyFile)) {
@@ -131,7 +120,7 @@ async function getModelBenchmarkScores(modelName: string): Promise<any> {
     // Calculer les scores moyens
     let totalTests = 0
     let successfulTests = 0
-    let validResponseTimeTests = 0
+    let validResponseTimeTests = 0 // Nouveau compteur pour les tests avec temps de réponse valide
     let totalResponseTime = 0
     let totalTokensPerSecond = 0
     let totalRating = 0
@@ -146,6 +135,7 @@ async function getModelBenchmarkScores(modelName: string): Promise<any> {
           totalTests++
           if (test.success) {
             successfulTests++
+            // N'ajouter le temps de réponse que si ce n'est pas un timeout
             if (test.responseTime !== null && !test.isTimeout) {
               totalResponseTime += test.responseTime || 0
               validResponseTimeTests++
@@ -172,7 +162,7 @@ async function getModelBenchmarkScores(modelName: string): Promise<any> {
       averageRating: ratedTests > 0 ? Math.round((totalRating / ratedTests) * 10) / 10 : null,
       totalTests,
       successfulTests,
-      validResponseTimeTests,
+      validResponseTimeTests, // Ajouter cette info
       lastTested: modelBenchmarks[0]?.timestamp
     }
   } catch (error) {
@@ -180,7 +170,6 @@ async function getModelBenchmarkScores(modelName: string): Promise<any> {
     return null
   }
 }
-
 async function getModelsFromService(url: string, serviceName: string): Promise<{ models: any[], serviceName: string, url: string } | null> {
   try {
     const response = await fetch(`${url}/api/tags`, {
@@ -208,82 +197,6 @@ async function getModelsFromService(url: string, serviceName: string): Promise<{
   }
 }
 
-// Fonction de fallback pour enrichir les modèles sans config
-function enrichModelFallback(name: string) {
-  let modelInfo = {
-    displayName: name,
-    description: "Modèle de langage avancé",
-    type: "general",
-    specialties: [] as string[],
-    parameters: "Inconnu",
-    github: "",
-    website: "",
-    notes: "",
-    creator: "Inconnu",
-    license: "Inconnu"
-  };
-
-  // Base de données complète des modèles (fallback)
-  const cleanName = name.split(':')[0].toLowerCase()
-  
-  if (cleanName.includes('meditron')) {
-    modelInfo = {
-      displayName: "Meditron 7B",
-      description: "Modèle médical spécialisé basé sur Llama 2, entraîné sur des données médicales et biomédicales",
-      type: "medical",
-      specialties: ["Diagnostic médical", "Physiologie", "Pathologie"],
-      parameters: "7B",
-      github: "https://github.com/epfLLM/meditron",
-      website: "https://huggingface.co/epfl-llm/meditron-7b",
-      creator: "EPFL",
-      license: "Apache 2.0",
-      notes: "Spécialement conçu pour l'assistance médicale"
-    };
-  } else if (cleanName.includes('biomistral')) {
-    modelInfo = {
-      displayName: "BioMistral 7B",
-      description: "Modèle biomédical basé sur Mistral 7B, spécialisé dans la recherche biomédicale",
-      type: "medical",
-      specialties: ["Recherche biomédicale", "Biologie moléculaire"],
-      parameters: "7B",
-      github: "https://github.com/BioMistral/BioMistral",
-      website: "https://huggingface.co/BioMistral/BioMistral-7B",
-      creator: "Mistral AI",
-      license: "Apache 2.0",
-      notes: "Excellent pour la recherche biomédicale"
-    };
-  } else if (cleanName.includes('qwen')) {
-    const params = name.includes('8b') ? '8B' : '7B';
-    modelInfo = {
-      displayName: `Qwen3 ${params}`,
-      description: "Modèle de langage avancé de dernière génération, excellent en raisonnement",
-      type: "general",
-      specialties: ["Raisonnement", "Analyse de texte", "Génération de code"],
-      parameters: params,
-      github: "https://github.com/QwenLM/Qwen",
-      website: "https://huggingface.co/Qwen/Qwen3-8B",
-      creator: "Alibaba Cloud",
-      license: "Apache 2.0",
-      notes: "Excellent modèle général avec de très bonnes capacités de raisonnement"
-    };
-  } else if (cleanName.includes('mistral')) {
-    modelInfo = {
-      displayName: "Mistral 7B",
-      description: "Modèle français haute performance, excellent équilibre entre qualité et efficacité",
-      type: "general",
-      specialties: ["Français", "Multilangue", "Instructions complexes"],
-      parameters: "7B",
-      github: "https://github.com/mistralai/mistral-src",
-      website: "https://huggingface.co/mistralai/Mistral-7B-Instruct-v0.2",
-      creator: "Mistral AI",
-      license: "Apache 2.0",
-      notes: "Excellent modèle français avec de très bonnes performances générales"
-    };
-  }
-
-  return modelInfo;
-}
-
 export async function GET() {
   // URLs des services dans l'ordre de préférence (natif d'abord)
   const services = [
@@ -293,9 +206,6 @@ export async function GET() {
   ]
   
   try {
-    // Charger la configuration des modèles
-    const modelsConfig = await loadModelsConfig()
-    
     // Tester tous les services en parallèle
     const serviceResults = await Promise.all(
       services.map(service => getModelsFromService(service.url, service.name))
@@ -308,18 +218,245 @@ export async function GET() {
       throw new Error('Aucun service Ollama disponible')
     }
     
+    // Base de données des informations sur les LLM
+    const getModelMetadata = (modelName: string) => {
+      const cleanName = modelName.split(':')[0].toLowerCase()
+      const modelDatabase: Record<string, any> = {
+        'llama3.2': {
+          fullName: 'Llama 3.2',
+          creator: 'Meta AI',
+          description: 'Modèle de langage général de Meta, optimisé pour les conversations et le raisonnement',
+          github: 'https://github.com/meta-llama/llama-models',
+          website: 'https://ai.meta.com/llama/',
+          paper: 'https://arxiv.org/abs/2407.21783',
+          license: 'Llama 3.2 Community License',
+          type: 'general',
+          specialties: ['Conversation', 'Raisonnement', 'Code']
+        },
+        'meditron': {
+          fullName: 'Meditron',
+          creator: 'EPFL',
+          description: 'LLM spécialisé en médecine, entraîné sur des textes médicaux',
+          github: 'https://github.com/epfLLM/meditron',
+          website: 'https://huggingface.co/epfl-llm/meditron-7b',
+          paper: 'https://arxiv.org/abs/2311.16079',
+          license: 'Apache 2.0',
+          type: 'medical',
+          specialties: ['Médecine', 'Diagnostic', 'Recherche médicale']
+        },
+        'biomistral': {
+          fullName: 'BioMistral',
+          creator: 'Mistral AI',
+          description: 'Version biomédicale de Mistral, spécialisée en sciences de la vie',
+          github: 'https://github.com/BioMistral/BioMistral',
+          website: 'https://huggingface.co/BioMistral/BioMistral-7B',
+          paper: 'https://arxiv.org/abs/2402.10373',
+          license: 'Apache 2.0',
+          type: 'medical',
+          specialties: ['Biomédecine', 'Sciences de la vie', 'Recherche']
+        },
+        'medllama2': {
+          fullName: 'MedLlama2',
+          creator: 'Stanford AIMI',
+          description: 'Llama2 fine-tuné pour les applications médicales',
+          github: 'https://github.com/stanford-aimi/medllama2',
+          website: 'https://huggingface.co/epfl-llm/medllama2-7b',
+          paper: 'https://arxiv.org/abs/2309.05037',
+          license: 'Custom Medical License',
+          type: 'medical',
+          specialties: ['Médecine clinique', 'Imagerie médicale']
+        },
+        'phi3': {
+          fullName: 'Phi-3',
+          creator: 'Microsoft',
+          description: 'Petit modèle haute performance de Microsoft Research',
+          github: 'https://github.com/microsoft/Phi-3CookBook',
+          website: 'https://azure.microsoft.com/en-us/products/ai-services/phi-3',
+          paper: 'https://arxiv.org/abs/2404.14219',
+          license: 'MIT',
+          type: 'general',
+          specialties: ['Efficacité', 'Raisonnement', 'Code']
+        },
+        'qwen2': {
+          fullName: 'Qwen2',
+          creator: 'Alibaba Cloud',
+          description: 'Modèle multilingue avec de fortes capacités en chinois et anglais',
+          github: 'https://github.com/QwenLM/Qwen2',
+          website: 'https://qwenlm.github.io/',
+          paper: 'https://arxiv.org/abs/2407.10671',
+          license: 'Apache 2.0',
+          type: 'general',
+          specialties: ['Multilingue', 'Mathématiques', 'Code']
+        },
+        'mistral': {
+          fullName: 'Mistral 7B',
+          creator: 'Mistral AI',
+          description: 'Modèle français haute performance pour diverses tâches',
+          github: 'https://github.com/mistralai/mistral-src',
+          website: 'https://mistral.ai/',
+          paper: 'https://arxiv.org/abs/2310.06825',
+          license: 'Apache 2.0',
+          type: 'general',
+          specialties: ['Français', 'Raisonnement', 'Instruction following']
+        },
+        'gemma2': {
+          fullName: 'Gemma 2',
+          creator: 'Google DeepMind',
+          description: 'Modèle open source basé sur Gemini de Google',
+          github: 'https://github.com/google-deepmind/gemma',
+          website: 'https://ai.google.dev/gemma',
+          paper: 'https://arxiv.org/abs/2408.00118',
+          license: 'Gemma Terms of Use',
+          type: 'general',
+          specialties: ['Sécurité', 'Raisonnement', 'Multilingue']
+        },
+        'tinyllama': {
+          fullName: 'TinyLlama',
+          creator: 'TinyLlama Team',
+          description: 'Version compacte de Llama pour l\'edge computing',
+          github: 'https://github.com/jzhang38/TinyLlama',
+          website: 'https://huggingface.co/TinyLlama/TinyLlama-1.1B-Chat-v1.0',
+          paper: 'https://arxiv.org/abs/2401.02385',
+          license: 'Apache 2.0',
+          type: 'general',
+          specialties: ['Légèreté', 'Edge computing', 'Efficacité']
+        },
+        'orca2': {
+          fullName: 'Orca 2',
+          creator: 'Microsoft Research',
+          description: 'Modèle entraîné avec des techniques de reasoning progressif',
+          github: 'https://github.com/microsoft/Orca',
+          website: 'https://huggingface.co/microsoft/Orca-2-7b',
+          paper: 'https://arxiv.org/abs/2311.11045',
+          license: 'Custom Microsoft License',
+          type: 'general',
+          specialties: ['Raisonnement', 'Step-by-step thinking', 'Logique']
+        },
+        'qwen3': {
+          fullName: 'Qwen 3',
+          creator: 'Alibaba',
+          description: 'Dernière génération de la série Qwen avec des améliorations significatives',
+          github: 'https://github.com/QwenLM/Qwen3',
+          website: 'https://qwenlm.github.io/',
+          license: 'Apache 2.0',
+          type: 'general',
+          specialties: ['Multilingue', 'Mathématiques', 'Code', 'Raisonnement']
+        },
+        'deepseek': {
+          fullName: 'DeepSeek',
+          creator: 'DeepSeek',
+          description: 'Modèle de raisonnement avancé développé par DeepSeek (entreprise chinoise)',
+          github: 'https://github.com/deepseek-ai',
+          website: 'https://www.deepseek.com/',
+          license: 'MIT',
+          type: 'general',
+          specialties: ['Raisonnement', 'Code', 'Mathématiques', 'Logique']
+        },
+        'medgemma': {
+          fullName: 'MedGemma',
+          creator: 'Google (fork de Gemma)',
+          description: 'Fork médical de Gemma spécialisé dans les applications médicales',
+          github: 'https://github.com/google-deepmind/gemma',
+          website: 'https://ai.google.dev/gemma',
+          license: 'Gemma Terms of Use',
+          type: 'medical',
+          specialties: ['Médecine', 'Diagnostic', 'Recherche médicale']
+        },
+        'gemma3': {
+          fullName: 'Gemma 3',
+          creator: 'Google',
+          description: 'Troisième génération du modèle Gemma de Google',
+          github: 'https://github.com/google-deepmind/gemma',
+          website: 'https://ai.google.dev/gemma',
+          license: 'Gemma Terms of Use',
+          type: 'general',
+          specialties: ['Sécurité', 'Raisonnement', 'Multilingue', 'Performance']
+        },
+        'lastmass': {
+          fullName: 'Lastmass/Qwen3 Medical GRPO',
+          creator: 'Lastmass (fork de Qwen3)',
+          description: 'Fork médical de Qwen3 spécialisé pour les applications médicales',
+          github: 'https://github.com/QwenLM/Qwen3',
+          website: 'https://huggingface.co/lastmass',
+          license: 'Apache 2.0',
+          type: 'medical',
+          specialties: ['Médecine', 'GRPO', 'Diagnostic médical', 'Recherche clinique']
+        },
+        'lastmass/qwen3_medical_grpo': {
+          fullName: 'Lastmass/Qwen3 Medical GRPO',
+          creator: 'Lastmass (fork de Qwen3)',
+          description: 'Fork médical de Qwen3 spécialisé pour les applications médicales',
+          github: 'https://github.com/QwenLM/Qwen3',
+          website: 'https://huggingface.co/lastmass',
+          license: 'Apache 2.0',
+          type: 'medical',
+          specialties: ['Médecine', 'GRPO', 'Diagnostic médical', 'Recherche clinique']
+        },
+        'qwen3_medical_grpo': {
+          fullName: 'Lastmass/Qwen3 Medical GRPO',
+          creator: 'Lastmass (fork de Qwen3)',
+          description: 'Fork médical de Qwen3 spécialisé pour les applications médicales',
+          github: 'https://github.com/QwenLM/Qwen3',
+          website: 'https://huggingface.co/lastmass',
+          license: 'Apache 2.0',
+          type: 'medical',
+          specialties: ['Médecine', 'GRPO', 'Diagnostic médical', 'Recherche clinique']
+        }
+      }
+
+      // Recherche spécifique pour lastmass (priorité haute)
+      if (cleanName.includes('lastmass') && cleanName.includes('qwen3') && cleanName.includes('medical')) {
+        return modelDatabase['lastmass/qwen3_medical_grpo']
+      }
+
+      // Recherche par nom partiel
+      for (const [key, metadata] of Object.entries(modelDatabase)) {
+        if (cleanName.includes(key) || key.includes(cleanName.replace(/[_-]/g, ''))) {
+          return metadata
+        }
+      }
+
+      // Recherche spéciale pour les modèles avec des slashes ou des underscores
+      const simplifiedName = cleanName.replace(/[\/\-_]/g, '').toLowerCase()
+      for (const [key, metadata] of Object.entries(modelDatabase)) {
+        const simplifiedKey = key.replace(/[\/\-_]/g, '').toLowerCase()
+        if (simplifiedName.includes(simplifiedKey) || simplifiedKey.includes(simplifiedName)) {
+          return metadata
+        }
+      }
+
+      // Recherche par mots-clés dans le nom
+      if (cleanName.includes('medical') || cleanName.includes('med')) {
+        if (cleanName.includes('qwen') || cleanName.includes('lastmass')) {
+          return modelDatabase['lastmass/qwen3_medical_grpo']
+        }
+        if (cleanName.includes('gemma')) {
+          return modelDatabase['medgemma']
+        }
+      }
+
+      // Recherche spécifique pour lastmass (priorité haute)
+      if (cleanName.includes('lastmass') && cleanName.includes('qwen3') && cleanName.includes('medical')) {
+        return modelDatabase['lastmass/qwen3_medical_grpo']
+      }
+
+      // Valeurs par défaut si non trouvé
+      return {
+        fullName: modelName.split(':')[0].replace(/[_-]/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()),
+        creator: 'Unknown',
+        description: 'Informations non disponibles pour ce modèle',
+        github: null,
+        website: null,
+        paper: null,
+        license: 'Unknown',
+        type: 'general',
+        specialties: []
+      }
+    }
+
     // Fonction pour obtenir des informations enrichies sur le modèle
     const getModelInfo = (model: any, serviceName: string, serviceType: string) => {
-      const name = model.name
-      
-      // Utiliser la configuration JSON si disponible, sinon fallback
-      let metadata;
-      if (modelsConfig && modelsConfig.models[name]) {
-        metadata = modelsConfig.models[name];
-      } else {
-        metadata = enrichModelFallback(name);
-      }
-      
+      const metadata = getModelMetadata(model.name)
       const sizeInGB = model.size ? (model.size / (1024 * 1024 * 1024)).toFixed(1) : 'N/A'
       
       // Résoudre la version "latest" vers la vraie version
@@ -327,20 +464,20 @@ export async function GET() {
       const resolvedTag = resolveLatestVersion(model.name, model)
       
       // Extraire les paramètres du modèle
-      const parameters = metadata.parameters || extractModelParameters(model.name, model.size)
+      const parameters = extractModelParameters(model.name, model.size)
       
-      // Créer le nom d'affichage
-      let displayName = metadata.displayName
+      // Créer le nom d'affichage avec les paramètres au lieu de "latest"
+      let displayName = metadata.fullName
       if (originalTag === 'latest' && resolvedTag !== 'latest') {
-        displayName = `${metadata.displayName} (${resolvedTag.toUpperCase()})`
+        displayName = `${metadata.fullName} (${resolvedTag.toUpperCase()})`
       } else if (originalTag !== 'latest') {
-        displayName = `${metadata.displayName} (${originalTag.toUpperCase()})`
+        displayName = `${metadata.fullName} (${originalTag.toUpperCase()})`
       }
       
       return {
         name: model.name,
         displayName: displayName,
-        creator: metadata.creator || "Inconnu",
+        creator: metadata.creator,
         description: metadata.description,
         github: metadata.github,
         website: metadata.website,
@@ -350,7 +487,7 @@ export async function GET() {
         type: metadata.type,
         size: model.size,
         sizeFormatted: `${sizeInGB} GB`,
-        parameters: parameters,
+        parameters: parameters, // Nouveau : afficher les paramètres au lieu du poids
         originalTag: originalTag,
         resolvedTag: resolvedTag,
         modified: model.modified_at,
@@ -359,8 +496,6 @@ export async function GET() {
         details: model,
         available: true,
         installed: true,
-        notes: metadata.notes || "",
-        metrics: metadata.metrics || {},
         service: {
           name: serviceName,
           type: serviceType,
@@ -370,9 +505,9 @@ export async function GET() {
     }
 
     // Collecter tous les modèles de tous les services
-    const modelMap = new Map()
-    const digestMap = new Map()
-    const modelFamilyMap = new Map()
+    const modelMap = new Map() // Pour éviter les doublons par digest
+    const digestMap = new Map() // Pour détecter les doublons basés sur le digest
+    const modelFamilyMap = new Map() // Pour regrouper les variantes d'un même modèle
 
     availableServices.forEach(service => {
       const serviceType = services.find(s => s.url === service.url)?.type || 'unknown'
@@ -464,6 +599,7 @@ export async function GET() {
     // Trier les variantes par taille
     modelFamilies.forEach(family => {
       family.variants.sort((a: any, b: any) => {
+        // Extraire les tailles numériques des variantes (1b, 3b, 7b, etc.)
         const getSizeNumber = (variant: string) => {
           const match = variant.match(/(\d+\.?\d*)([bm]?)/)
           if (!match) return 0
@@ -516,7 +652,6 @@ export async function GET() {
 
     return NextResponse.json({
       status: 'connected',
-      configLoaded: !!modelsConfig,
       primary_service: availableServices.length > 0 ? {
         name: availableServices[0].serviceName,
         url: availableServices[0].url,
@@ -601,7 +736,6 @@ export async function GET() {
         status: 'disconnected',
         error: errorMessage,
         docker_status: 'offline',
-        configLoaded: false,
         models: {
           all: [],
           medical: [],

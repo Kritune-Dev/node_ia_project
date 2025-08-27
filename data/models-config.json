@@ -1,0 +1,254 @@
+{
+  "models": {
+    "meditron:latest": {
+      "displayName": "Meditron 7B",
+      "description": "Modèle médical spécialisé basé sur Llama 2, entraîné sur des données médicales et biomédicales. Excellente performance pour les diagnostics et conseils médicaux.",
+      "type": "medical",
+      "specialties": ["Diagnostic médical", "Physiologie", "Pathologie", "Pharmacologie"],
+      "parameters": "7B",
+      "github": "https://github.com/epfLLM/meditron",
+      "website": "https://huggingface.co/epfl-llm/meditron-7b",
+      "metrics": {
+        "medical_accuracy": "85%",
+        "general_performance": "78%"
+      },
+      "notes": "Spécialement conçu pour l'assistance médicale. Très performant sur les cas cliniques."
+    },
+    "cniongolo/biomistral:latest": {
+      "displayName": "BioMistral 7B",
+      "description": "Modèle biomédical basé sur Mistral 7B, spécialisé dans la recherche biomédicale et les sciences de la vie.",
+      "type": "medical",
+      "specialties": ["Recherche biomédicale", "Biologie moléculaire", "Génétique", "Pharmacologie"],
+      "parameters": "7B",
+      "github": "https://github.com/BioMistral/BioMistral",
+      "website": "https://huggingface.co/BioMistral/BioMistral-7B",
+      "metrics": {
+        "biomedical_accuracy": "82%",
+        "research_capability": "88%"
+      },
+      "notes": "Excellent pour la recherche biomédicale et l'analyse de publications scientifiques."
+    },
+    "medllama2:latest": {
+      "displayName": "MedLlama2 7B",
+      "description": "Version médicale de Llama 2 adaptée aux applications cliniques et diagnostiques.",
+      "type": "medical",
+      "specialties": ["Diagnostic clinique", "Médecine générale", "Pédiatrie", "Cardiologie"],
+      "parameters": "7B",
+      "notes": "Modèle médical polyvalent, très bon pour les consultations générales."
+    },
+    "alibayram/medgemma:4b": {
+      "displayName": "MedGemma 4B",
+      "description": "Modèle médical basé sur Gemma, optimisé pour la rapidité tout en conservant une bonne précision médicale.",
+      "type": "medical",
+      "specialties": ["Médecine d'urgence", "Diagnostic rapide", "Triage médical"],
+      "parameters": "4B",
+      "notes": "Modèle rapide pour les diagnostics d'urgence et le triage."
+    },
+    "lastmass/Qwen3_Medical_GRPO:latest": {
+      "displayName": "Qwen3 Medical GRPO",
+      "description": "Modèle Qwen3 spécialisé en médecine avec optimisation GRPO pour de meilleures performances cliniques.",
+      "type": "medical",
+      "specialties": ["Intelligence médicale", "Recherche clinique", "Analyse de données médicales"],
+      "parameters": "7B",
+      "notes": "Version optimisée de Qwen3 pour les applications médicales avancées."
+    },
+    "qwen3:8b": {
+      "displayName": "Qwen3 8B",
+      "description": "Modèle de langage avancé de dernière génération, excellent en raisonnement et compréhension.",
+      "type": "general",
+      "specialties": ["Raisonnement logique", "Analyse de texte", "Génération de code", "Mathématiques"],
+      "parameters": "8B",
+      "github": "https://github.com/QwenLM/Qwen",
+      "website": "https://huggingface.co/Qwen/Qwen3-8B",
+      "metrics": {
+        "reasoning_score": "92%",
+        "code_generation": "89%"
+      },
+      "notes": "Excellent modèle général avec de très bonnes capacités de raisonnement."
+    },
+    "deepseek-r1:7b": {
+      "displayName": "DeepSeek R1 7B",
+      "description": "Modèle de raisonnement avancé spécialisé dans la résolution de problèmes complexes.",
+      "type": "general",
+      "specialties": ["Raisonnement complexe", "Mathématiques", "Logique", "Résolution de problèmes"],
+      "parameters": "7B",
+      "github": "https://github.com/deepseek-ai/DeepSeek-R1",
+      "website": "https://huggingface.co/deepseek-ai/deepseek-r1-7b",
+      "notes": "Excellent pour les tâches nécessitant un raisonnement approfondi."
+    },
+    "phi3:3.8b": {
+      "displayName": "Phi-3 Mini",
+      "description": "Modèle compact mais puissant de Microsoft, optimisé pour l'efficacité et la rapidité.",
+      "type": "general",
+      "specialties": ["Efficacité", "Rapidité", "Applications mobiles", "Edge computing"],
+      "parameters": "3.8B",
+      "github": "https://github.com/microsoft/Phi-3",
+      "website": "https://huggingface.co/microsoft/Phi-3-mini-4k-instruct",
+      "metrics": {
+        "efficiency_score": "95%",
+        "speed_index": "88%"
+      },
+      "notes": "Parfait équilibre entre performance et efficacité pour les applications légères."
+    },
+    "gemma3:270m": {
+      "displayName": "Gemma3 270M",
+      "description": "Modèle ultra-léger de Google, idéal pour les applications à contraintes de ressources.",
+      "type": "general",
+      "specialties": ["Ultra-léger", "Edge computing", "IoT", "Applications mobiles"],
+      "parameters": "270M",
+      "github": "https://github.com/google-deepmind/gemma",
+      "website": "https://huggingface.co/google/gemma-270m",
+      "notes": "Modèle minimaliste pour les environnements très contraints."
+    },
+    "gemma3:1b": {
+      "displayName": "Gemma3 1B",
+      "description": "Version légère de Gemma3 adaptée aux applications mobiles et de prototypage.",
+      "type": "general",
+      "specialties": ["Prototypage", "Applications mobiles", "Tests rapides"],
+      "parameters": "1B",
+      "notes": "Bon compromis entre performance et taille pour les usages mobiles."
+    },
+    "gemma3:latest": {
+      "displayName": "Gemma3 3B",
+      "description": "Version standard de Gemma3 pour des tâches générales avec un bon équilibre performance/taille.",
+      "type": "general",
+      "specialties": ["Analyse de texte", "Raisonnement", "Applications mobiles"],
+      "parameters": "3B",
+      "notes": "Polyvalent pour des applications générales."
+    },
+    "tinyllama:1.1b": {
+      "displayName": "TinyLlama 1.1B",
+      "description": "Version compacte de Llama, parfaite pour l'expérimentation et les applications légères.",
+      "type": "general",
+      "specialties": ["Apprentissage", "Prototypage", "Tests rapides", "Développement"],
+      "parameters": "1.1B",
+      "github": "https://github.com/jzhang38/TinyLlama",
+      "website": "https://huggingface.co/TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+      "notes": "Parfait pour débuter et tester rapidement des concepts."
+    },
+    "qwen3:4b": {
+      "displayName": "Qwen3 4B",
+      "description": "Version allégée de Qwen3 pour des performances rapides sur des tâches générales.",
+      "type": "general",
+      "specialties": ["Analyse de texte", "Raisonnement", "Mathématiques", "Applications rapides"],
+      "parameters": "4B",
+      "notes": "Bon compromis entre taille et puissance de traitement."
+    },
+    "qwen3:1.7b": {
+      "displayName": "Qwen3 1.7B",
+      "description": "Version compacte de Qwen3 adaptée à des usages mobiles et légers.",
+      "type": "general",
+      "specialties": ["Raisonnement léger", "Analyse texte", "Applications mobiles"],
+      "parameters": "1.7B",
+      "notes": "Idéal pour prototypage rapide et usage léger."
+    },
+    "qwen3:0.6b": {
+      "displayName": "Qwen3 600M",
+      "description": "Version ultra-compacte de Qwen3 pour des usages très légers.",
+      "type": "general",
+      "specialties": ["Raisonnement ultra-léger", "Applications embarquées", "Tests rapides"],
+      "parameters": "0.6B",
+      "notes": "Pour usage minimal sur appareils limités."
+    },
+    "deepseek-r1:1.5b": {
+      "displayName": "DeepSeek R1 1.5B",
+      "description": "Version compacte de DeepSeek R1 pour tâches nécessitant moins de ressources.",
+      "type": "general",
+      "specialties": ["Raisonnement léger", "Résolution rapide", "Tests"],
+      "parameters": "1.5B",
+      "notes": "Pour environnements avec contraintes de ressources."
+    },
+    "llama3.2:3b": {
+      "displayName": "Llama3.2 3B",
+      "description": "Version 3B de Llama3, bon compromis pour usage général et expérimentation.",
+      "type": "general",
+      "specialties": ["Analyse de texte", "Raisonnement", "Applications mobiles"],
+      "parameters": "3B",
+      "notes": "Polyvalent et stable pour usages généraux."
+    },
+    "qwen2:7b": {
+      "displayName": "Qwen2 7B",
+      "description": "Modèle Qwen2 performant pour les tâches générales et analytiques.",
+      "type": "general",
+      "specialties": ["Raisonnement logique", "Analyse de texte", "Mathématiques", "Génération de code"],
+      "parameters": "7B",
+      "notes": "Stable et performant pour usage général."
+    },
+    "PRFD/croissant-llm:latest": {
+      "displayName": "Croissant LLM",
+      "description": "Modèle léger pour prototypage rapide et tests de génération de texte.",
+      "type": "general",
+      "specialties": ["Prototypage", "Génération de texte", "Tests rapides"],
+      "parameters": "1.4B",
+      "notes": "Ultra-rapide pour tests et expérimentations."
+    },
+    "mistral:latest": {
+        "displayName": "Mistral 7B",
+        "description": "Modèle haute performance open-source, excellent pour le traitement du langage naturel et les tâches multilingues.",
+        "type": "general",
+        "specialties": ["Raisonnement", "Analyse de texte", "Multilangue", "Instructions complexes", "Créativité"],
+        "parameters": "7B",
+        "github": "https://github.com/mistralai/mistral-src",
+        "website": "https://huggingface.co/mistralai/Mistral-7B-Instruct-v0.2",
+        "metrics": {
+            "language_accuracy": "94%",
+            "instruction_following": "91%"
+        },
+        "notes": "Excellente option pour des usages généraux et créatifs avec de bonnes performances."
+    }
+  },
+  "categories": {
+    "medical": {
+      "label": "Médical",
+      "description": "Modèles spécialisés dans les domaines médicaux et biomédicaux",
+      "color": "red"
+    },
+    "general": {
+      "label": "Général",
+      "description": "Modèles polyvalents pour usage général",
+      "color": "blue"
+    }
+  },
+  "specialties": [
+    "Diagnostic médical",
+    "Physiologie",
+    "Pathologie",
+    "Pharmacologie",
+    "Recherche biomédicale",
+    "Biologie moléculaire",
+    "Génétique",
+    "Médecine générale",
+    "Pédiatrie",
+    "Cardiologie",
+    "Médecine d'urgence",
+    "Triage médical",
+    "Intelligence médicale",
+    "Recherche clinique",
+    "Raisonnement logique",
+    "Analyse de texte",
+    "Génération de code",
+    "Mathématiques",
+    "Raisonnement complexe",
+    "Logique",
+    "Résolution de problèmes",
+    "Efficacité",
+    "Rapidité",
+    "Applications mobiles",
+    "Edge computing",
+    "Ultra-léger",
+    "IoT",
+    "Apprentissage",
+    "Prototypage",
+    "Tests rapides",
+    "Développement",
+    "Français",
+    "Multilangue",
+    "Instructions complexes",
+    "Créativité"
+  ],
+  "config": {
+    "version": "1.1.0",
+    "lastUpdated": "2025-08-27T12:00:00Z",
+    "description": "Configuration des modèles LLM avec métadonnées enrichies et tous modèles listés"
+  }
+}

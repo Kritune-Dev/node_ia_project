@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Calendar, Clock, TrendingUp, Eye, Trash2, Search, Filter, ChevronDown, ChevronRight, AlertCircle, CheckCircle, XCircle, Copy, ExternalLink, Star } from 'lucide-react'
+import { Calendar, Clock, TrendingUp, Eye, Trash2, Search, Filter, ChevronDown, ChevronRight, AlertCircle, CheckCircle, XCircle, Copy, ExternalLink, Star, MessageSquare, Edit, Save, X } from 'lucide-react'
 
 // Fonction pour formater les temps de réponse (affiche en ms si < 1s, sinon en format minute:seconde)
 const formatResponseTime = (milliseconds: number) => {
@@ -30,6 +30,19 @@ interface TestDetailProps {
   benchmarkId: string
   isExpanded: boolean
   onToggle: () => void
+}
+
+// Interface pour le composant ModelSummary
+interface ModelSummaryProps {
+  modelName: string
+  modelData: any
+  benchmarkId: string
+  isExpanded: boolean
+  onToggle: () => void
+  globalComment: string
+  onGlobalCommentChange: (comment: string) => void
+  expandedTests: {[key: string]: boolean}
+  onTestToggle: (benchmarkId: string, modelName: string, questionId: string) => void
 }
 
 function TestDetail({ test, modelName, questionId, benchmarkId, isExpanded, onToggle }: TestDetailProps) {
@@ -336,12 +349,216 @@ function TestDetail({ test, modelName, questionId, benchmarkId, isExpanded, onTo
   )
 }
 
+// Nouveau composant pour le résumé des modèles avec notation globale
+function ModelSummary({ 
+  modelName, 
+  modelData, 
+  benchmarkId, 
+  isExpanded, 
+  onToggle, 
+  globalComment, 
+  onGlobalCommentChange,
+  expandedTests,
+  onTestToggle
+}: ModelSummaryProps) {
+  const [isEditingComment, setIsEditingComment] = useState(false)
+  const [tempComment, setTempComment] = useState(globalComment)
+
+  const handleSaveComment = () => {
+    onGlobalCommentChange(tempComment)
+    setIsEditingComment(false)
+  }
+
+  const handleCancelEdit = () => {
+    setTempComment(globalComment)
+    setIsEditingComment(false)
+  }
+
+  // Calculer la note moyenne basée sur les notes individuelles des tests
+  const calculateAverageRating = () => {
+    const testRatings = Object.values(modelData.questions || {})
+      .map((test: any) => test.user_rating)
+      .filter((rating: any) => rating && rating > 0)
+    
+    if (testRatings.length === 0) return 0
+    
+    const sum = testRatings.reduce((acc: number, rating: number) => acc + rating, 0)
+    return Math.round((sum / testRatings.length) * 10) / 10 // Arrondi à 1 décimale
+  }
+
+  const displayRating = calculateAverageRating()
+
+  return (
+    <div className="border border-gray-200 rounded-lg mb-4 overflow-hidden">
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex-1">
+            <div className="flex items-center gap-3 mb-3">
+              <h5 className="font-semibold text-lg text-gray-900">{modelName}</h5>
+              <div className={`px-3 py-1 text-sm font-medium rounded-full ${
+                modelData.success_rate >= 80 ? 'bg-green-100 text-green-800' :
+                modelData.success_rate >= 60 ? 'bg-yellow-100 text-yellow-800' :
+                'bg-red-100 text-red-800'
+              }`}>
+                {Math.round(modelData.success_rate || 0)}% réussite
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm mb-3">
+              <div>
+                <div className="text-gray-600">Temps moyen</div>
+                <div className="font-medium">{((modelData.average_response_time || 0) / 1000).toFixed(1)}s</div>
+              </div>
+              <div>
+                <div className="text-gray-600">Tokens/sec</div>
+                <div className="font-medium">{(modelData.average_tokens_per_second || 0).toFixed(1)}</div>
+              </div>
+              <div>
+                <div className="text-gray-600">Tests réussis</div>
+                <div className="font-medium">
+                  {Object.values(modelData.questions || {}).filter((test: any) => test.success).length}/{Object.keys(modelData.questions || {}).length}
+                </div>
+              </div>
+              <div>
+                <div className="text-gray-600">Temps total</div>
+                <div className="font-medium">{Math.round((modelData.total_response_time || 0) / 1000)}s</div>
+              </div>
+              <div>
+                <div className="text-gray-600">Note moyenne</div>
+                <div className="font-medium flex items-center gap-1">
+                  {displayRating > 0 ? (
+                    <>
+                      <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                      <span>{displayRating}/5</span>
+                    </>
+                  ) : (
+                    <span className="text-gray-400">Non noté</span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Commentaire global */}
+            <div className="mb-3">
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-sm text-gray-600">Commentaire global :</div>
+                <button
+                  onClick={() => setIsEditingComment(!isEditingComment)}
+                  className="p-1 text-gray-500 hover:text-gray-700 transition-colors"
+                  title={isEditingComment ? "Annuler l'édition" : "Modifier le commentaire"}
+                >
+                  {isEditingComment ? <X className="w-4 h-4" /> : <Edit className="w-4 h-4" />}
+                </button>
+              </div>
+              
+              {isEditingComment ? (
+                <div className="space-y-2">
+                  <textarea
+                    value={tempComment}
+                    onChange={(e) => setTempComment(e.target.value)}
+                    placeholder="Ajoutez votre commentaire global sur ce modèle..."
+                    className="w-full p-2 text-sm border border-gray-300 rounded-md resize-none"
+                    rows={3}
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleSaveComment}
+                      className="flex items-center gap-1 px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    >
+                      <Save className="w-3 h-3" />
+                      Sauvegarder
+                    </button>
+                    <button
+                      onClick={handleCancelEdit}
+                      className="flex items-center gap-1 px-3 py-1 text-sm bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+                    >
+                      <X className="w-3 h-3" />
+                      Annuler
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-sm text-gray-700 bg-white p-3 rounded-md border border-gray-200 min-h-[60px]">
+                  {globalComment || (
+                    <span className="text-gray-400 italic">
+                      Aucun commentaire global. Cliquez sur l'icône d'édition pour en ajouter un.
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 ml-4">
+            <button
+              onClick={onToggle}
+              className="p-2 text-gray-600 hover:bg-white hover:bg-opacity-70 rounded-lg transition-colors"
+              title={isExpanded ? "Masquer les tests détaillés" : "Voir les tests détaillés"}
+            >
+              {isExpanded ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Tests détaillés (expandable) */}
+      {isExpanded && (
+        <div className="p-4 space-y-3 bg-white">
+          <div className="text-sm font-medium text-gray-900 mb-3 flex items-center gap-2">
+            <Eye className="w-4 h-4" />
+            Tests détaillés ({Object.keys(modelData.questions || {}).length} tests)
+          </div>
+          
+          {Object.entries(modelData.questions || {}).map(([questionId, test]: [string, any]) => {
+            const testKey = `${benchmarkId}-${modelName}-${questionId}`
+            return (
+              <TestDetail
+                key={`${modelName}-${questionId}`}
+                test={test}
+                modelName={modelName}
+                questionId={questionId}
+                benchmarkId={benchmarkId}
+                isExpanded={expandedTests[testKey] || false}
+                onToggle={() => onTestToggle(benchmarkId, modelName, questionId)}
+              />
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function BenchmarkHistory({ benchmarks, onSelectBenchmark, onDataUpdate }: BenchmarkHistoryProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const [sortBy, setSortBy] = useState<'date' | 'models' | 'questions' | 'success_rate'>('date')
   const [filterCategory, setFilterCategory] = useState<string>('all')
   const [expandedTests, setExpandedTests] = useState<{ [key: string]: boolean }>({})
   const [selectedBenchmark, setSelectedBenchmark] = useState<string | null>(null)
+  const [expandedModels, setExpandedModels] = useState<{[key: string]: boolean}>({})
+  const [globalComments, setGlobalComments] = useState<{[key: string]: string}>({})
+  const [editingComment, setEditingComment] = useState<string | null>(null)
+  const [tempComment, setTempComment] = useState('')
+
+  // Charger les commentaires globaux depuis localStorage
+  useEffect(() => {
+    const savedComments = localStorage.getItem('globalModelComments')
+    
+    if (savedComments) {
+      try {
+        setGlobalComments(JSON.parse(savedComments))
+      } catch (e) {
+        console.error('Erreur lors du chargement des commentaires globaux:', e)
+      }
+    }
+  }, [])
+
+  // Sauvegarder les commentaires globaux
+  const saveGlobalComment = (modelKey: string, comment: string) => {
+    const newComments = { ...globalComments, [modelKey]: comment }
+    setGlobalComments(newComments)
+    localStorage.setItem('globalModelComments', JSON.stringify(newComments))
+  }
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('fr-FR', {
@@ -370,6 +587,14 @@ export default function BenchmarkHistory({ benchmarks, onSelectBenchmark, onData
   const toggleTestExpansion = (benchmarkId: string, modelName: string, questionId: string) => {
     const key = `${benchmarkId}-${modelName}-${questionId}`
     setExpandedTests(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }))
+  }
+
+  const toggleModelExpansion = (benchmarkId: string, modelName: string) => {
+    const key = `${benchmarkId}-${modelName}`
+    setExpandedModels(prev => ({
       ...prev,
       [key]: !prev[key]
     }))
@@ -614,45 +839,23 @@ export default function BenchmarkHistory({ benchmarks, onSelectBenchmark, onData
                       Détails des tests par modèle
                     </h4>
                     
-                    {Object.entries(benchmark.results || {}).map(([modelName, modelData]: [string, any]) => (
-                      <div key={modelName} className="mb-6">
-                        <div className="bg-gray-50 p-3 rounded-lg mb-3">
-                          <h5 className="font-medium text-gray-900 mb-2">{modelName}</h5>
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-                            <div>
-                              <div className="text-gray-500">Temps moyen</div>
-                              <div className="font-medium">{Math.round(modelData.average_response_time || 0)}ms</div>
-                            </div>
-                            <div>
-                              <div className="text-gray-500">Tokens/sec</div>
-                              <div className="font-medium">{(modelData.average_tokens_per_second || 0).toFixed(1)}</div>
-                            </div>
-                            <div>
-                              <div className="text-gray-500">Taux de réussite</div>
-                              <div className="font-medium">{Math.round(modelData.success_rate || 0)}%</div>
-                            </div>
-                            <div>
-                              <div className="text-gray-500">Tests</div>
-                              <div className="font-medium">{Object.keys(modelData.questions || {}).length}</div>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-2">
-                          {Object.entries(modelData.questions || {}).map(([questionId, test]: [string, any]) => (
-                            <TestDetail
-                              key={`${modelName}-${questionId}`}
-                              test={test}
-                              modelName={modelName}
-                              questionId={questionId}
-                              benchmarkId={benchmark.id || benchmark.benchmark_id}
-                              isExpanded={expandedTests[`${benchmark.id || benchmark.benchmark_id}-${modelName}-${questionId}`] || false}
-                              onToggle={() => toggleTestExpansion(benchmark.id || benchmark.benchmark_id, modelName, questionId)}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                    ))}
+                    {Object.entries(benchmark.results || {}).map(([modelName, modelData]: [string, any]) => {
+                      const modelKey = `${benchmark.id || benchmark.benchmark_id}-${modelName}`
+                      return (
+                        <ModelSummary
+                          key={modelName}
+                          modelName={modelName}
+                          modelData={modelData}
+                          benchmarkId={benchmark.id || benchmark.benchmark_id}
+                          isExpanded={expandedModels[modelKey] || false}
+                          onToggle={() => toggleModelExpansion(benchmark.id || benchmark.benchmark_id, modelName)}
+                          globalComment={globalComments[modelName] || ''}
+                          onGlobalCommentChange={(comment) => saveGlobalComment(modelName, comment)}
+                          expandedTests={expandedTests}
+                          onTestToggle={toggleTestExpansion}
+                        />
+                      )
+                    })}
                   </div>
                 </div>
               )}
