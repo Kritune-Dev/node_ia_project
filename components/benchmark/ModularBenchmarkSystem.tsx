@@ -16,7 +16,14 @@ import {
   AlertTriangle,
   Brain,
   ToggleLeft,
-  ToggleRight
+  ToggleRight,
+  History,
+  Trophy,
+  ArrowLeft,
+  Terminal,
+  ChevronDown,
+  ChevronUp,
+  Activity
 } from 'lucide-react';
 
 import { useBenchmark, useBenchmarkQuestions } from '../../hooks/useBenchmark';
@@ -24,8 +31,17 @@ import { BenchmarkTestType, BenchmarkExecution, BenchmarkQuestion, QuestionCateg
 import ModelSection from './ModelSection';
 import TestDetailModal from './TestDetailModal';
 import CustomQuestions from './CustomQuestions';
+import BenchmarkHistory from './BenchmarkHistory';
+import BenchmarkRanking from './BenchmarkRanking';
+
+type ViewMode = 'benchmark' | 'history' | 'ranking' | 'results';
 
 const ModularBenchmarkSystem: React.FC = () => {
+  const [currentView, setCurrentView] = useState<ViewMode>('benchmark');
+  const [selectedBenchmark, setSelectedBenchmark] = useState<any>(null);
+  const [isTerminalOpen, setIsTerminalOpen] = useState<boolean>(false);
+  const [terminalLogs, setTerminalLogs] = useState<string[]>([]);
+  
   const {
     isRunning,
     progress,
@@ -48,6 +64,21 @@ const ModularBenchmarkSystem: React.FC = () => {
       return `${minutes}min ${secs}s`;
     }
     return `${secs}s`;
+  };
+
+  // Fonctions de gestion du terminal
+  const addTerminalLog = (message: string, type: 'info' | 'success' | 'warning' | 'error' = 'info') => {
+    const timestamp = new Date().toLocaleTimeString();
+    const logEntry = `[${timestamp}] ${type.toUpperCase()}: ${message}`;
+    setTerminalLogs(prev => [...prev, logEntry]);
+  };
+
+  const clearTerminalLogs = () => {
+    setTerminalLogs([]);
+  };
+
+  const toggleTerminal = () => {
+    setIsTerminalOpen(prev => !prev);
   };
 
   // Ordre des tests de performance (du plus rapide au plus lent)
@@ -109,6 +140,24 @@ const ModularBenchmarkSystem: React.FC = () => {
     fetchModels();
   }, []);
 
+  // Surveiller l'état du benchmark et ajouter des logs
+  useEffect(() => {
+    if (isRunning) {
+      addTerminalLog('Benchmark en cours d\'exécution...', 'info');
+    } else if (currentExecution && progress === 100) {
+      addTerminalLog('Benchmark terminé avec succès!', 'success');
+      addTerminalLog(`Tests complétés: ${currentExecution.summary?.completedTests || 0}/${currentExecution.summary?.totalTests || 0}`, 'success');
+      addTerminalLog(`Score moyen: ${currentExecution.summary?.averageScore?.toFixed(1) || '0.0'}`, 'success');
+    }
+  }, [isRunning, progress, currentExecution]);
+
+  // Surveiller les erreurs et les afficher dans le terminal
+  useEffect(() => {
+    if (error) {
+      addTerminalLog(`Erreur: ${error}`, 'error');
+    }
+  }, [error]);
+
   // Générer automatiquement la description du benchmark
   useEffect(() => {
     if (selectedTestTypes.length > 0 && selectedModels.length > 0) {
@@ -133,9 +182,15 @@ const ModularBenchmarkSystem: React.FC = () => {
   const handleRunBenchmark = async () => {
     if (!canRunBenchmark()) return;
 
+    // Ajouter des logs sans ouvrir automatiquement le terminal
+    addTerminalLog('Initialisation du benchmark...', 'info');
+    addTerminalLog(`Modèles sélectionnés: ${selectedModels.join(', ')}`, 'info');
+    addTerminalLog(`Types de tests: ${selectedTestTypes.join(', ')}`, 'info');
+
     // Générer les questions par défaut pour les types de tests sélectionnés
     const questions: BenchmarkQuestion[] = [];
     for (const testType of selectedTestTypes) {
+      addTerminalLog(`Génération des questions pour ${testType}...`, 'info');
       // Créer des questions de base pour chaque type de test
       const baseQuestions = [
         'Test de base pour ' + testType.replace('_', ' '),
@@ -147,13 +202,15 @@ const ModularBenchmarkSystem: React.FC = () => {
 
     // Ajouter les questions personnalisées si spécifiées
     if (customQuestions.length > 0) {
+      addTerminalLog(`Ajout de ${customQuestions.length} questions personnalisées...`, 'info');
       const customQuestionsList = customQuestions.map(cq => 
         createQuestion(cq.question, QuestionCategory.LANGUAGE_UNDERSTANDING, DifficultyLevel.MEDIUM)
       );
       questions.push(...customQuestionsList);
     }
 
-            // Utiliser la fonction createBenchmarkSuite pour créer une suite valide
+    // Utiliser la fonction createBenchmarkSuite pour créer une suite valide
+    addTerminalLog('Création de la suite de tests...', 'info');
     const suite = createBenchmarkSuite({
       name: suiteConfig.name,
       description: suiteConfig.description,
@@ -161,12 +218,22 @@ const ModularBenchmarkSystem: React.FC = () => {
       questions,
       models: selectedModels,
       configuration: getDefaultConfiguration()
-    });    await startBenchmark(suite);
+    });
+    
+    addTerminalLog('Lancement du benchmark...', 'success');
+    await startBenchmark(suite);
   };
 
   const handleQuickSmokeTest = async () => {
     if (selectedModels.length === 0) return;
+    
+    // Ajouter des logs sans ouvrir automatiquement le terminal
+    addTerminalLog('Lancement du test Smoke rapide...', 'info');
+    addTerminalLog(`Modèles sélectionnés: ${selectedModels.join(', ')}`, 'info');
+    addTerminalLog('Test de validation fonctionnelle en cours...', 'info');
+    
     await createQuickSmokeTest(selectedModels);
+    addTerminalLog('Test Smoke terminé avec succès!', 'success');
   };
 
   const handleModelToggle = (modelName: string) => {
@@ -228,17 +295,57 @@ const ModularBenchmarkSystem: React.FC = () => {
                 </span>
               </div>
             </div>
+            
+            {/* Navigation */}
+            <div className="flex gap-2">
+              <button
+                onClick={() => setCurrentView('benchmark')}
+                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                  currentView === 'benchmark'
+                    ? 'bg-blue-500 text-white shadow-lg'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                <Settings className="w-4 h-4 inline mr-2" />
+                Benchmark
+              </button>
+              <button
+                onClick={() => setCurrentView('history')}
+                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                  currentView === 'history'
+                    ? 'bg-blue-500 text-white shadow-lg'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                <History className="w-4 h-4 inline mr-2" />
+                Historique
+              </button>
+              <button
+                onClick={() => setCurrentView('ranking')}
+                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                  currentView === 'ranking'
+                    ? 'bg-blue-500 text-white shadow-lg'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                <Trophy className="w-4 h-4 inline mr-2" />
+                Classement
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Modèles disponibles en haut */}
-        <ModelSection
-          availableModels={availableModels}
-          selectedModels={selectedModels}
-          onModelToggle={handleModelToggle}
-        />
+        {/* Contenu conditionnel selon la vue */}
+        {currentView === 'benchmark' && (
+          <div>
+            {/* Modèles disponibles en haut */}
+            <ModelSection
+              availableModels={availableModels}
+              selectedModels={selectedModels}
+              onModelToggle={handleModelToggle}
+            />
 
-        {/* Types de tests */}
+            {/* Types de tests */}
         <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-gray-900">Types de tests</h2>
@@ -408,6 +515,7 @@ const ModularBenchmarkSystem: React.FC = () => {
           </div>
         </div>
       </div>
+      )}
 
       {/* Barre de contrôle fixe en bas */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-gray-200 shadow-2xl z-50">
@@ -451,6 +559,16 @@ const ModularBenchmarkSystem: React.FC = () => {
                     </span>
                   </div>
                 )}
+
+                {/* Bouton voir les résultats quand terminé */}
+                {!isRunning && currentExecution && progress === 100 && (
+                  <button
+                    onClick={() => setCurrentView('results')}
+                    className="px-4 py-2 bg-gradient-to-r from-green-500 to-blue-500 text-white text-sm font-medium rounded-lg hover:from-green-600 hover:to-blue-600 transition-all shadow-lg"
+                  >
+                    Voir les résultats
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -483,6 +601,25 @@ const ModularBenchmarkSystem: React.FC = () => {
               
               {/* Actions */}
               <div className="flex items-center gap-3">
+                {/* Bouton Terminal */}
+                <button
+                  onClick={toggleTerminal}
+                  className={`px-4 py-2 rounded-lg font-medium text-sm transition-all relative ${
+                    isTerminalOpen
+                      ? 'bg-blue-500 text-white shadow-lg'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                  title="Ouvrir/Fermer le terminal"
+                >
+                  <Terminal className="w-4 h-4 inline mr-2" />
+                  Terminal
+                  {terminalLogs.length > 0 && !isTerminalOpen && (
+                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full flex items-center justify-center">
+                      <Activity className="w-2 h-2 text-white" />
+                    </div>
+                  )}
+                </button>
+                
                 <button
                   onClick={handleQuickSmokeTest}
                   disabled={selectedModels.length === 0 || isRunning}
@@ -523,6 +660,170 @@ const ModularBenchmarkSystem: React.FC = () => {
           </div>
         </div>
       </div>
+
+
+        {/* Vue Historique */}
+        {currentView === 'history' && (
+          <BenchmarkHistory 
+            benchmarks={executionHistory} 
+            onSelectBenchmark={(benchmark) => {
+              setSelectedBenchmark(benchmark);
+              setCurrentView('results');
+            }}
+            onDataUpdate={() => {
+              // Fonction pour rafraîchir les données si nécessaire
+            }}
+          />
+        )}
+
+        {/* Vue Classement */}
+        {currentView === 'ranking' && (
+          <BenchmarkRanking 
+            benchmarks={executionHistory}
+            onSelectBenchmark={(benchmark) => {
+              setSelectedBenchmark(benchmark);
+              setCurrentView('results');
+            }}
+          />
+        )}
+
+        {/* Vue Résultats */}
+        {currentView === 'results' && (selectedBenchmark || currentExecution) && (
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <button
+                onClick={() => setCurrentView('benchmark')}
+                className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Retour
+              </button>
+              <h2 className="text-2xl font-bold text-gray-900">Résultats du test</h2>
+            </div>
+            
+            {(() => {
+              const execution = selectedBenchmark || currentExecution;
+              return (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div className="text-center bg-gray-50 rounded-xl p-6">
+                      <div className="text-3xl font-bold text-blue-600">{execution.summary?.completedTests || 0}</div>
+                      <div className="text-sm text-gray-600 font-medium">Tests complétés</div>
+                    </div>
+                    <div className="text-center bg-gray-50 rounded-xl p-6">
+                      <div className="text-3xl font-bold text-purple-600">{execution.summary?.totalTests || 0}</div>
+                      <div className="text-sm text-gray-600 font-medium">Tests totaux</div>
+                    </div>
+                    <div className="text-center bg-gray-50 rounded-xl p-6">
+                      <div className="text-3xl font-bold text-green-600">
+                        {execution.summary?.averageScore.toFixed(1) || '0.0'}
+                      </div>
+                      <div className="text-sm text-gray-600 font-medium">Score moyen</div>
+                    </div>
+                    <div className="text-center bg-gray-50 rounded-xl p-6">
+                      <div className="text-3xl font-bold text-red-600">{execution.summary?.failedTests || 0}</div>
+                      <div className="text-sm text-gray-600 font-medium">Échecs</div>
+                    </div>
+                  </div>
+
+                  {/* Détails des résultats */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-800">Détails par modèle</h3>
+                    {execution.results && Object.entries(execution.results).map(([modelName, results]) => (
+                      <div key={modelName} className="border border-gray-200 rounded-lg p-4">
+                        <h4 className="font-medium text-gray-900 mb-2">{modelName}</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                          <div>
+                            <span className="text-gray-600">Tests: </span>
+                            <span className="font-medium">{Array.isArray(results) ? results.length : 0}</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-600">Score moyen: </span>
+                            <span className="font-medium text-green-600">
+                              {Array.isArray(results) && results.length > 0 
+                                ? (results.reduce((acc: number, r: any) => acc + (r.score || 0), 0) / results.length).toFixed(1)
+                                : '0.0'
+                              }
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-gray-600">Temps total: </span>
+                            <span className="font-medium">
+                              {Array.isArray(results) 
+                                ? formatTime(results.reduce((acc: number, r: any) => acc + (r.duration || 0), 0))
+                                : '0s'
+                              }
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              );
+            })()}
+          </div>
+        )}
+      </div>
+
+      {/* Terminal pliable */}
+      {isTerminalOpen && (
+        <div className="fixed bottom-20 right-6 w-96 max-h-80 bg-gray-900 rounded-lg shadow-2xl z-50 overflow-hidden">
+          {/* En-tête du terminal */}
+          <div className="bg-gray-800 px-4 py-2 flex items-center justify-between border-b border-gray-700">
+            <div className="flex items-center gap-2">
+              <Terminal className="w-4 h-4 text-green-400" />
+              <span className="text-white text-sm font-medium">Console de Benchmark</span>
+              <div className="flex gap-1 ml-2">
+                <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={clearTerminalLogs}
+                className="text-gray-400 hover:text-white text-xs px-2 py-1 rounded transition-colors"
+                title="Effacer les logs"
+              >
+                Clear
+              </button>
+              <button
+                onClick={toggleTerminal}
+                className="text-gray-400 hover:text-white"
+                title="Fermer le terminal"
+              >
+                {isTerminalOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
+              </button>
+            </div>
+          </div>
+          
+          {/* Contenu du terminal */}
+          <div className="p-3 h-64 overflow-y-auto bg-gray-900 font-mono text-sm">
+            {terminalLogs.length === 0 ? (
+              <div className="text-gray-500 italic">
+                $ En attente d'actions de benchmark...
+              </div>
+            ) : (
+              terminalLogs.map((log, index) => (
+                <div 
+                  key={index} 
+                  className={`mb-1 ${
+                    log.includes('ERROR') ? 'text-red-400' :
+                    log.includes('SUCCESS') ? 'text-green-400' :
+                    log.includes('WARNING') ? 'text-yellow-400' :
+                    'text-gray-300'
+                  }`}
+                >
+                  $ {log}
+                </div>
+              ))
+            )}
+            {/* Auto-scroll vers le bas */}
+            <div ref={(el) => el?.scrollIntoView({ behavior: 'smooth' })} />
+          </div>
+        </div>
+      )}
 
       {/* Modal pour les détails de test */}
       <TestDetailModal
