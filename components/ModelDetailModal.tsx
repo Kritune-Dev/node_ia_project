@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { X, ExternalLink, Github, FileText, Zap, Brain, Globe, BarChart3, Clock, Target, Star, Edit, Save, MessageSquare, TrendingUp, Calendar, Eye, CheckCircle, XCircle } from 'lucide-react'
+import { X, ExternalLink, Github, FileText, Zap, Brain, Globe, BarChart3, Clock, Target, Star, Edit, Save, MessageSquare, TrendingUp, Calendar, Eye, CheckCircle, XCircle, AlertTriangle, Settings, Plus, Trash2 } from 'lucide-react'
 import { useModelCompleteData } from '../hooks/useModelCompleteData'
+import { useModelConfig } from '../hooks/useModelConfig'
 
 interface ModelDetailModalProps {
   model: any
@@ -11,15 +12,81 @@ interface ModelDetailModalProps {
 }
 
 export default function ModelDetailModal({ model, isVisible, onClose }: ModelDetailModalProps) {
-  const [activeTab, setActiveTab] = useState<'infos' | 'performance' | 'tests' | 'historique'>('infos')
+  const [activeTab, setActiveTab] = useState<'infos' | 'performance' | 'tests' | 'historique' | 'config'>('infos')
   const [isEditingComment, setIsEditingComment] = useState(false)
   const [tempComment, setTempComment] = useState('')
+  const [isEditingConfig, setIsEditingConfig] = useState(false)
+  const [tempConfig, setTempConfig] = useState<{
+    displayName?: string
+    description?: string
+    type?: 'medical' | 'general'
+    specialties?: string[]
+    parameters?: string
+    github?: string
+    website?: string
+    notes?: string
+    metrics?: Record<string, string>
+  }>({})
 
   const { data: completeData, loading, error, updateGlobalComment } = useModelCompleteData(
     isVisible && model ? model.name : null
   )
 
+  const { 
+    config: modelConfig, 
+    isConfigured, 
+    loading: configLoading, 
+    error: configError,
+    updateConfig,
+    deleteConfig,
+    refresh: refreshConfig
+  } = useModelConfig(isVisible && model ? model.name : null)
+
   if (!isVisible || !model) return null
+
+  const handleSaveConfig = async () => {
+    const success = await updateConfig(tempConfig)
+    if (success) {
+      setIsEditingConfig(false)
+      setTempConfig({})
+    }
+  }
+
+  const handleCancelConfigEdit = () => {
+    setTempConfig({})
+    setIsEditingConfig(false)
+  }
+
+  const handleStartConfigEdit = () => {
+    setTempConfig({
+      displayName: modelConfig?.displayName || model.displayName || model.name,
+      description: modelConfig?.description || model.description || '',
+      type: modelConfig?.type || model.type || 'general',
+      specialties: modelConfig?.specialties || model.specialties || [],
+      parameters: modelConfig?.parameters || model.parameters || '',
+      github: modelConfig?.github || model.github || '',
+      website: modelConfig?.website || model.website || '',
+      notes: modelConfig?.notes || model.notes || '',
+      metrics: modelConfig?.metrics || {}
+    })
+    setIsEditingConfig(true)
+  }
+
+  const handleDeleteConfig = async () => {
+    if (confirm('Êtes-vous sûr de vouloir supprimer cette configuration ? Le modèle utilisera les valeurs par défaut.')) {
+      await deleteConfig()
+    }
+  }
+
+  // Fonction pour vérifier si une valeur vient de la config JSON ou du fallback
+  const getValueWithSource = (configValue: any, fallbackValue: any) => {
+    const hasConfigValue = configValue !== undefined && configValue !== null && configValue !== ''
+    return {
+      value: hasConfigValue ? configValue : fallbackValue,
+      fromConfig: hasConfigValue,
+      isEmpty: !hasConfigValue && (!fallbackValue || fallbackValue === '')
+    }
+  }
 
   const handleSaveComment = () => {
     updateGlobalComment(tempComment)
@@ -67,7 +134,8 @@ export default function ModelDetailModal({ model, isVisible, onClose }: ModelDet
     { id: 'infos', label: 'Informations', icon: FileText },
     { id: 'performance', label: 'Performance', icon: BarChart3 },
     { id: 'tests', label: 'Tests', icon: Target },
-    { id: 'historique', label: 'Historique', icon: Calendar }
+    { id: 'historique', label: 'Historique', icon: Calendar },
+    { id: 'config', label: 'Configuration', icon: Settings }
   ]
 
   return (
@@ -84,9 +152,14 @@ export default function ModelDetailModal({ model, isVisible, onClose }: ModelDet
             </div>
             <div>
               <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                {completeData?.displayName || model.displayName || model.name}
+                {getValueWithSource(modelConfig?.displayName, model.displayName || model.name).value}
                 {(completeData?.hasNative || model.hasNative) && (
                   <Zap className="h-6 w-6 text-yellow-500" />
+                )}
+                {!isConfigured && (
+                  <div title="Modèle non configuré - utilise les valeurs par défaut">
+                    <AlertTriangle className="h-5 w-5 text-orange-500" />
+                  </div>
                 )}
               </h2>
               <p className="text-sm text-gray-500">{model.name}</p>
@@ -159,22 +232,58 @@ export default function ModelDetailModal({ model, isVisible, onClose }: ModelDet
             <>
               {activeTab === 'infos' && (
                 <div className="space-y-6">
-                  {/* Description */}
-                  {(completeData?.description || model.description) && (
-                    <div>
-                      <h3 className="text-lg font-semibold mb-3">Description</h3>
-                      <p className="text-gray-700 leading-relaxed">{completeData?.description || model.description}</p>
+                  {/* Indicateur de configuration */}
+                  <div className={`p-3 rounded-lg border ${isConfigured ? 'bg-green-50 border-green-200' : 'bg-orange-50 border-orange-200'}`}>
+                    <div className="flex items-center gap-2">
+                      {isConfigured ? 
+                        <CheckCircle className="w-5 h-5 text-green-600" /> : 
+                        <AlertTriangle className="w-5 h-5 text-orange-600" />
+                      }
+                      <span className={`font-medium ${isConfigured ? 'text-green-800' : 'text-orange-800'}`}>
+                        {isConfigured ? 'Modèle configuré manuellement' : 'Configuration automatique (par défaut)'}
+                      </span>
+                      <button
+                        onClick={() => setActiveTab('config')}
+                        className={`ml-auto px-3 py-1 rounded text-sm ${
+                          isConfigured ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-orange-100 text-orange-700 hover:bg-orange-200'
+                        }`}
+                      >
+                        {isConfigured ? 'Modifier' : 'Configurer'}
+                      </button>
                     </div>
-                  )}
+                  </div>
+
+                  {/* Description */}
+                  {(() => {
+                    const descData = getValueWithSource(modelConfig?.description, model.description)
+                    return descData.value && (
+                      <div>
+                        <div className="flex items-center gap-2 mb-3">
+                          <h3 className="text-lg font-semibold">Description</h3>
+                          {!descData.fromConfig && (
+                            <div title="Valeur générée automatiquement">
+                              <AlertTriangle className="w-4 h-4 text-orange-500" />
+                            </div>
+                          )}
+                        </div>
+                        <p className="text-gray-700 leading-relaxed">{descData.value}</p>
+                      </div>
+                    )
+                  })()}
 
                   {/* Spécifications */}
                   <div>
                     <h3 className="text-lg font-semibold mb-3">Spécifications</h3>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <div className="bg-gray-50 p-3 rounded-lg">
-                        <div className="text-sm text-gray-500">Type</div>
+                        <div className="flex items-center gap-1 text-sm text-gray-500 mb-1">
+                          <span>Type</span>
+                          {!getValueWithSource(modelConfig?.type, model.type).fromConfig && (
+                            <AlertTriangle className="w-3 h-3 text-orange-500" />
+                          )}
+                        </div>
                         <div className="font-medium">
-                          {(completeData?.type || model.type) === 'medical' ? 'Médical' : 'Général'}
+                          {getValueWithSource(modelConfig?.type, model.type).value === 'medical' ? 'Médical' : 'Général'}
                         </div>
                       </div>
                       <div className="bg-gray-50 p-3 rounded-lg">
@@ -182,8 +291,13 @@ export default function ModelDetailModal({ model, isVisible, onClose }: ModelDet
                         <div className="font-medium">{completeData?.sizeFormatted || model.sizeFormatted || 'N/A'}</div>
                       </div>
                       <div className="bg-gray-50 p-3 rounded-lg">
-                        <div className="text-sm text-gray-500">Paramètres</div>
-                        <div className="font-medium">{completeData?.parameters || model.parameters || 'N/A'}</div>
+                        <div className="flex items-center gap-1 text-sm text-gray-500 mb-1">
+                          <span>Paramètres</span>
+                          {!getValueWithSource(modelConfig?.parameters, model.parameters).fromConfig && (
+                            <AlertTriangle className="w-3 h-3 text-orange-500" />
+                          )}
+                        </div>
+                        <div className="font-medium">{getValueWithSource(modelConfig?.parameters, model.parameters).value || 'N/A'}</div>
                       </div>
                       <div className="bg-gray-50 p-3 rounded-lg">
                         <div className="text-sm text-gray-500">Benchmarks</div>
@@ -191,6 +305,30 @@ export default function ModelDetailModal({ model, isVisible, onClose }: ModelDet
                       </div>
                     </div>
                   </div>
+
+                  {/* Spécialités */}
+                  {(() => {
+                    const specialtiesData = getValueWithSource(modelConfig?.specialties, model.specialties)
+                    return specialtiesData.value && specialtiesData.value.length > 0 && (
+                      <div>
+                        <div className="flex items-center gap-2 mb-3">
+                          <h3 className="text-lg font-semibold">Spécialités</h3>
+                          {!specialtiesData.fromConfig && (
+                            <div title="Valeurs générées automatiquement">
+                              <AlertTriangle className="w-4 h-4 text-orange-500" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {specialtiesData.value.map((specialty: string, index: number) => (
+                            <span key={index} className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+                              {specialty}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )
+                  })()}
 
                   {/* Commentaire global */}
                   <div>
@@ -266,37 +404,54 @@ export default function ModelDetailModal({ model, isVisible, onClose }: ModelDet
                   </div>
 
                   {/* Links */}
-                  {((completeData?.github || model.github) || (completeData?.website || model.website)) && (
-                    <div>
-                      <h3 className="text-lg font-semibold mb-3">Ressources</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {(completeData?.github || model.github) && (
-                          <a
-                            href={completeData?.github || model.github}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-2 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-                          >
-                            <Github className="h-5 w-5 text-gray-600" />
-                            <span className="text-sm font-medium">Code source</span>
-                            <ExternalLink className="h-4 w-4 text-gray-400 ml-auto" />
-                          </a>
-                        )}
-                        {(completeData?.website || model.website) && (
-                          <a
-                            href={completeData?.website || model.website}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-2 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-                          >
-                            <Globe className="h-5 w-5 text-gray-600" />
-                            <span className="text-sm font-medium">Site web</span>
-                            <ExternalLink className="h-4 w-4 text-gray-400 ml-auto" />
-                          </a>
-                        )}
+                  {(() => {
+                    const githubData = getValueWithSource(modelConfig?.github, model.github)
+                    const websiteData = getValueWithSource(modelConfig?.website, model.website)
+                    return (githubData.value || websiteData.value) && (
+                      <div>
+                        <div className="flex items-center gap-2 mb-3">
+                          <h3 className="text-lg font-semibold">Ressources</h3>
+                          {(!githubData.fromConfig || !websiteData.fromConfig) && (
+                            <div title="Certains liens générés automatiquement">
+                              <AlertTriangle className="w-4 h-4 text-orange-500" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          {githubData.value && (
+                            <a
+                              href={githubData.value}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={`flex items-center gap-2 p-3 border rounded-lg transition-colors ${
+                                githubData.fromConfig ? 'border-gray-200 hover:bg-gray-50' : 'border-orange-200 bg-orange-50 hover:bg-orange-100'
+                              }`}
+                            >
+                              <Github className="h-5 w-5 text-gray-600" />
+                              <span className="text-sm font-medium">Code source</span>
+                              {!githubData.fromConfig && <AlertTriangle className="w-3 h-3 text-orange-500" />}
+                              <ExternalLink className="h-4 w-4 text-gray-400 ml-auto" />
+                            </a>
+                          )}
+                          {websiteData.value && (
+                            <a
+                              href={websiteData.value}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={`flex items-center gap-2 p-3 border rounded-lg transition-colors ${
+                                websiteData.fromConfig ? 'border-gray-200 hover:bg-gray-50' : 'border-orange-200 bg-orange-50 hover:bg-orange-100'
+                              }`}
+                            >
+                              <Globe className="h-5 w-5 text-gray-600" />
+                              <span className="text-sm font-medium">Site web</span>
+                              {!websiteData.fromConfig && <AlertTriangle className="w-3 h-3 text-orange-500" />}
+                              <ExternalLink className="h-4 w-4 text-gray-400 ml-auto" />
+                            </a>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )
+                  })()}
                 </div>
               )}
 
@@ -532,6 +687,284 @@ export default function ModelDetailModal({ model, isVisible, onClose }: ModelDet
                         </div>
                       </div>
                     </div>
+                  )}
+                </div>
+              )}
+
+              {activeTab === 'config' && (
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-semibold">Configuration du modèle</h3>
+                    <div className="flex gap-2">
+                      {isConfigured && !isEditingConfig && (
+                        <button
+                          onClick={handleDeleteConfig}
+                          className="flex items-center gap-2 px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          Supprimer config
+                        </button>
+                      )}
+                      {!isEditingConfig && (
+                        <button
+                          onClick={handleStartConfigEdit}
+                          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                        >
+                          {isConfigured ? <Edit className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+                          {isConfigured ? 'Modifier' : 'Créer config'}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {configLoading && (
+                    <div className="flex items-center justify-center py-8">
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                      <span className="ml-2 text-gray-600">Chargement...</span>
+                    </div>
+                  )}
+
+                  {configError && (
+                    <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                      <div className="text-red-800 font-medium">Erreur de configuration</div>
+                      <div className="text-red-600">{configError}</div>
+                    </div>
+                  )}
+
+                  {!configLoading && !configError && (
+                    <>
+                      {!isConfigured && !isEditingConfig && (
+                        <div className="text-center py-8">
+                          <Settings className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                          <h3 className="text-lg font-medium text-gray-900 mb-2">Aucune configuration</h3>
+                          <p className="text-gray-600 mb-4">
+                            Ce modèle utilise les valeurs détectées automatiquement. 
+                            Créez une configuration pour personnaliser ses informations.
+                          </p>
+                          <button
+                            onClick={handleStartConfigEdit}
+                            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 mx-auto"
+                          >
+                            <Plus className="w-4 h-4" />
+                            Créer une configuration
+                          </button>
+                        </div>
+                      )}
+
+                      {isEditingConfig && (
+                        <div className="space-y-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {/* Nom d'affichage */}
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Nom d'affichage *
+                              </label>
+                              <input
+                                type="text"
+                                value={tempConfig.displayName || ''}
+                                onChange={(e) => setTempConfig(prev => ({ ...prev, displayName: e.target.value }))}
+                                className="w-full p-2 border border-gray-300 rounded-lg"
+                                placeholder="ex: GPT-4 32K"
+                              />
+                            </div>
+
+                            {/* Type */}
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Type *
+                              </label>
+                              <select
+                                value={tempConfig.type || 'general'}
+                                onChange={(e) => setTempConfig(prev => ({ ...prev, type: e.target.value as 'medical' | 'general' }))}
+                                className="w-full p-2 border border-gray-300 rounded-lg"
+                              >
+                                <option value="general">Général</option>
+                                <option value="medical">Médical</option>
+                              </select>
+                            </div>
+
+                            {/* Paramètres */}
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Paramètres
+                              </label>
+                              <input
+                                type="text"
+                                value={tempConfig.parameters || ''}
+                                onChange={(e) => setTempConfig(prev => ({ ...prev, parameters: e.target.value }))}
+                                className="w-full p-2 border border-gray-300 rounded-lg"
+                                placeholder="ex: 7B, 3.8B, 270M"
+                              />
+                            </div>
+
+                            {/* GitHub */}
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                GitHub URL
+                              </label>
+                              <input
+                                type="url"
+                                value={tempConfig.github || ''}
+                                onChange={(e) => setTempConfig(prev => ({ ...prev, github: e.target.value }))}
+                                className="w-full p-2 border border-gray-300 rounded-lg"
+                                placeholder="https://github.com/..."
+                              />
+                            </div>
+
+                            {/* Website */}
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Site web
+                              </label>
+                              <input
+                                type="url"
+                                value={tempConfig.website || ''}
+                                onChange={(e) => setTempConfig(prev => ({ ...prev, website: e.target.value }))}
+                                className="w-full p-2 border border-gray-300 rounded-lg"
+                                placeholder="https://huggingface.co/..."
+                              />
+                            </div>
+                          </div>
+
+                          {/* Description */}
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Description *
+                            </label>
+                            <textarea
+                              value={tempConfig.description || ''}
+                              onChange={(e) => setTempConfig(prev => ({ ...prev, description: e.target.value }))}
+                              className="w-full p-3 border border-gray-300 rounded-lg resize-none"
+                              rows={3}
+                              placeholder="Description détaillée du modèle..."
+                            />
+                          </div>
+
+                          {/* Spécialités */}
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Spécialités
+                            </label>
+                            <input
+                              type="text"
+                              value={tempConfig.specialties ? tempConfig.specialties.join(', ') : ''}
+                              onChange={(e) => setTempConfig(prev => ({ 
+                                ...prev, 
+                                specialties: e.target.value.split(',').map(s => s.trim()).filter(s => s)
+                              }))}
+                              className="w-full p-2 border border-gray-300 rounded-lg"
+                              placeholder="Spécialité 1, Spécialité 2, Spécialité 3..."
+                            />
+                            <p className="text-xs text-gray-500 mt-1">
+                              Séparez les spécialités par des virgules
+                            </p>
+                          </div>
+
+                          {/* Notes */}
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Notes
+                            </label>
+                            <textarea
+                              value={tempConfig.notes || ''}
+                              onChange={(e) => setTempConfig(prev => ({ ...prev, notes: e.target.value }))}
+                              className="w-full p-3 border border-gray-300 rounded-lg resize-none"
+                              rows={2}
+                              placeholder="Notes additionnelles..."
+                            />
+                          </div>
+
+                          {/* Actions */}
+                          <div className="flex gap-3 pt-4 border-t">
+                            <button
+                              onClick={handleSaveConfig}
+                              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                            >
+                              <Save className="w-4 h-4" />
+                              Sauvegarder
+                            </button>
+                            <button
+                              onClick={handleCancelConfigEdit}
+                              className="flex items-center gap-2 px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400"
+                            >
+                              <X className="w-4 h-4" />
+                              Annuler
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {!isEditingConfig && isConfigured && modelConfig && (
+                        <div className="space-y-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-3">
+                              <div>
+                                <div className="text-sm font-medium text-gray-700">Nom d'affichage</div>
+                                <div className="p-2 bg-gray-50 rounded">{modelConfig.displayName}</div>
+                              </div>
+                              <div>
+                                <div className="text-sm font-medium text-gray-700">Type</div>
+                                <div className="p-2 bg-gray-50 rounded">{modelConfig.type === 'medical' ? 'Médical' : 'Général'}</div>
+                              </div>
+                              <div>
+                                <div className="text-sm font-medium text-gray-700">Paramètres</div>
+                                <div className="p-2 bg-gray-50 rounded">{modelConfig.parameters || 'Non défini'}</div>
+                              </div>
+                              <div>
+                                <div className="text-sm font-medium text-gray-700">GitHub</div>
+                                <div className="p-2 bg-gray-50 rounded">
+                                  {modelConfig.github ? (
+                                    <a href={modelConfig.github} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                      {modelConfig.github}
+                                    </a>
+                                  ) : (
+                                    'Non défini'
+                                  )}
+                                </div>
+                              </div>
+                              <div>
+                                <div className="text-sm font-medium text-gray-700">Site web</div>
+                                <div className="p-2 bg-gray-50 rounded">
+                                  {modelConfig.website ? (
+                                    <a href={modelConfig.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                      {modelConfig.website}
+                                    </a>
+                                  ) : (
+                                    'Non défini'
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="space-y-3">
+                              <div>
+                                <div className="text-sm font-medium text-gray-700">Description</div>
+                                <div className="p-3 bg-gray-50 rounded min-h-[100px]">{modelConfig.description}</div>
+                              </div>
+                              <div>
+                                <div className="text-sm font-medium text-gray-700">Spécialités</div>
+                                <div className="p-2 bg-gray-50 rounded">
+                                  {modelConfig.specialties.length > 0 ? (
+                                    <div className="flex flex-wrap gap-1">
+                                      {modelConfig.specialties.map((spec, i) => (
+                                        <span key={i} className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">
+                                          {spec}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  ) : (
+                                    'Aucune spécialité définie'
+                                  )}
+                                </div>
+                              </div>
+                              <div>
+                                <div className="text-sm font-medium text-gray-700">Notes</div>
+                                <div className="p-3 bg-gray-50 rounded min-h-[60px]">{modelConfig.notes || 'Aucune note'}</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               )}
