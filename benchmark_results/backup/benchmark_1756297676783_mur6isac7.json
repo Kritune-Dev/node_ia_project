@@ -1,0 +1,25 @@
+{
+  "benchmarks": [
+    {
+      "id": "test_smoke_manual_12345",
+      "timestamp": "2025-08-27T12:30:00.000Z",
+      "suite": {
+        "name": "Test Smoke Direct",
+        "testTypes": [
+          "SMOKE"
+        ]
+      },
+      "results": {},
+      "summary": {
+        "totalTests": 1,
+        "completedTests": 1,
+        "failedTests": 0
+      },
+      "status": "completed"
+    }
+  ],
+  "id": "benchmark_1756297676783_mur6isac7",
+  "timestamp": "2025-08-27T12:27:56.783Z",
+  "ratings": {},
+  "comments": {}
+}

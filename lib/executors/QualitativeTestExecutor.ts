@@ -46,12 +46,13 @@ export abstract class BaseTestExecutor implements TestExecutorInterface {
     const startTime = Date.now();
     
     try {
-      const response = await fetch('/api/models/generate', {
+      const response = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          text: prompt,
           model: modelName,
-          prompt,
+          type: 'general', // Type par défaut pour les benchmarks
           ...parameters
         })
       });
@@ -66,12 +67,12 @@ export abstract class BaseTestExecutor implements TestExecutorInterface {
       return {
         id: crypto.randomUUID(),
         modelName,
-        response: data.text || data.response,
+        response: data.analysis || data.response,
         responseTime,
-        tokenCount: data.tokenCount,
+        tokenCount: data.tokenCount || Math.floor((data.analysis || '').length / 4), // Estimation basique
         temperature: parameters?.temperature,
         timestamp: new Date(),
-        metadata: data.metadata
+        metadata: { confidence: data.confidence, ...data.metadata }
       };
     } catch (error) {
       throw new Error(`Failed to call model ${modelName}: ${error}`);

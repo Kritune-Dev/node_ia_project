@@ -223,89 +223,25 @@ function enrichModelFallback(name: string) {
     license: "Inconnu"
   };
 
-  // Base de données complète des modèles (fallback)
-  const cleanName = name.split(':')[0].toLowerCase()
-  
-  if (cleanName.includes('meditron')) {
-    modelInfo = {
-      displayName: "Meditron 7B",
-      description: "Modèle médical spécialisé basé sur Llama 2, entraîné sur des données médicales et biomédicales",
-      type: "medical",
-      specialties: ["Diagnostic médical", "Physiologie", "Pathologie"],
-      parameters: "7B",
-      github: "https://github.com/epfLLM/meditron",
-      website: "https://huggingface.co/epfl-llm/meditron-7b",
-      creator: "EPFL",
-      license: "Apache 2.0",
-      notes: "Spécialement conçu pour l'assistance médicale"
-    };
-  } else if (cleanName.includes('biomistral')) {
-    modelInfo = {
-      displayName: "BioMistral 7B",
-      description: "Modèle biomédical basé sur Mistral 7B, spécialisé dans la recherche biomédicale",
-      type: "medical",
-      specialties: ["Recherche biomédicale", "Biologie moléculaire"],
-      parameters: "7B",
-      github: "https://github.com/BioMistral/BioMistral",
-      website: "https://huggingface.co/BioMistral/BioMistral-7B",
-      creator: "Mistral AI",
-      license: "Apache 2.0",
-      notes: "Excellent pour la recherche biomédicale"
-    };
-  } else if (cleanName.includes('qwen')) {
-    const params = name.includes('8b') ? '8B' : '7B';
-    modelInfo = {
-      displayName: `Qwen3 ${params}`,
-      description: "Modèle de langage avancé de dernière génération, excellent en raisonnement",
-      type: "general",
-      specialties: ["Raisonnement", "Analyse de texte", "Génération de code"],
-      parameters: params,
-      github: "https://github.com/QwenLM/Qwen",
-      website: "https://huggingface.co/Qwen/Qwen3-8B",
-      creator: "Alibaba Cloud",
-      license: "Apache 2.0",
-      notes: "Excellent modèle général avec de très bonnes capacités de raisonnement"
-    };
-  } else if (cleanName.includes('mistral')) {
-    modelInfo = {
-      displayName: "Mistral 7B",
-      description: "Modèle français haute performance, excellent équilibre entre qualité et efficacité",
-      type: "general",
-      specialties: ["Français", "Multilangue", "Instructions complexes"],
-      parameters: "7B",
-      github: "https://github.com/mistralai/mistral-src",
-      website: "https://huggingface.co/mistralai/Mistral-7B-Instruct-v0.2",
-      creator: "Mistral AI",
-      license: "Apache 2.0",
-      notes: "Excellent modèle français avec de très bonnes performances générales"
-    };
-  }
-
   return modelInfo;
 }
 
 export async function GET() {
-  // URLs des services dans l'ordre de préférence (natif d'abord)
-  const services = [
-    { url: process.env.NATIVE_OLLAMA_URL || 'http://localhost:11436', name: 'Ollama Natif', type: 'native' },
-    { url: process.env.OLLAMA_BASE_URL || 'http://localhost:11434', name: 'Docker Ollama Medical', type: 'docker' },
-    { url: process.env.TRANSLATOR_BASE_URL || 'http://localhost:11435', name: 'Docker Ollama Translator', type: 'docker' }
-  ]
+  // URL pour Ollama natif
+  const ollamaUrl = process.env.OLLAMA_BASE_URL || 'http://localhost:11436'
   
   try {
     // Charger la configuration des modèles
     const modelsConfig = await loadModelsConfig()
     
-    // Tester tous les services en parallèle
-    const serviceResults = await Promise.all(
-      services.map(service => getModelsFromService(service.url, service.name))
-    )
+    // Tester Ollama
+    const ollamaResult = await getModelsFromService(ollamaUrl, 'Ollama')
     
-    // Filtrer les services disponibles
-    const availableServices = serviceResults.filter(result => result !== null)
+    // Vérifier si Ollama est disponible
+    const availableServices = ollamaResult ? [ollamaResult] : []
     
     if (availableServices.length === 0) {
-      throw new Error('Aucun service Ollama disponible')
+      throw new Error('Service Ollama non disponible')
     }
     
     // Fonction pour obtenir des informations enrichies sur le modèle
@@ -327,19 +263,12 @@ export async function GET() {
       const resolvedTag = resolveLatestVersion(model.name, model)
       
       // Extraire les paramètres du modèle
-      const parameters = metadata.parameters || extractModelParameters(model.name, model.size)
+      const parameters = metadata.parameters
       
-      // Créer le nom d'affichage
-      let displayName = metadata.displayName
-      if (originalTag === 'latest' && resolvedTag !== 'latest') {
-        displayName = `${metadata.displayName} (${resolvedTag.toUpperCase()})`
-      } else if (originalTag !== 'latest') {
-        displayName = `${metadata.displayName} (${originalTag.toUpperCase()})`
-      }
       
       return {
         name: model.name,
-        displayName: displayName,
+        displayName: metadata.displayName,
         creator: metadata.creator || "Inconnu",
         description: metadata.description,
         github: metadata.github,
@@ -375,7 +304,7 @@ export async function GET() {
     const modelFamilyMap = new Map()
 
     availableServices.forEach(service => {
-      const serviceType = services.find(s => s.url === service.url)?.type || 'unknown'
+      const serviceType = 'native'
       
       // Exclure les modèles du service traducteur de l'affichage
       if (service.serviceName.toLowerCase().includes('traducteur') || 
@@ -435,6 +364,7 @@ export async function GET() {
           modelFamilyMap.get(familyName).variants.push({
             name: modelKey,
             variant: variant,
+            parameters: enrichedModel.parameters,
             size: enrichedModel.size,
             sizeFormatted: enrichedModel.sizeFormatted,
             services: enrichedModel.services,
@@ -491,7 +421,7 @@ export async function GET() {
     // Calculer les statistiques pour les filtres
     const serviceStats = availableServices.map(service => ({
       name: service.serviceName,
-      type: services.find(s => s.url === service.url)?.type || 'unknown',
+      type: 'native',
       count: availableModels.filter((m: any) => 
         m.services?.some((s: any) => s.name === service.serviceName)
       ).length
@@ -514,19 +444,37 @@ export async function GET() {
       })
     })
 
+    // Calculer les modèles rapides (moins de 2GB)
+    const fastModels = allModels.filter((model: any) => {
+      const sizeInGB = model.size ? model.size / (1024 * 1024 * 1024) : 0
+      return sizeInGB < 2 || model.sizeFormatted?.includes('MB')
+    })
+
+    // Enrichir les familles avec l'information "rapide"
+    const enrichedModelFamilies = modelFamilies.map(family => ({
+      ...family,
+      variants: family.variants.map((variant: any) => {
+        const sizeInGB = variant.size ? variant.size / (1024 * 1024 * 1024) : 0
+        return {
+          ...variant,
+          isFast: sizeInGB < 2 || variant.sizeFormatted?.includes('MB')
+        }
+      })
+    }))
+
     return NextResponse.json({
       status: 'connected',
       configLoaded: !!modelsConfig,
       primary_service: availableServices.length > 0 ? {
         name: availableServices[0].serviceName,
         url: availableServices[0].url,
-        type: services.find(s => s.url === availableServices[0].url)?.type || 'unknown'
+        type: 'native'
       } : null,
       available_services: availableServices.map(service => ({
         name: service.serviceName,
         url: service.url,
         models_count: service.models.length,
-        type: services.find(s => s.url === service.url)?.type || 'unknown'
+        type: 'native'
       })),
       filter_options: {
         services: serviceStats,
@@ -544,18 +492,20 @@ export async function GET() {
       total: totalModels,
       medical_models: medicalModels.length,
       general_models: generalModels.length,
+      fast_models: fastModels.length,
       available_models: availableModels.length,
-      model_families: modelFamilies,
+      model_families: enrichedModelFamilies,
       models: {
         all: allModels,
         medical: allModels.filter((m: any) => m?.type === 'medical'),
         general: allModels.filter((m: any) => m?.type === 'general'),
+        fast: fastModels,
         installed: availableModels,
         not_installed: []
       },
       raw_models: Array.from(new Set(availableServices.flatMap(s => s.models))),
       performance_note: availableServices.length > 0 && 
-        services.find(s => s.url === availableServices[0].url)?.type === 'native' ? 
+        'native' ? 
         'Utilisation d\'Ollama natif - Performances optimales' :
         'Utilisation de Docker - Performances correctes',
       timestamp: new Date().toISOString(),

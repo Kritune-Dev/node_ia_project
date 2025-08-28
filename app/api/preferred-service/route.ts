@@ -29,65 +29,27 @@ async function testOllamaConnection(url: string): Promise<{ healthy: boolean, mo
 }
 
 export async function GET() {
-  // URLs des services dans l'ordre de préférence
-  const services = [
-    { 
-      name: 'native', 
-      url: process.env.NATIVE_OLLAMA_URL || 'http://localhost:11436',
-      description: 'Ollama Natif (Performances optimales)',
-      priority: 1
-    },
-    { 
-      name: 'docker_medical', 
-      url: process.env.OLLAMA_BASE_URL || 'http://localhost:11434',
-      description: 'Docker Ollama Medical',
-      priority: 2
-    },
-    { 
-      name: 'docker_translator', 
-      url: process.env.TRANSLATOR_BASE_URL || 'http://localhost:11435',
-      description: 'Docker Ollama Translator',
-      priority: 3
-    }
-  ]
+  // URL pour Ollama natif
+  const ollamaUrl = process.env.OLLAMA_BASE_URL || 'http://localhost:11436'
+  
+  // Tester la connexion Ollama
+  const result = await testOllamaConnection(ollamaUrl)
 
-  // Tester tous les services
-  const results = await Promise.all(
-    services.map(async (service) => ({
-      ...service,
-      ...(await testOllamaConnection(service.url))
-    }))
-  )
-
-  // Filtrer les services actifs et trier par priorité
-  const activeServices = results.filter(service => service.healthy)
-    .sort((a, b) => a.priority - b.priority)
-
-  const preferredService = activeServices[0] || null
+  const preferredService = result.healthy ? {
+    name: 'ollama',
+    url: ollamaUrl,
+    description: 'Ollama Natif (Performances optimales)',
+    models: result.models,
+    priority: 1
+  } : null
 
   return NextResponse.json({
-    preferred: preferredService ? {
-      name: preferredService.name,
-      url: preferredService.url,
-      description: preferredService.description,
-      models: preferredService.models,
-      priority: preferredService.priority
-    } : null,
-    available_services: activeServices.map(service => ({
-      name: service.name,
-      url: service.url,
-      description: service.description,
-      models: service.models,
-      priority: service.priority
-    })),
-    total_active: activeServices.length,
-    recommendation: preferredService?.name === 'native' ? 
+    preferred: preferredService,
+    available_services: result.healthy ? [preferredService] : [],
+    total_active: result.healthy ? 1 : 0,
+    recommendation: result.healthy ? 
       'Utilisation d\'Ollama natif pour des performances optimales' :
-      preferredService?.name === 'docker_medical' ?
-        'Utilisation de Docker Medical - Bon compromis' :
-        preferredService?.name === 'docker_translator' ?
-          'Utilisation de Docker Translator - Fonctionnalité limitée' :
-          'Aucun service Ollama disponible',
+      'Aucun service Ollama disponible - Vérifiez qu\'Ollama est démarré',
     timestamp: new Date().toISOString()
   })
 }

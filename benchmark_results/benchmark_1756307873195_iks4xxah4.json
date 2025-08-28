@@ -1,0 +1,126 @@
+{
+  "id": "benchmark_1756307873195_iks4xxah4",
+  "suiteId": "c9923370-638c-4df8-b7e0-50ecdf4267ec",
+  "status": "completed",
+  "progress": 100,
+  "startedAt": "2025-08-27T15:17:51.389Z",
+  "results": [
+    {
+      "id": "d4e31a9b-eeaa-416e-afaa-37e1878b9081",
+      "questionId": "2ffe129c-43fc-4683-bd6f-6bab9ca7f861",
+      "modelName": "tinyllama:1.1b",
+      "testType": "smoke",
+      "response": {
+        "id": "6081b60a-5bff-42f6-acaa-494e6336a27d",
+        "modelName": "tinyllama:1.1b",
+        "response": "2 + 2 = 4",
+        "responseTime": 957,
+        "tokenCount": 2,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T15:17:52.348Z",
+        "metadata": {
+          "confidence": 0.3
+        }
+      },
+      "evaluatedAt": "2025-08-27T15:17:52.350Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": false,
+        "responseCompleteness": false,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 4,
+      "notes": "Test smoke rapide (959ms)"
+    },
+    {
+      "id": "1631a3b2-04b9-4e79-a13d-354c53e578bf",
+      "questionId": "0b520aa6-a8a5-4d22-8ae0-fbc4b2228142",
+      "modelName": "tinyllama:1.1b",
+      "testType": "smoke",
+      "response": {
+        "id": "12538405-f0f9-498f-9ef5-a5451fff22da",
+        "modelName": "tinyllama:1.1b",
+        "response": "Sure, here are three colors:\n\n1. Red\n2. Blue\n3. Green",
+        "responseTime": 276,
+        "tokenCount": 13,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T15:17:52.627Z",
+        "metadata": {
+          "confidence": 0.3
+        }
+      },
+      "evaluatedAt": "2025-08-27T15:17:52.627Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": false,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 7,
+      "notes": "Test smoke rapide (276ms)"
+    },
+    {
+      "id": "292a2e24-cf7d-41cc-836f-04cc1c0bff86",
+      "questionId": "7005debf-54a8-4ca4-890f-0da7048931f8",
+      "modelName": "tinyllama:1.1b",
+      "testType": "smoke",
+      "response": {
+        "id": "1be3430c-5671-49c8-8534-6d154a1369ab",
+        "modelName": "tinyllama:1.1b",
+        "response": "Hey there! Welcome to my website! I'm glad you could join us today. Let me know if you have any questions or if there's anything else we can help you with. Have a great day!",
+        "responseTime": 477,
+        "tokenCount": 43,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T15:17:53.105Z",
+        "metadata": {
+          "confidence": 0.5
+        }
+      },
+      "evaluatedAt": "2025-08-27T15:17:53.106Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (478ms)"
+    }
+  ],
+  "errors": [],
+  "summary": {
+    "totalTests": 3,
+    "completedTests": 3,
+    "failedTests": 0,
+    "averageScore": 7,
+    "modelRankings": [
+      {
+        "modelName": "tinyllama:1.1b",
+        "averageScore": 7,
+        "rank": 1,
+        "strengths": [],
+        "weaknesses": []
+      }
+    ],
+    "categoryPerformance": {
+      "language_understanding": {
+        "averageScore": 10,
+        "bestModel": "tinyllama:1.1b",
+        "worstModel": "tinyllama:1.1b"
+      }
+    },
+    "testTypePerformance": {
+      "smoke": {
+        "averageScore": 7,
+        "completionRate": 100
+      }
+    }
+  },
+  "completedAt": "2025-08-27T15:17:53.107Z",
+  "timestamp": "2025-08-27T15:17:53.195Z",
+  "ratings": {},
+  "comments": {}
+}

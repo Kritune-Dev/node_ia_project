@@ -3,10 +3,10 @@
 import { useState, useEffect } from 'react'
 import { Brain, Activity, BarChart3, FileText } from 'lucide-react'
 import Link from 'next/link'
-import ModelStatus from '@/components/ModelStatus'
-import QuickAnalysis from '@/components/QuickAnalysis'
-import RecentResults from '@/components/RecentResults'
-import DockerSetupGuide from '@/components/DockerSetupGuide'
+import ModelStatus from '@/components/models/ModelStatus'
+import QuickAnalysis from '@/components/ui/QuickAnalysis'
+import RecentResults from '@/components/ui/RecentResults'
+import OllamaSetupGuide from '@/components/guides/OllamaSetupGuide'
 
 export default function HomePage() {
   const [systemStatus, setSystemStatus] = useState<'online' | 'offline' | 'error'>('offline')
@@ -76,7 +76,7 @@ export default function HomePage() {
       {systemStatus === 'offline' ? (
         // Affichage du guide Docker quand le système est hors ligne
         <div className="mb-8">
-          <DockerSetupGuide />
+          <OllamaSetupGuide />
         </div>
       ) : (
         <>

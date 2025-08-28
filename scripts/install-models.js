@@ -8,7 +8,7 @@
 const https = require('https')
 const http = require('http')
 
-const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL || 'http://localhost:11434'
+const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL || 'http://localhost:11436'
 
 const MEDICAL_MODELS = [
   'llama3.2:3b',

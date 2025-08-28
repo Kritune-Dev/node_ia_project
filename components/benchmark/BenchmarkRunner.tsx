@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Play, Square, RefreshCw, CheckCircle, XCircle, Settings, AlertCircle, Zap, Info, ArrowUpDown } from 'lucide-react'
-import ModelDetailModal from '../ModelDetailModal'
+import { useState, useEffect, useRef } from 'react'
+import { Play, Pause, Square, RotateCcw, Settings, ChevronDown, ChevronUp, Monitor, Eye, EyeOff, Minimize2, Maximize2, RefreshCw, AlertCircle, ArrowUpDown, Zap, Info, CheckCircle } from 'lucide-react'
+import ModelDetailModal from '../models/ModelDetailModal'
 import CustomQuestions, { CustomQuestion } from './CustomQuestions'
 
 interface BenchmarkQuestion {

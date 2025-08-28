@@ -1,8 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Trophy, Medal, Award, TrendingUp, Clock, Zap, Target, Info, ArrowUpDown } from 'lucide-react'
-import ModelDetailModal from '../ModelDetailModal'
+import { Clock, Target, BarChart3, TrendingUp, Medal, ChevronDown, ChevronUp, Filter, X, Trophy, Award, ArrowUpDown, Zap, Info } from 'lucide-react'
+import { formatDistanceToNow } from 'date-fns'
+import { fr } from 'date-fns/locale'
+import ModelDetailModal from '../models/ModelDetailModal'
 
 interface BenchmarkRankingProps {
   benchmarks: any[]
@@ -20,6 +22,7 @@ interface ModelStats {
   avgUserRating: number
   totalRatings: number
   categories: { [key: string]: number }
+  testSeries: { [key: string]: { total: number, successful: number, avgRating: number, ratings: number } }
   lastTested: string
   bestBenchmark: any
   hasNative: boolean
@@ -29,8 +32,9 @@ interface ModelStats {
 }
 
 export default function BenchmarkRanking({ benchmarks, onSelectBenchmark }: BenchmarkRankingProps) {
-  const [rankingMode, setRankingMode] = useState<'overall' | 'speed' | 'accuracy' | 'user_rating'>('overall')
+  const [rankingMode, setRankingMode] = useState<'overall' | 'speed' | 'accuracy' | 'user_rating' | 'test_series'>('overall')
   const [categoryFilter, setCategoryFilter] = useState<string>('all')
+  const [selectedTestSeries, setSelectedTestSeries] = useState<string>('all')
   const [modelStats, setModelStats] = useState<ModelStats[]>([])
   const [models, setModels] = useState<any[]>([])
   const [sortBy, setSortBy] = useState<'name' | 'size' | 'score'>('score')
@@ -82,6 +86,7 @@ export default function BenchmarkRanking({ benchmarks, onSelectBenchmark }: Benc
             avgUserRating: 0,
             totalRatings: 0,
             categories: {},
+            testSeries: {},
             lastTested: benchmark.timestamp,
             bestBenchmark: benchmark,
             hasNative: modelInfo.hasNative || false,
@@ -116,6 +121,20 @@ export default function BenchmarkRanking({ benchmarks, onSelectBenchmark }: Benc
           // Catégories
           const category = questionData.category || 'unknown'
           stats[modelName].categories[category] = (stats[modelName].categories[category] || 0) + 1
+
+          // Séries de tests (basé sur la catégorie ou le type de test)
+          const testSeries = questionData.testSeries || category
+          if (!stats[modelName].testSeries[testSeries]) {
+            stats[modelName].testSeries[testSeries] = { total: 0, successful: 0, avgRating: 0, ratings: 0 }
+          }
+          stats[modelName].testSeries[testSeries].total++
+          if (questionData.success) {
+            stats[modelName].testSeries[testSeries].successful++
+          }
+          if (questionData.user_rating && questionData.user_rating > 0) {
+            stats[modelName].testSeries[testSeries].avgRating += questionData.user_rating
+            stats[modelName].testSeries[testSeries].ratings++
+          }
         })
 
         // Mettre à jour la date de dernier test
@@ -137,6 +156,13 @@ export default function BenchmarkRanking({ benchmarks, onSelectBenchmark }: Benc
       if (stat.totalRatings > 0) {
         stat.avgUserRating = stat.avgUserRating / stat.totalRatings
       }
+      
+      // Calculer les moyennes des séries de tests
+      Object.values(stat.testSeries).forEach(series => {
+        if (series.ratings > 0) {
+          series.avgRating = series.avgRating / series.ratings
+        }
+      })
     })
 
     setModelStats(Object.values(stats))
@@ -149,6 +175,14 @@ export default function BenchmarkRanking({ benchmarks, onSelectBenchmark }: Benc
     
     // Pondération: 40% réussite, 30% vitesse, 30% note utilisateur
     return (successRate * 0.4) + (speedScore * 0.3) + (userScore * 0.3)
+  }
+
+  const getAvailableTestSeries = (): string[] => {
+    const series = new Set<string>()
+    modelStats.forEach(model => {
+      Object.keys(model.testSeries).forEach(key => series.add(key))
+    })
+    return Array.from(series).sort()
   }
 
   const handleModelDetail = (modelName: string) => {
@@ -187,7 +221,35 @@ export default function BenchmarkRanking({ benchmarks, onSelectBenchmark }: Benc
         })
         break
       case 'user_rating':
-        sorted = sorted.sort((a, b) => b.avgUserRating - a.avgUserRating)
+        sorted = sorted.sort((a, b) => {
+          // Prioritiser d'abord le nombre de ratings, puis la moyenne
+          if (a.totalRatings === 0 && b.totalRatings === 0) return 0
+          if (a.totalRatings === 0) return 1
+          if (b.totalRatings === 0) return -1
+          
+          // Si les deux ont des ratings, trier par moyenne puis par nombre de ratings
+          const ratingDiff = b.avgUserRating - a.avgUserRating
+          if (Math.abs(ratingDiff) < 0.1) {
+            return b.totalRatings - a.totalRatings
+          }
+          return ratingDiff
+        })
+        break
+      case 'test_series':
+        if (selectedTestSeries === 'all') {
+          sorted = sorted.sort((a, b) => Object.keys(b.testSeries).length - Object.keys(a.testSeries).length)
+        } else {
+          sorted = sorted.filter(model => model.testSeries[selectedTestSeries])
+            .sort((a, b) => {
+              const aSeriesData = a.testSeries[selectedTestSeries]
+              const bSeriesData = b.testSeries[selectedTestSeries]
+              
+              const aSuccessRate = aSeriesData ? (aSeriesData.successful / aSeriesData.total) * 100 : 0
+              const bSuccessRate = bSeriesData ? (bSeriesData.successful / bSeriesData.total) * 100 : 0
+              
+              return bSuccessRate - aSuccessRate
+            })
+        }
         break
     }
 
@@ -260,8 +322,22 @@ export default function BenchmarkRanking({ benchmarks, onSelectBenchmark }: Benc
               <option value="overall">Score global</option>
               <option value="speed">Vitesse</option>
               <option value="accuracy">Précision</option>
-              <option value="user_rating">Note utilisateur</option>
+              <option value="user_rating">Meilleures évaluations</option>
+              <option value="test_series">Par série de tests</option>
             </select>
+            
+            {rankingMode === 'test_series' && (
+              <select
+                value={selectedTestSeries}
+                onChange={(e) => setSelectedTestSeries(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="all">Toutes les séries</option>
+                {getAvailableTestSeries().map(series => (
+                  <option key={series} value={series}>{series}</option>
+                ))}
+              </select>
+            )}
             
             <div className="flex items-center gap-1">
               <span className="text-sm text-gray-500">Trier par:</span>
@@ -322,7 +398,19 @@ export default function BenchmarkRanking({ benchmarks, onSelectBenchmark }: Benc
                     {rankingMode === 'overall' && `${Math.round(getOverallScore(model))}%`}
                     {rankingMode === 'speed' && `${Math.round(model.avgTokensPerSecond)} t/s`}
                     {rankingMode === 'accuracy' && `${Math.round((model.successfulTests / model.totalTests) * 100)}%`}
-                    {rankingMode === 'user_rating' && `${model.avgUserRating.toFixed(1)}/5`}
+                    {rankingMode === 'user_rating' && (
+                      <div className="flex flex-col items-center">
+                        <span>{model.avgUserRating.toFixed(1)}/5 ⭐</span>
+                        <span className="text-xs text-gray-500">({model.totalRatings} avis)</span>
+                      </div>
+                    )}
+                    {rankingMode === 'test_series' && (
+                      selectedTestSeries === 'all' 
+                        ? `${Object.keys(model.testSeries).length} séries`
+                        : model.testSeries[selectedTestSeries] 
+                          ? `${Math.round((model.testSeries[selectedTestSeries].successful / model.testSeries[selectedTestSeries].total) * 100)}%`
+                          : 'N/A'
+                    )}
                   </div>
                 </div>
               </div>
@@ -400,10 +488,15 @@ export default function BenchmarkRanking({ benchmarks, onSelectBenchmark }: Benc
                     <div>
                       <div className="text-sm text-gray-500">Note utilisateur</div>
                       <div className="font-semibold text-lg">
-                        {model.totalRatings > 0 ? model.avgUserRating.toFixed(1) : 'N/A'}
+                        {model.totalRatings > 0 ? (
+                          <div className="flex items-center justify-center gap-1">
+                            <span>{model.avgUserRating.toFixed(1)}</span>
+                            <span className="text-yellow-500">⭐</span>
+                          </div>
+                        ) : 'N/A'}
                       </div>
                       <div className="text-xs text-gray-400">
-                        {model.totalRatings > 0 ? `${model.totalRatings} notes` : 'Aucune note'}
+                        {model.totalRatings > 0 ? `${model.totalRatings} avis` : 'Aucun avis'}
                       </div>
                     </div>
                   </div>
@@ -424,6 +517,33 @@ export default function BenchmarkRanking({ benchmarks, onSelectBenchmark }: Benc
                     </span>
                   ))}
                 </div>
+
+                {/* Séries de tests */}
+                {rankingMode === 'test_series' && (
+                  <div className="mt-2">
+                    <h5 className="text-sm font-medium text-gray-700 mb-2">Performances par série :</h5>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      {Object.entries(model.testSeries).map(([seriesName, seriesData]) => (
+                        <div key={seriesName} className={`p-2 rounded border ${
+                          selectedTestSeries === seriesName ? 'bg-blue-50 border-blue-200' : 'bg-gray-50 border-gray-200'
+                        }`}>
+                          <div className="text-xs font-medium text-gray-700">{seriesName}</div>
+                          <div className="text-sm font-semibold">
+                            {Math.round((seriesData.successful / seriesData.total) * 100)}%
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {seriesData.successful}/{seriesData.total} tests
+                            {seriesData.ratings > 0 && (
+                              <span className="ml-1">
+                                • {seriesData.avgRating.toFixed(1)}⭐
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )
           })}

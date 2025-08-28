@@ -33,6 +33,10 @@ export interface UseBenchmarkReturn {
   executionHistory: BenchmarkExecution[];
   addToHistory: (execution: BenchmarkExecution) => void;
   clearHistory: () => void;
+  reloadHistory: () => Promise<void>;
+  
+  // Configuration des callbacks
+  setLogCallback: (callback: (message: string, type: 'info' | 'success' | 'warning' | 'error') => void) => void;
 }
 
 export interface CreateSuiteParams {
@@ -66,25 +70,67 @@ export function useBenchmark(): UseBenchmarkReturn {
     }
   }, []);
   
-  // Charger l'historique depuis localStorage
-  useEffect(() => {
+  // Fonction pour charger l'historique depuis l'API serveur
+  const loadHistoryFromServer = useCallback(async () => {
     try {
-      const saved = localStorage.getItem('benchmark_history');
-      if (saved) {
-        const history = JSON.parse(saved);
-        setExecutionHistory(history);
+      const response = await fetch('/api/benchmark/history');
+      if (response.ok) {
+        const data = await response.json();
+        setExecutionHistory(data.benchmarks || []);
+      } else {
+        // Fallback vers localStorage si l'API échoue
+        const saved = localStorage.getItem('benchmark_history');
+        if (saved) {
+          const history = JSON.parse(saved);
+          setExecutionHistory(history);
+        }
       }
     } catch (error) {
-      console.warn('Failed to load benchmark history:', error);
+      console.warn('Failed to load benchmark history from server, using localStorage:', error);
+      try {
+        const saved = localStorage.getItem('benchmark_history');
+        if (saved) {
+          const history = JSON.parse(saved);
+          setExecutionHistory(history);
+        }
+      } catch (localError) {
+        console.warn('Failed to load benchmark history from localStorage:', localError);
+      }
     }
   }, []);
+
+  // Charger l'historique depuis l'API serveur au démarrage
+  useEffect(() => {
+    loadHistoryFromServer();
+  }, [loadHistoryFromServer]);
   
-  // Sauvegarder l'historique
-  const saveHistory = useCallback((history: BenchmarkExecution[]) => {
+  // Sauvegarder l'historique vers l'API serveur et localStorage
+  const saveHistory = useCallback(async (history: BenchmarkExecution[]) => {
+    // Toujours sauvegarder en localStorage comme backup
     try {
-      localStorage.setItem('benchmark_history', JSON.stringify(history.slice(-10))); // Garder les 10 derniers
+      localStorage.setItem('benchmark_history', JSON.stringify(history.slice(-10))); // Garder les 10 derniers localement
     } catch (error) {
-      console.warn('Failed to save benchmark history:', error);
+      console.warn('Failed to save benchmark history to localStorage:', error);
+    }
+  }, []);
+
+  // Sauvegarder un nouveau benchmark individuel sur le serveur
+  const saveBenchmarkToServer = useCallback(async (execution: BenchmarkExecution) => {
+    try {
+      const response = await fetch('/api/benchmark/history', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(execution) // Envoyer le benchmark individuel directement
+      });
+
+      if (!response.ok) {
+        console.warn('Failed to save benchmark to server');
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.warn('Failed to save benchmark to server:', error);
+      return false;
     }
   }, []);
   
@@ -102,10 +148,13 @@ export function useBenchmark(): UseBenchmarkReturn {
       setCurrentExecution(execution);
       setIsRunning(false);
       
-      // Ajouter à l'historique
+      // Ajouter à l'historique local
       const newHistory = [...executionHistory, execution];
       setExecutionHistory(newHistory);
-      saveHistory(newHistory);
+      
+      // Sauvegarder localement et sur le serveur
+      await saveHistory(newHistory);
+      await saveBenchmarkToServer(execution);
       
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Unknown error');
@@ -190,7 +239,7 @@ export function useBenchmark(): UseBenchmarkReturn {
         evaluationMethod: 'quality'
       },
       smoke: {
-        timeLimit: 10000,
+        timeLimit: 30000, // 30 secondes pour les modèles plus gros
         basicChecks: ['proper_length', 'no_repetition', 'contains_punctuation']
       }
     };
@@ -207,11 +256,19 @@ export function useBenchmark(): UseBenchmarkReturn {
     const newHistory = [...executionHistory, execution];
     setExecutionHistory(newHistory);
     saveHistory(newHistory);
-  }, [executionHistory, saveHistory]);
+    saveBenchmarkToServer(execution);
+  }, [executionHistory, saveHistory, saveBenchmarkToServer]);
   
   const clearHistory = useCallback(() => {
     setExecutionHistory([]);
     localStorage.removeItem('benchmark_history');
+  }, []);
+  
+  // Fonction pour configurer le callback de logging
+  const setLogCallback = useCallback((callback: (message: string, type: 'info' | 'success' | 'warning' | 'error') => void) => {
+    if (benchmarkManagerRef.current) {
+      benchmarkManagerRef.current.onDetailedLog = callback;
+    }
   }, []);
   
   return {
@@ -227,7 +284,9 @@ export function useBenchmark(): UseBenchmarkReturn {
     getEstimatedDuration,
     executionHistory,
     addToHistory,
-    clearHistory
+    clearHistory,
+    reloadHistory: loadHistoryFromServer,
+    setLogCallback
   };
 }
 

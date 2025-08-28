@@ -17,127 +17,125 @@ export default function TestDetailModal({ testType, isVisible, onClose }: TestDe
     switch (type) {
       case BenchmarkTestType.SMOKE:
         return {
-          name: 'Smoke Tests',
-          description: 'Tests rapides pour vérifier le fonctionnement de base des modèles',
+          name: 'Série Smoke Tests',
+          description: 'Tests rapides de fonctionnement de base avec 3 questions essentielles',
           temperature: 0.1,
           seed: 42,
           timeout: 30,
           questions: [
-            'Bonjour, comment allez-vous ?',
-            'Quelle est la capitale de la France ?',
-            'Combien font 2 + 2 ?',
-            'Pouvez-vous me dire l\'heure qu\'il est ?',
-            'Quelle est votre couleur préférée ?'
+            'What is 2 + 2?',
+            'Name three colors.',
+            'Write a simple greeting.'
           ],
-          estimatedDuration: '30 secondes',
+          estimatedDuration: '15-30 secondes',
           complexity: 'Faible'
         }
       case BenchmarkTestType.API_IO:
         return {
-          name: 'Tests API/I-O',
-          description: 'Tests des entrées et sorties pour évaluer la cohérence des réponses',
+          name: 'Série Tests API/I-O',
+          description: 'Tests de performance en charge avec requêtes concurrentes',
           temperature: 0.3,
           seed: 123,
           timeout: 60,
           questions: [
-            'Formatez cette date en français : 2024-12-25',
-            'Convertissez 100°F en Celsius',
-            'Traduisez "Hello world" en espagnol',
-            'Résumez ce texte en 50 mots : [texte long]',
-            'Générez une liste de 5 fruits en JSON'
+            'Test de charge avec 5 requêtes simultanées',
+            'Mesure de la latence sous stress',
+            'Évaluation de la stabilité des réponses',
+            'Test de débit (throughput)',
+            'Vérification de la cohérence des sorties'
           ],
-          estimatedDuration: '2-3 minutes',
+          estimatedDuration: '2-5 minutes',
           complexity: 'Moyenne'
         }
       case BenchmarkTestType.QUALITATIVE:
         return {
-          name: 'Tests Qualitatifs',
-          description: 'Tests pour évaluer la qualité du raisonnement et de la créativité',
+          name: 'Série Tests Qualitatifs',
+          description: 'Évaluation de la qualité, créativité et pertinence des réponses',
           temperature: 0.7,
           seed: null,
           timeout: 120,
           questions: [
-            'Écrivez une histoire courte sur un robot qui apprend l\'amitié',
-            'Expliquez le concept de photosynthèse à un enfant de 8 ans',
-            'Donnez trois arguments pour et contre l\'intelligence artificielle',
-            'Comment résoudriez-vous le problème du réchauffement climatique ?',
-            'Créez un poème sur la technologie moderne'
+            'Questions de raisonnement complexe',
+            'Tâches créatives et narratives',
+            'Analyse et synthèse d\'informations',
+            'Résolution de problèmes éthiques',
+            'Évaluation de la cohérence logique'
           ],
-          estimatedDuration: '5-8 minutes',
+          estimatedDuration: '5-10 minutes',
           complexity: 'Élevée'
         }
       case BenchmarkTestType.STABILITY:
         return {
-          name: 'Tests de Stabilité',
-          description: 'Tests répétés pour évaluer la cohérence des réponses',
+          name: 'Série Tests de Stabilité',
+          description: 'Tests répétés (5 itérations) pour mesurer la cohérence des réponses',
           temperature: 0.5,
           seed: 456,
           timeout: 90,
           questions: [
-            'Décrivez les étapes pour faire du pain (répété 5 fois)',
-            'Expliquez la théorie de la relativité (répété 3 fois)',
-            'Donnez des conseils de santé généraux (répété 4 fois)',
-            'Résolvez cette équation : 2x + 5 = 15 (répété 5 fois)',
-            'Racontez l\'histoire de Napoléon (répété 3 fois)'
+            'Répétition de la même question 5 fois',
+            'Mesure de la variance des réponses',
+            'Calcul du score de cohérence',
+            'Détection des incohérences',
+            'Évaluation de la stabilité temporelle'
           ],
-          estimatedDuration: '8-12 minutes',
+          estimatedDuration: '8-15 minutes',
           complexity: 'Moyenne-Élevée'
         }
       case BenchmarkTestType.PARAMETER:
         return {
-          name: 'Tests de Paramètres',
-          description: 'Tests avec différents paramètres de température et de seed',
+          name: 'Série Tests de Paramètres',
+          description: 'Tests avec différents paramètres (température, seed) sur 5-10 variations',
           temperature: 'Variable (0.1-1.0)',
           seed: 'Variable',
           timeout: 75,
           questions: [
-            'Générez un nom d\'entreprise créatif',
-            'Écrivez un slogan publicitaire',
-            'Créez une recette originale',
-            'Inventez une excuse créative',
-            'Proposez une solution innovante'
+            'Test avec température basse (0.1-0.3)',
+            'Test avec température moyenne (0.4-0.7)',
+            'Test avec température élevée (0.8-1.0)',
+            'Comparaison des variations de seed',
+            'Analyse de l\'impact des paramètres'
           ],
-          estimatedDuration: '6-10 minutes',
+          estimatedDuration: '6-12 minutes',
           complexity: 'Élevée'
         }
       case BenchmarkTestType.PROMPT_ALTERNATIVE:
         return {
-          name: 'Tests d\'Alternatives de Prompt',
-          description: 'Tests avec différentes formulations pour la même question',
+          name: 'Série Tests d\'Alternatives de Prompt',
+          description: 'Même question formulée de 3-5 façons différentes pour tester la robustesse',
           temperature: 0.4,
           seed: 789,
           timeout: 90,
           questions: [
-            'Version 1: Quelle est la différence entre...?',
-            'Version 2: Pouvez-vous expliquer la distinction entre...?',
-            'Version 3: Comment distinguer... de...?',
-            'Version 4: En quoi... diffère-t-il de...?',
-            'Version 5: Comparez et contrastez... avec...'
+            'Formulation directe de la question',
+            'Formulation polie et formelle',
+            'Formulation concise et technique',
+            'Formulation avec contexte ajouté',
+            'Formulation inversée ou négative'
           ],
-          estimatedDuration: '7-12 minutes',
+          estimatedDuration: '7-15 minutes',
           complexity: 'Élevée'
         }
       case BenchmarkTestType.REAL_DATA:
         return {
-          name: 'Tests avec Données Réelles',
-          description: 'Tests avec de vraies données pour évaluer les performances en conditions réelles',
+          name: 'Série Tests avec Données Réelles',
+          description: 'Tests avec vrais documents, code source et données complexes (contexte 1000+ tokens)',
           temperature: 0.6,
           seed: 999,
           timeout: 180,
           questions: [
-            'Analysez ce rapport financier réel',
-            'Résumez cet article de presse complexe',
-            'Extrayez les informations clés de ce document légal',
-            'Interprétez ces données scientifiques',
-            'Analysez ce code source et trouvez les bugs'
+            'Analyse de documents PDF réels',
+            'Traitement de code source complexe',
+            'Extraction d\'informations de datasets',
+            'Résumé d\'articles scientifiques',
+            'Interprétation de données financières'
           ],
-          estimatedDuration: '15-25 minutes',
+          estimatedDuration: '15-30 minutes',
           complexity: 'Très Élevée'
         }
       default:
         return {
-          name: 'Test Inconnu',
-          description: 'Type de test non reconnu',
+          name: 'Série Inconnue',
+          description: 'Type de série de tests non reconnu',
           temperature: 0.5,
           seed: null,
           timeout: 60,

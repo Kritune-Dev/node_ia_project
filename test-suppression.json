@@ -1,0 +1,20 @@
+{
+  "id": "test-pour-suppression",
+  "timestamp": "2025-08-27T12:40:00.000Z",
+  "suite": {
+    "name": "Test à Supprimer",
+    "testTypes": ["SMOKE"]
+  },
+  "results": {
+    "test_model": {
+      "score": 50,
+      "responseTime": 2000
+    }
+  },
+  "summary": {
+    "totalTests": 1,
+    "completedTests": 1,
+    "failedTests": 0
+  },
+  "status": "completed"
+}

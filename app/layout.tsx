@@ -1,7 +1,7 @@
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import { Metadata } from 'next'
-import GlobalLayout from '@/components/GlobalLayout'
+import GlobalLayout from '@/components/ui/GlobalLayout'
 
 const inter = Inter({ 
   subsets: ['latin'],

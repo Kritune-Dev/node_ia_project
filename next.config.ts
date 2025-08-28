@@ -15,10 +15,9 @@ const nextConfig = {
   },
   // Configuration pour Vercel
   env: {
-    OLLAMA_BASE_URL: process.env.OLLAMA_BASE_URL || 'http://localhost:11434',
-    TRANSLATOR_BASE_URL: process.env.TRANSLATOR_BASE_URL || 'http://localhost:11435',
+    OLLAMA_BASE_URL: process.env.OLLAMA_BASE_URL || 'http://localhost:11436',
   },
-  // Headers CORS pour communication avec Docker
+  // Headers CORS pour communication avec Ollama
   async headers() {
     return [
       {

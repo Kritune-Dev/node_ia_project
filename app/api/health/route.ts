@@ -55,62 +55,31 @@ async function testConnection(url: string, serviceName: string): Promise<{ healt
 }
 
 export async function GET() {
-  // URLs pour tous les services possibles
-  const dockerOllamaUrl = process.env.OLLAMA_BASE_URL || 'http://localhost:11434'
-  const dockerTranslatorUrl = process.env.TRANSLATOR_BASE_URL || 'http://localhost:11435'
-  const nativeOllamaUrl = process.env.NATIVE_OLLAMA_URL || 'http://localhost:11436'
+  // URL pour Ollama natif
+  const ollamaUrl = process.env.OLLAMA_BASE_URL || 'http://localhost:11436'
   
-  // Test des connexions en parallèle
-  const [dockerOllamaResult, dockerTranslatorResult, nativeOllamaResult] = await Promise.all([
-    testConnection(dockerOllamaUrl, 'Docker Ollama Medical'),
-    testConnection(dockerTranslatorUrl, 'Docker Ollama Translator'),
-    testConnection(nativeOllamaUrl, 'Ollama Natif')
-  ])
+  // Test de la connexion
+  const ollamaResult = await testConnection(ollamaUrl, 'Ollama Natif')
 
-  // Compter les services actifs
-  const activeServices = [dockerOllamaResult, dockerTranslatorResult, nativeOllamaResult]
-    .filter(result => result.healthy).length
-  
-  const anyHealthy = activeServices > 0
-  const preferredService = nativeOllamaResult.healthy ? 'native' : 
-                          dockerOllamaResult.healthy ? 'docker_medical' : 
-                          dockerTranslatorResult.healthy ? 'docker_translator' : null
-
-  // Si aucun service n'est disponible, retourner 503
-  if (!anyHealthy) {
+  // Si Ollama n'est pas accessible, retourner 503
+  if (!ollamaResult.healthy) {
     return NextResponse.json(
       {
         status: 'unhealthy',
-        services: {
-          docker_ollama: {
+        service: {
+          ollama: {
             healthy: false,
-            url: dockerOllamaUrl,
-            error: dockerOllamaResult.error,
-            models: 0,
-          },
-          docker_translator: {
-            healthy: false,
-            url: dockerTranslatorUrl,
-            error: dockerTranslatorResult.error,
-            models: 0,
-          },
-          native_ollama: {
-            healthy: false,
-            url: nativeOllamaUrl,
-            error: nativeOllamaResult.error,
+            url: ollamaUrl,
+            error: ollamaResult.error,
             models: 0,
           }
         },
-        preferred_service: null,
-        active_services_count: 0,
-        message: 'Aucun service Ollama accessible',
+        message: 'Service Ollama non accessible',
         recommendations: {
-          priority: 'Démarrer Ollama natif (meilleures performances)',
-          fallback: 'Ou démarrer les services Docker',
           instructions: [
-            '1. Installer Ollama natif: curl -fsSL https://ollama.ai/install.sh | sh',
-            '2. Démarrer: OLLAMA_HOST=127.0.0.1:11436 ollama serve',
-            '3. Ou Docker: docker-compose up -d',
+            '1. Vérifier qu\'Ollama est installé: ollama --version',
+            '2. Démarrer Ollama: OLLAMA_HOST=127.0.0.1:11436 ollama serve',
+            '3. Vérifier les modèles: ollama list',
             '4. Actualiser cette page'
           ]
         },
@@ -120,43 +89,19 @@ export async function GET() {
     )
   }
 
-  // Réponse normale avec le statut réel
-  const allHealthy = dockerOllamaResult.healthy && dockerTranslatorResult.healthy && nativeOllamaResult.healthy
-  const status = allHealthy ? 'healthy' : activeServices >= 2 ? 'partial' : 'degraded'
-
+  // Réponse normale
   return NextResponse.json({
-    status,
-    services: {
-      docker_ollama: {
-        healthy: dockerOllamaResult.healthy,
-        url: dockerOllamaUrl,
-        error: dockerOllamaResult.error,
-        models: dockerOllamaResult.models || 0,
-        type: 'docker'
-      },
-      docker_translator: {
-        healthy: dockerTranslatorResult.healthy,
-        url: dockerTranslatorUrl,
-        error: dockerTranslatorResult.error,
-        models: dockerTranslatorResult.models || 0,
-        type: 'docker'
-      },
-      native_ollama: {
-        healthy: nativeOllamaResult.healthy,
-        url: nativeOllamaUrl,
-        error: nativeOllamaResult.error,
-        models: nativeOllamaResult.models || 0,
-        type: 'native',
-        preferred: true  // Natif est préféré pour les performances
+    status: 'healthy',
+    service: {
+      ollama: {
+        healthy: ollamaResult.healthy,
+        url: ollamaUrl,
+        error: ollamaResult.error,
+        models: ollamaResult.models || 0,
+        type: 'native'
       }
     },
-    preferred_service: preferredService,
-    active_services_count: activeServices,
-    performance_recommendation: nativeOllamaResult.healthy ? 
-      'Utilisation d\'Ollama natif - Performances optimales' :
-      dockerOllamaResult.healthy ? 
-        'Utilisation de Docker - Performances correctes' :
-        'Services limités - Performance dégradée',
+    performance_recommendation: 'Utilisation d\'Ollama natif - Performances optimales',
     timestamp: new Date().toISOString(),
   })
 }

@@ -4,7 +4,7 @@
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
-[![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://docker.com)
+[![Ollama](https://img.shields.io/badge/Ollama-000000?style=for-the-badge&logo=ai&logoColor=white)](https://ollama.ai/)
 [![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com)
 
 ## 🎯 Contexte du Projet
@@ -65,7 +65,7 @@ graph TD
 ### Prérequis
 
 - **Node.js** 18+ ([télécharger](https://nodejs.org/))
-- **Docker Desktop** ([télécharger](https://www.docker.com/products/docker-desktop))
+- **Ollama** ([télécharger](https://ollama.ai/))
 - **Git** ([télécharger](https://git-scm.com/))
 
 ### Installation
@@ -78,8 +78,8 @@ cd medical-llm-platform
 # 2. Installer les dépendances
 npm install
 
-# 3. Démarrer les services Docker
-docker-compose up -d
+# 3. Démarrer Ollama natif
+OLLAMA_HOST=127.0.0.1:11436 ollama serve
 
 # 4. Installer les modèles IA (première fois uniquement)
 npm run setup:models
@@ -191,37 +191,37 @@ npm run format          # Formatage du code
 
 ```typescript
 // Exemple d'analyse de données cliniques
-import { ClinicalAnalyzer } from "./lib/clinical-analyzer";
-import { OrthoTestEvaluator } from "./lib/ortho-test-eval";
+import { ClinicalAnalyzer } from './lib/clinical-analyzer'
+import { OrthoTestEvaluator } from './lib/ortho-test-eval'
 
-const analyzer = new ClinicalAnalyzer();
-const orthoEval = new OrthoTestEvaluator();
+const analyzer = new ClinicalAnalyzer()
+const orthoEval = new OrthoTestEvaluator()
 
 // Analyse d'un cas clinique ostéopathique
 const clinicalCase = {
-  symptoms: ["lombalgie chronique", "raideur matinale"],
-  history: "Patient de 45 ans, travail de bureau",
-  examination: "Limitation flexion lombaire, tension psoas",
-};
+  symptoms: ['lombalgie chronique', 'raideur matinale'],
+  history: 'Patient de 45 ans, travail de bureau',
+  examination: 'Limitation flexion lombaire, tension psoas',
+}
 
 const analysis = await analyzer.analyzeCase(clinicalCase, [
-  "lastmass/Qwen3_Medical_GRPO",
-  "cniongolo/biomistral",
-  "meditron",
-]);
+  'lastmass/Qwen3_Medical_GRPO',
+  'cniongolo/biomistral',
+  'meditron',
+])
 
 // Évaluation de tests orthopédiques
 const orthoTests = {
-  lasegue: { result: "positif à 45°", side: "droit" },
-  thomas: { result: "positif", compensation: "lordose" },
-  patrick: { result: "négatif" },
-};
+  lasegue: { result: 'positif à 45°', side: 'droit' },
+  thomas: { result: 'positif', compensation: 'lordose' },
+  patrick: { result: 'négatif' },
+}
 
 const evaluation = await orthoEval.evaluateTests(orthoTests, {
   compareModels: true,
   generateReport: true,
   confidenceScore: true,
-});
+})
 ```
 
 ### Types de Tests Disponibles

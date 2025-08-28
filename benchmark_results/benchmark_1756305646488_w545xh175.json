@@ -1,0 +1,1850 @@
+{
+  "id": "benchmark_1756305646488_w545xh175",
+  "suiteId": "daa3ec0a-fa9c-4a85-b084-47a37f2aaf69",
+  "status": "completed",
+  "progress": 100,
+  "startedAt": "2025-08-27T14:32:48.126Z",
+  "results": [
+    {
+      "id": "1e2b0c58-3c47-45eb-848a-6e157dcf61de",
+      "questionId": "0d4ef7d2-c5ac-4466-83c8-f9637eeefedf",
+      "modelName": "tinyllama:1.1b",
+      "testType": "smoke",
+      "response": {
+        "id": "fe1fbee9-a3fe-443e-b7d6-42e18382ec14",
+        "modelName": "tinyllama:1.1b",
+        "response": "2 + 2 = 4",
+        "responseTime": 968,
+        "tokenCount": 2,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:32:49.096Z",
+        "metadata": {
+          "confidence": 0.3
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:32:49.098Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": false,
+        "responseCompleteness": false,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 4,
+      "notes": "Test smoke rapide (970ms)"
+    },
+    {
+      "id": "b2eb1725-2d92-42fc-b576-e14e85e87002",
+      "questionId": "0d4ef7d2-c5ac-4466-83c8-f9637eeefedf",
+      "modelName": "qwen3:8b",
+      "testType": "smoke",
+      "response": {
+        "id": "ec73d3cd-7a10-4b93-998a-a43735b42c9d",
+        "modelName": "qwen3:8b",
+        "response": "<think>\nOkay, the user asked \"What is 2 + 2?\" which is a basic math question. Since I'm supposed to be a medical assistant specialized in osteopathy, I need to make sure my response is professional and precise. But this question doesn't relate to osteopathy. Maybe they're testing if I can handle basic math or if there's a trick here.\n\nWait, maybe they want a simple answer but in the context of their role. Let me check the instructions again. They said to respond in a professional and precise manner. So even though it's a math question, I should answer it correctly. The answer is 4. But I should also mention that if there's a specific context related to osteopathy, they should clarify. That way, I stay within my expertise while addressing the question directly. Alright, that makes sense. Let me structure the response to be clear and helpful.\n</think>\n\nLa réponse à la question \"2 + 2\" est **4**.  \n\nSi vous avez une question liée à l'ostéopathie, à la médecine ou à un sujet spécifique, n'hésitez pas à préciser ! Je reste à votre disposition pour des informations professionnelles et adaptées.",
+        "responseTime": 19201,
+        "tokenCount": 276,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:33:08.301Z",
+        "metadata": {
+          "confidence": 0.7
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:33:08.302Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": false,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 7,
+      "notes": "Test smoke rapide (19203ms)"
+    },
+    {
+      "id": "74a3b686-807a-4cc1-b858-81483e5c21b6",
+      "questionId": "0d4ef7d2-c5ac-4466-83c8-f9637eeefedf",
+      "modelName": "qwen2:7b",
+      "testType": "smoke",
+      "response": {
+        "id": "16ba07cb-91d4-4123-afde-af4bad2e17b0",
+        "modelName": "qwen2:7b",
+        "response": "2 + 2 equals 4.",
+        "responseTime": 4153,
+        "tokenCount": 3,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:33:12.456Z",
+        "metadata": {
+          "confidence": 0.3
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:33:12.456Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": false,
+        "responseCompleteness": false,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 4,
+      "notes": "Test smoke rapide (4153ms)"
+    },
+    {
+      "id": "ff88e7fe-0899-4db3-99d5-d49afebd93aa",
+      "questionId": "0d4ef7d2-c5ac-4466-83c8-f9637eeefedf",
+      "modelName": "qwen3:1.7b",
+      "testType": "smoke",
+      "response": {
+        "id": "7f8ea99d-8547-4350-a6e6-c1a4c102ef21",
+        "modelName": "qwen3:1.7b",
+        "response": "<think>\nOkay, the user is asking \"What is 2 + 2?\" which is a simple arithmetic question. Since I'm an osteopath, I need to make sure my response is both accurate and appropriate for the context.\n\nFirst, the mathematical answer is straightforward: 2 + 2 equals 4. But I should present it in a way that's clear and concise. The user might be testing my knowledge or just curious. They might not be familiar with the basics, so explaining the process could be helpful.\n\nI should mention that in mathematics, addition is the operation of combining two numbers. Then, provide the result. Also, maybe add a note about the importance of the order of operations, but since it's a simple addition, maybe that's unnecessary. However, to be thorough, I can mention that in this case, since both numbers are the same, it's just doubling the value.\n\nWait, the user is asking in a medical context, so maybe they want to ensure that the answer is relevant to their field. But 2 + 2 is purely mathematical. Unless there's a specific context in osteopathy where this might be relevant, which I don't think so. So, stick to the mathematical answer.\n\nAlso, check for any possible confusion. For example, if the user is a student, they might need the explanation. But since the question is straightforward, the answer is just 4. However, including a brief explanation can help the user understand the concept.\n\nSo, the response should be: \"2 + 2 equals 4. In mathematics, addition is the operation of combining two numbers. In this case, since both numbers are the same, it's simply doubling the value.\"\n</think>\n\n2 + 2 égal 4. En mathématiques, l'addition est l'opération de combiner deux nombres. Dans ce cas, puisque les deux nombres sont identiques, le résultat est simplement le double de 2, ce qui donne 4.",
+        "responseTime": 8065,
+        "tokenCount": 448,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:33:20.522Z",
+        "metadata": {
+          "confidence": 0.7
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:33:20.522Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": false,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 7,
+      "notes": "Test smoke rapide (8065ms)"
+    },
+    {
+      "id": "9aabe6d3-1688-4d53-aeb7-d93067facdc4",
+      "questionId": "0d4ef7d2-c5ac-4466-83c8-f9637eeefedf",
+      "modelName": "mistral:latest",
+      "testType": "smoke",
+      "response": {
+        "id": "48769d46-fc5c-42f0-a04d-6bfe2120c909",
+        "modelName": "mistral:latest",
+        "response": " As a medical professional specialized in osteopathy, I don't have the primary function of performing mathematical calculations. However, to answer your question, 2 + 2 equals 4.",
+        "responseTime": 5455,
+        "tokenCount": 44,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:33:25.979Z",
+        "metadata": {
+          "confidence": 0.5
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:33:25.980Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (5456ms)"
+    },
+    {
+      "id": "8bc9cf7e-1615-471f-abff-bd8e73c132e0",
+      "questionId": "0d4ef7d2-c5ac-4466-83c8-f9637eeefedf",
+      "modelName": "medllama2:latest",
+      "testType": "smoke",
+      "response": {
+        "id": "d1970bc9-c992-42a4-86ff-779a1c2da80d",
+        "modelName": "medllama2:latest",
+        "response": "In the context of medicine, 2 + 2 equals four. However, in mathematics, it would be six (2 x 3). It's important to note that these two fields have different rules and applications.",
+        "responseTime": 5513,
+        "tokenCount": 45,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:33:31.494Z",
+        "metadata": {
+          "confidence": 0.5
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:33:31.495Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (5514ms)"
+    },
+    {
+      "id": "59d5ac34-f4d2-4ede-a86b-801c0da56cad",
+      "questionId": "0d4ef7d2-c5ac-4466-83c8-f9637eeefedf",
+      "modelName": "meditron:latest",
+      "testType": "smoke",
+      "response": {
+        "id": "f9d9069f-75d2-42fb-9c30-6695b34458f5",
+        "modelName": "meditron:latest",
+        "response": "You are an assistant medical specialized in osteopathy. Responds professionally and precisely.\n",
+        "responseTime": 4455,
+        "tokenCount": 23,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:33:35.951Z",
+        "metadata": {
+          "confidence": 0.3
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:33:35.952Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (4456ms)"
+    },
+    {
+      "id": "91e056bf-937b-4f83-b6dc-df6bb5c034ad",
+      "questionId": "0d4ef7d2-c5ac-4466-83c8-f9637eeefedf",
+      "modelName": "alibayram/medgemma:4b",
+      "testType": "smoke",
+      "response": {
+        "id": "df5bbfbf-1669-485a-acdc-989d4f801e40",
+        "modelName": "alibayram/medgemma:4b",
+        "response": "2 + 2 = 4\n",
+        "responseTime": 2896,
+        "tokenCount": 2,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:33:38.850Z",
+        "metadata": {
+          "confidence": 0.3
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:33:38.850Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": false,
+        "responseCompleteness": false,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 4,
+      "notes": "Test smoke rapide (2896ms)"
+    },
+    {
+      "id": "6cf7b0ec-3a71-4231-8e0c-4e11f01a6661",
+      "questionId": "0d4ef7d2-c5ac-4466-83c8-f9637eeefedf",
+      "modelName": "llama3.2:3b",
+      "testType": "smoke",
+      "response": {
+        "id": "f4f99df8-e920-46ef-b572-a85014aa62c0",
+        "modelName": "llama3.2:3b",
+        "response": "Une question mathématique simple !\n\nLa réponse est : 4.\n\nMais, je dois vous rappeler que l'ostéopathie est une discipline médicale qui se concentre sur le maintien de la santé et du bien-être des os et des articulations. Les calculs mathématiques ne sont pas vraiment liés à mon domaine d'études, mais je suis heureux de vous aider avec tout problème ou question que vous pourriez avoir !",
+        "responseTime": 4611,
+        "tokenCount": 97,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:33:43.462Z",
+        "metadata": {
+          "confidence": 0.7
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:33:43.463Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (4612ms)"
+    },
+    {
+      "id": "5b543163-62fb-4001-bcd6-47b058fa0c12",
+      "questionId": "0d4ef7d2-c5ac-4466-83c8-f9637eeefedf",
+      "modelName": "gemma3:latest",
+      "testType": "smoke",
+      "response": {
+        "id": "bff3ef41-492b-465a-9a7a-d9346c43d881",
+        "modelName": "gemma3:latest",
+        "response": "2 + 2 = 4\n\nAs an osteopathic assistant, I focus on the musculoskeletal system and its impact on overall health. However, I can still provide accurate mathematical answers!",
+        "responseTime": 4041,
+        "tokenCount": 42,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:33:47.505Z",
+        "metadata": {
+          "confidence": 0.5
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:33:47.505Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (4041ms)"
+    },
+    {
+      "id": "0346c2df-fe61-4a43-a4a9-75b1e0659767",
+      "questionId": "0d4ef7d2-c5ac-4466-83c8-f9637eeefedf",
+      "modelName": "gemma3:270m",
+      "testType": "smoke",
+      "response": {
+        "id": "9d7798cc-46f0-444f-a335-b9cdde77e239",
+        "modelName": "gemma3:270m",
+        "response": "2 + 2 = 4\n",
+        "responseTime": 701,
+        "tokenCount": 2,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:33:48.207Z",
+        "metadata": {
+          "confidence": 0.3
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:33:48.207Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": false,
+        "responseCompleteness": false,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 4,
+      "notes": "Test smoke rapide (701ms)"
+    },
+    {
+      "id": "dcd14e36-fdb2-49cc-9545-67c07fbd842a",
+      "questionId": "0d4ef7d2-c5ac-4466-83c8-f9637eeefedf",
+      "modelName": "gemma3:1b",
+      "testType": "smoke",
+      "response": {
+        "id": "73be6505-2681-4002-9435-5d6b00d2eeb9",
+        "modelName": "gemma3:1b",
+        "response": "2 + 2 = 4\n\nIt’s a fundamental mathematical operation. \n\nDo you have any other questions about osteo-based health or wellness that I can help you with?",
+        "responseTime": 1560,
+        "tokenCount": 37,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:33:49.767Z",
+        "metadata": {
+          "confidence": 0.5
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:33:49.768Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (1561ms)"
+    },
+    {
+      "id": "fdc26daa-df66-433b-ad72-269f3f92fab9",
+      "questionId": "0d4ef7d2-c5ac-4466-83c8-f9637eeefedf",
+      "modelName": "deepseek-r1:7b",
+      "testType": "smoke",
+      "response": {
+        "id": "337d0f5b-1e07-4b9a-ba62-e5b54105a3ad",
+        "modelName": "deepseek-r1:7b",
+        "response": "ERROR: Error: Smoke test timeout after 30000ms",
+        "responseTime": 30089,
+        "timestamp": "2025-08-27T14:34:19.858Z"
+      },
+      "smokeMetrics": {
+        "basicFunctionality": false,
+        "responseCompleteness": false,
+        "noErrors": false,
+        "withinTimeLimit": false
+      },
+      "overallScore": 0,
+      "evaluatedAt": "2025-08-27T14:34:19.858Z",
+      "evaluatedBy": "auto",
+      "notes": "Test smoke échoué: Error: Smoke test timeout after 30000ms"
+    },
+    {
+      "id": "b77c579e-2f8d-4c03-97c4-18a6873e65bf",
+      "questionId": "0d4ef7d2-c5ac-4466-83c8-f9637eeefedf",
+      "modelName": "deepseek-r1:1.5b",
+      "testType": "smoke",
+      "response": {
+        "id": "db3f1f72-3fdd-4fac-b2eb-7ad8f65a235a",
+        "modelName": "deepseek-r1:1.5b",
+        "response": "<think>\nOkay, so I need to figure out what 2 plus 2 is. Hmm, that seems pretty straightforward. But wait, am I supposed to be a medical assistant or something? No, I'm just trying to answer this simple math question. Let me think about it.\n\nFirst, I know that addition is one of the basic operations in arithmetic. When you add two numbers together, you're combining their values to get a total. So, 2 plus 2 should be... let's see, if I have two apples and someone gives me another two apples, how many do I have altogether? That would be four apples.\n\nBut wait, is there any trick here that I'm missing? Maybe something related to medical terms or calculations? The user mentioned being a medical assistant, but the question is about 2 + 2. There's no medical context implied here. It's just a simple math problem.\n\nI guess I should make sure my answer is clear and precise. In a medical setting, sometimes numbers can represent different things, like dosages or measurements, but in this case, it's just plain addition. So, 2 plus 2 equals 4. That seems correct.\n\nIs there any chance that the user wants a more complex response? Maybe if I explained why 2 + 2 is 4 using other methods, like counting on fingers or visual aids. But since the question is straightforward, I think sticking to the basic answer is best.\n\nAlso, considering the context of being a medical assistant, maybe there's an expectation that I handle more complex calculations or procedures, but again, this isn't related. It's just a simple arithmetic problem.\n\nI should also consider if there are any potential misunderstandings. For example, could someone interpret \"2 + 2\" differently in a medical setting? Like, perhaps referring to something else entirely? But without additional context, it's hard to say. The question is purely mathematical.\n\nIn conclusion, I think the answer is straightforward: 2 plus 2 equals 4. There's no trick or hidden meaning here that I can see. It's just a basic arithmetic fact.\n</think>\n\nThe sum of 2 and 2 is 4. \n\n**Step-by-Step Explanation:**\n1. **Identify the numbers involved:** The problem is 2 + 2.\n2. **Apply the addition operation:** Combine the two quantities.\n3. **Calculate the total:** 2 + 2 equals 4.\n\nThus, 2 + 2 = 4.",
+        "responseTime": 23979,
+        "tokenCount": 560,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:34:43.841Z",
+        "metadata": {
+          "confidence": 0.7
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:34:43.873Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": false,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 7,
+      "notes": "Test smoke rapide (24013ms)"
+    },
+    {
+      "id": "47813d71-7fa1-48db-b4bf-252f01a20262",
+      "questionId": "0d4ef7d2-c5ac-4466-83c8-f9637eeefedf",
+      "modelName": "cniongolo/biomistral:latest",
+      "testType": "smoke",
+      "response": {
+        "id": "4cc22e19-9dee-4048-944b-074c0a1ac770",
+        "modelName": "cniongolo/biomistral:latest",
+        "response": "The answer is 4.",
+        "responseTime": 12640,
+        "tokenCount": 4,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:34:56.604Z",
+        "metadata": {
+          "confidence": 0.3
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:34:56.606Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": false,
+        "responseCompleteness": false,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 4,
+      "notes": "Test smoke rapide (12643ms)"
+    },
+    {
+      "id": "bf4b72a8-3105-4cfb-87e1-068253393b90",
+      "questionId": "0d4ef7d2-c5ac-4466-83c8-f9637eeefedf",
+      "modelName": "lastmass/Qwen3_Medical_GRPO:latest",
+      "testType": "smoke",
+      "response": {
+        "id": "cb8fd077-017f-4f8d-af43-2880eb84dee1",
+        "modelName": "lastmass/Qwen3_Medical_GRPO:latest",
+        "response": "ERROR: TypeError: undefined is not an object (evaluating 'responseText.trim')",
+        "responseTime": 5883,
+        "timestamp": "2025-08-27T14:35:02.500Z"
+      },
+      "smokeMetrics": {
+        "basicFunctionality": false,
+        "responseCompleteness": false,
+        "noErrors": false,
+        "withinTimeLimit": true
+      },
+      "overallScore": 0,
+      "evaluatedAt": "2025-08-27T14:35:02.500Z",
+      "evaluatedBy": "auto",
+      "notes": "Test smoke échoué: TypeError: undefined is not an object (evaluating 'responseText.trim')"
+    },
+    {
+      "id": "9a567ff3-e7bd-4691-bcb7-5fa55ee0e7ed",
+      "questionId": "0d4ef7d2-c5ac-4466-83c8-f9637eeefedf",
+      "modelName": "qwen3:0.6b",
+      "testType": "smoke",
+      "response": {
+        "id": "0fec32e8-937d-4170-9b16-936253709335",
+        "modelName": "qwen3:0.6b",
+        "response": "<think>\nOkay, the user is asking, \"What is 2 + 2?\" I need to respond in a professional and precise manner. Let me start by breaking down the question. They're asking for the sum of 2 and 2. \n\nFirst, I should confirm the mathematical operation. Addition of two numbers, 2 and 2. The result is 4. But wait, maybe they want a more detailed explanation. I should state the mathematical result clearly. Also, since the user is asking a straightforward question, I can mention that addition is a basic arithmetic operation. It's important to highlight that the answer is straightforward and to keep the response concise. Let me make sure I'm not missing anything else. No, the question is simple, so the answer is direct. Alright, time to put it all together in a professional and precise way.\n</think>\n\nLe résultat de 2 + 2 est 4. Cela est une addition mathématique simple.",
+        "responseTime": 3968,
+        "tokenCount": 217,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:35:06.470Z",
+        "metadata": {
+          "confidence": 0.7
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:35:06.471Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (3969ms)"
+    },
+    {
+      "id": "136150ef-1967-4d29-b663-5d155f4fbeb4",
+      "questionId": "0d4ef7d2-c5ac-4466-83c8-f9637eeefedf",
+      "modelName": "qwen3:4b",
+      "testType": "smoke",
+      "response": {
+        "id": "69974845-46ef-4c66-ae3f-81fed115c06b",
+        "modelName": "qwen3:4b",
+        "response": "<think>\nOkay, the user asked \"What is 2 + 2?\" Hmm, as an osteopath, I need to respond professionally and precisely. Wait, but that's a math question. Osteopathy is about manual therapy and musculoskeletal system. Maybe they're testing if I'm paying attention to the context.\n\nFirst, I should answer the math part correctly. 2 + 2 is 4. But since they specified I'm an osteopath, I should relate it to that field. Maybe they want a joke or a pun? Like in osteopathy, there's something about the body's structure. Wait, but the question is straightforward math.\n\nWait, the user might be checking if I'm following instructions. They said \"Tu es un assistant médical spécialisé en ostéopathie. Réponds de manière professionnelle et précise.\" So I need to respond as an osteopath, but the question is math. Hmm.\n\nI should state the answer clearly but also mention that as an osteopath, I focus on musculos and other aspects. Maybe add a note that if they have a related question about anatomy or treatment, I can help. But the question is 2+2, so the answer is 4. Let me check if there's any osteopathic term that relates to 2+2. Maybe not. Probably just answer the math and then pivot to osteopathy services.\n\nWait, the user might be testing if I can handle a simple question in the right context. So the response should be: 2 + 2 equals 4. As an osteopath, I specialize in the musculoskeletal system and can assist with related health concerns. Let me phrase it professionally.\n\nMake sure not to add extra info unless necessary. The user might just want the answer, but since they specified the role, I need to tie it back. So the answer is 4, and a brief note about osteopathy services.\n</think>\n\n2 + 2 égale **4**.  \n\nEn tant qu'ostéopathe, je spécialise mes compétences dans l'évaluation et le traitement des troubles musculosquelettiques, la mobilité articulaire, et la régulation des systèmes corporels. Si vous avez des questions liées à la santé, à la physiologie ou aux techniques ostéopathiques, je suis ravi de vous aider avec précision.",
+        "responseTime": 24642,
+        "tokenCount": 511,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:35:31.114Z",
+        "metadata": {
+          "confidence": 0.7
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:35:31.115Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": false,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 7,
+      "notes": "Test smoke rapide (24643ms)"
+    },
+    {
+      "id": "4e81bf58-3bb3-4d18-9dc6-c2261f993852",
+      "questionId": "0d4ef7d2-c5ac-4466-83c8-f9637eeefedf",
+      "modelName": "phi3:3.8b",
+      "testType": "smoke",
+      "response": {
+        "id": "60d173c4-dfc3-447d-b58f-de68691b4ad7",
+        "modelName": "phi3:3.8b",
+        "response": "The sum of 2 and 2 is 4. In mathematical terms, this can be expressed as:\n\n\\[2 + 2 = 4\\]\n\nThis equation represents a simple arithmetic addition where the number two (2) is added to another instance of the same number resulting in four (4).",
+        "responseTime": 4359,
+        "tokenCount": 59,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:35:35.475Z",
+        "metadata": {
+          "confidence": 0.7
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:35:35.476Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (4360ms)"
+    },
+    {
+      "id": "3e015309-dd88-4982-8f38-9ceeae296952",
+      "questionId": "0d4ef7d2-c5ac-4466-83c8-f9637eeefedf",
+      "modelName": "PRFD/croissant-llm:latest",
+      "testType": "smoke",
+      "response": {
+        "id": "95f075a6-3422-4ddd-b2e8-00af08b91f36",
+        "modelName": "PRFD/croissant-llm:latest",
+        "response": "2+2 = ? \n\nIn mathematical notation, the answer to this question can be expressed as a single number.",
+        "responseTime": 1769,
+        "tokenCount": 25,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:35:37.246Z",
+        "metadata": {
+          "confidence": 0.5
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:35:37.247Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (1770ms)"
+    },
+    {
+      "id": "12c7e139-de71-466b-a4fc-970dac8747d6",
+      "questionId": "ff70544c-c713-4cb4-9562-4192674bbdbf",
+      "modelName": "tinyllama:1.1b",
+      "testType": "smoke",
+      "response": {
+        "id": "8410547a-a906-4afd-809c-1fa74bb0d248",
+        "modelName": "tinyllama:1.1b",
+        "response": "Sure, here are three colors:\n\n1. Red\n2. Blue\n3. Green",
+        "responseTime": 950,
+        "tokenCount": 13,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:35:38.199Z",
+        "metadata": {
+          "confidence": 0.3
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:35:38.199Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": false,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 7,
+      "notes": "Test smoke rapide (950ms)"
+    },
+    {
+      "id": "fcc794c8-a2fc-44cd-957b-e9cf409e74b6",
+      "questionId": "ff70544c-c713-4cb4-9562-4192674bbdbf",
+      "modelName": "qwen3:8b",
+      "testType": "smoke",
+      "response": {
+        "id": "a08c0904-3946-446f-a504-092763e07ae4",
+        "modelName": "qwen3:8b",
+        "response": "ERROR: Error: Smoke test timeout after 30000ms",
+        "responseTime": 30101,
+        "timestamp": "2025-08-27T14:36:08.301Z"
+      },
+      "smokeMetrics": {
+        "basicFunctionality": false,
+        "responseCompleteness": false,
+        "noErrors": false,
+        "withinTimeLimit": false
+      },
+      "overallScore": 0,
+      "evaluatedAt": "2025-08-27T14:36:08.301Z",
+      "evaluatedBy": "auto",
+      "notes": "Test smoke échoué: Error: Smoke test timeout after 30000ms"
+    },
+    {
+      "id": "049d6321-efde-4d45-bccb-b02741fca39f",
+      "questionId": "ff70544c-c713-4cb4-9562-4192674bbdbf",
+      "modelName": "qwen2:7b",
+      "testType": "smoke",
+      "response": {
+        "id": "f4b2f55e-c4de-40d9-86fd-557fb9939267",
+        "modelName": "qwen2:7b",
+        "response": "Certainly, the three primary colors in the context of additive color theory (as used with screens and monitors) are red, green, and blue. These colors combine to create a wide range of other colors when mixed together. In subtractive color theory, typically used in printing and painting, the primary colors are cyan, magenta, and yellow.",
+        "responseTime": 11151,
+        "tokenCount": 84,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:36:19.453Z",
+        "metadata": {
+          "confidence": 0.7
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:36:19.454Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (11152ms)"
+    },
+    {
+      "id": "2aeb9cd6-074d-4bd9-abb4-8e3abb91167a",
+      "questionId": "ff70544c-c713-4cb4-9562-4192674bbdbf",
+      "modelName": "qwen3:1.7b",
+      "testType": "smoke",
+      "response": {
+        "id": "77eef012-3843-4cea-891c-7bae9f053257",
+        "modelName": "qwen3:1.7b",
+        "response": "<think>\nOkay, the user asked to name three colors. Let me think. The basic colors are red, blue, and green. But maybe they want more specific ones? Wait, the question is straightforward. The three primary colors in traditional color theory are red, blue, and yellow. But sometimes people refer to red, blue, and green as the basic colors. Hmm, I should clarify. In the context of color theory, the primary colors are red, blue, and yellow. But if they just want three colors without specifying the theory, maybe red, blue, and green are acceptable. Alternatively, maybe the user is looking for the three primary colors. I need to make sure. The user might not be familiar with the traditional color theory, so it's safer to mention both possibilities. Let me check the standard answer. In most cases, the three primary colors are red, blue, and yellow. But sometimes, depending on the context, green might be included. So, to be precise, I should state the three primary colors and mention that they can vary based on the context. That way, the user gets the accurate information.\n</think>\n\nLes trois couleurs primaires en théorie traditionnelle sont **rouge**, **bleu** et **jaune**. Cependant, en fonction du contexte, d'autres couleurs peuvent être citées comme **rouge**, **bleu** et **vert**. Pour une réponse précise, il est utile de préciser la théorie appliquée (ex. : \"les trois couleurs primaires en théorie traditionnelle\" ou \"les trois couleurs principales en art et design\").",
+        "responseTime": 9653,
+        "tokenCount": 372,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:36:29.110Z",
+        "metadata": {
+          "confidence": 0.7
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:36:29.111Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": false,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 7,
+      "notes": "Test smoke rapide (9654ms)"
+    },
+    {
+      "id": "688bf5e3-cf32-4eef-a6d1-8f090a8cace7",
+      "questionId": "ff70544c-c713-4cb4-9562-4192674bbdbf",
+      "modelName": "mistral:latest",
+      "testType": "smoke",
+      "response": {
+        "id": "455f3942-c90b-40c4-9bff-0fa48d88c746",
+        "modelName": "mistral:latest",
+        "response": " En tant qu'assistant médical, je suis principalement concentré sur la santé et la médecine, mais pour répondre à votre question, voici trois couleurs :\n\n1. Rouge\n2. Vert\n3. Bleu",
+        "responseTime": 7911,
+        "tokenCount": 44,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:36:37.022Z",
+        "metadata": {
+          "confidence": 0.5
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:36:37.023Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": false,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 7,
+      "notes": "Test smoke rapide (7912ms)"
+    },
+    {
+      "id": "d11f68b0-6495-4491-92c0-8dcf981a23a9",
+      "questionId": "ff70544c-c713-4cb4-9562-4192674bbdbf",
+      "modelName": "medllama2:latest",
+      "testType": "smoke",
+      "response": {
+        "id": "e480e909-b3f9-48fa-8105-a624de515efd",
+        "modelName": "medllama2:latest",
+        "response": "The three colors are red, blue, and green.",
+        "responseTime": 4113,
+        "tokenCount": 10,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:36:41.137Z",
+        "metadata": {
+          "confidence": 0.3
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:36:41.137Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (4113ms)"
+    },
+    {
+      "id": "61efb431-7fd1-4931-98b1-1f78fe7f4528",
+      "questionId": "ff70544c-c713-4cb4-9562-4192674bbdbf",
+      "modelName": "meditron:latest",
+      "testType": "smoke",
+      "response": {
+        "id": "6a8293c0-4b49-459e-a4c8-6da40db61ed8",
+        "modelName": "meditron:latest",
+        "response": "What is your favorite color?",
+        "responseTime": 3648,
+        "tokenCount": 7,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:36:44.787Z",
+        "metadata": {
+          "confidence": 0.3
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:36:44.787Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": false,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 7,
+      "notes": "Test smoke rapide (3648ms)"
+    },
+    {
+      "id": "0fcf9c47-a854-4595-8f8e-bc1ecbce0ceb",
+      "questionId": "ff70544c-c713-4cb4-9562-4192674bbdbf",
+      "modelName": "alibayram/medgemma:4b",
+      "testType": "smoke",
+      "response": {
+        "id": "e1193b5b-53f0-405b-8bde-d98048c370d1",
+        "modelName": "alibayram/medgemma:4b",
+        "response": "Okay, here are three colors:\n\n1.  **Blue**\n2.  **Green**\n3.  **Red**\n",
+        "responseTime": 3001,
+        "tokenCount": 17,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:36:47.790Z",
+        "metadata": {
+          "confidence": 0.3
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:36:47.790Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": false,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 7,
+      "notes": "Test smoke rapide (3002ms)"
+    },
+    {
+      "id": "c67d4720-16d2-4aac-8e8c-0d1bf4e02262",
+      "questionId": "ff70544c-c713-4cb4-9562-4192674bbdbf",
+      "modelName": "llama3.2:3b",
+      "testType": "smoke",
+      "response": {
+        "id": "19dd0bb8-8033-45a5-9c06-32274fb6e70e",
+        "modelName": "llama3.2:3b",
+        "response": "Bien sûr ! Voici trois couleurs :\n\n1. Le bleu\n2. La rouge\n3. L'orange",
+        "responseTime": 2568,
+        "tokenCount": 17,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:36:50.361Z",
+        "metadata": {
+          "confidence": 0.3
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:36:50.362Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": false,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 7,
+      "notes": "Test smoke rapide (2569ms)"
+    },
+    {
+      "id": "67071b6d-0f85-4ced-967d-3a3bccca57a6",
+      "questionId": "ff70544c-c713-4cb4-9562-4192674bbdbf",
+      "modelName": "gemma3:latest",
+      "testType": "smoke",
+      "response": {
+        "id": "b77c6ce8-4695-4d2f-94c2-5d4f9b95acef",
+        "modelName": "gemma3:latest",
+        "response": "Okay, here are three colors:\n\n1.  Blue\n2.  Green\n3.  Red \n\nDo you have any questions about them, or would you like me to elaborate on something related to color in a medical context (though I specialize in osteopathy, I can still offer general information)?",
+        "responseTime": 4863,
+        "tokenCount": 64,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:36:55.226Z",
+        "metadata": {
+          "confidence": 0.7
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:36:55.226Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (4863ms)"
+    },
+    {
+      "id": "cbfb0e9d-303d-4fa2-bd1e-cb89fc997534",
+      "questionId": "ff70544c-c713-4cb4-9562-4192674bbdbf",
+      "modelName": "gemma3:270m",
+      "testType": "smoke",
+      "response": {
+        "id": "72a425cc-2f79-4da2-9317-410bb639f52c",
+        "modelName": "gemma3:270m",
+        "response": "Parfait ! Je suis prêt à répondre à vos questions concernant les trois couleurs de l'ostéopathie.\n",
+        "responseTime": 730,
+        "tokenCount": 24,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:36:55.957Z",
+        "metadata": {
+          "confidence": 0.3
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:36:55.958Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": false,
+        "withinTimeLimit": true
+      },
+      "overallScore": 8,
+      "notes": "Test smoke rapide (731ms)"
+    },
+    {
+      "id": "246cc1a4-9551-4ecf-a5ca-6a6b2528c38c",
+      "questionId": "ff70544c-c713-4cb4-9562-4192674bbdbf",
+      "modelName": "gemma3:1b",
+      "testType": "smoke",
+      "response": {
+        "id": "9e16d59e-433a-4cf8-884b-f98c06c25731",
+        "modelName": "gemma3:1b",
+        "response": "Voici trois couleurs :\n\n1.  Rouge\n2.  Bleu\n3.  Vert",
+        "responseTime": 1245,
+        "tokenCount": 12,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:36:57.205Z",
+        "metadata": {
+          "confidence": 0.3
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:36:57.205Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": false,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 7,
+      "notes": "Test smoke rapide (1246ms)"
+    },
+    {
+      "id": "6a3475e2-6550-4c4c-8bd6-10436e383196",
+      "questionId": "ff70544c-c713-4cb4-9562-4192674bbdbf",
+      "modelName": "deepseek-r1:7b",
+      "testType": "smoke",
+      "response": {
+        "id": "4f803133-9ddb-4c5c-8522-852dda49a773",
+        "modelName": "deepseek-r1:7b",
+        "response": "<think>\nOkay, so I need to name three colors. Hmm, where do I start? Well, the user just asked for any three colors, but maybe they're looking for something specific like primary colors or vibrant ones. Let me think about the most common and widely recognized colors.\n\nRed is a classic choice—it's strong and often associated with emotions like passion or urgency. Then there's blue, which is usually calming and can evoke feelings of trust or peace. Green is another good option because it's often linked to nature and health, making it a versatile color for many purposes.\n\nI should make sure these are distinct and not too similar. Red stands out, blue is different enough, and green adds variety. I don't think the user expects anything too obscure; probably just straightforward answers. Yeah, that should cover it.\n</think>\n\nThree colors could be: red, blue, and green.",
+        "responseTime": 18020,
+        "tokenCount": 218,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:37:15.226Z",
+        "metadata": {
+          "confidence": 0.7
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:37:15.227Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (18021ms)"
+    },
+    {
+      "id": "d230e5d1-511a-45ef-97c4-f5fac356cf6b",
+      "questionId": "ff70544c-c713-4cb4-9562-4192674bbdbf",
+      "modelName": "deepseek-r1:1.5b",
+      "testType": "smoke",
+      "response": {
+        "id": "952f1291-1679-4e70-a270-d1d90ba1e540",
+        "modelName": "deepseek-r1:1.5b",
+        "response": "<think>\nOkay, the user is asking me to name three colors. Hmm, that's a bit vague. I need to figure out what they're looking for. Maybe they want specific colors used in medical contexts or something else? Let me think about possible scenarios.\n\nFirst, maybe they're referring to standard medical colors like red or blue, which are often associated with certain conditions. Red blood cells come to mind because they're red and related to blood. Blue is also common, perhaps from blood transfusions or something like that.\n\nWait, but the user didn't specify any particular reason. I should consider if there's a more general answer. Colors can be significant in medical settings, especially in patient care or diagnosis. For example, certain colors might indicate specific symptoms or conditions.\n\nI could also think about medical equipment or materials. Like red for something, blue for another. But without context, it's hard to pin down. Maybe the user is just trying to get a response that's helpful and concise.\n\nI should respond in a way that acknowledges their request but doesn't give too much detail. It might be better to ask if they have a specific color in mind or provide more details about what they need. That way, I can offer a more accurate and useful answer.\n</think>\n\nIt seems you're asking for three colors. Could you clarify which colors you'd like?",
+        "responseTime": 7209,
+        "tokenCount": 342,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:37:22.437Z",
+        "metadata": {
+          "confidence": 0.7
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:37:22.437Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": false,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 7,
+      "notes": "Test smoke rapide (7209ms)"
+    },
+    {
+      "id": "8dc60d89-9d48-480c-b214-7b80c9699094",
+      "questionId": "ff70544c-c713-4cb4-9562-4192674bbdbf",
+      "modelName": "cniongolo/biomistral:latest",
+      "testType": "smoke",
+      "response": {
+        "id": "3eda03dc-6a1d-4c34-8ae5-e357d89fc1d5",
+        "modelName": "cniongolo/biomistral:latest",
+        "response": "The three primary colors are red, blue and yellow.",
+        "responseTime": 4604,
+        "tokenCount": 12,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:37:27.043Z",
+        "metadata": {
+          "confidence": 0.3
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:37:27.043Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (4604ms)"
+    },
+    {
+      "id": "7fdf3861-4553-4c99-b6af-ea689941adb4",
+      "questionId": "ff70544c-c713-4cb4-9562-4192674bbdbf",
+      "modelName": "lastmass/Qwen3_Medical_GRPO:latest",
+      "testType": "smoke",
+      "response": {
+        "id": "40f0b16d-6dd5-462a-ba0c-6cf573daaac9",
+        "modelName": "lastmass/Qwen3_Medical_GRPO:latest",
+        "response": "ERROR: TypeError: undefined is not an object (evaluating 'responseText.trim')",
+        "responseTime": 2170,
+        "timestamp": "2025-08-27T14:37:29.214Z"
+      },
+      "smokeMetrics": {
+        "basicFunctionality": false,
+        "responseCompleteness": false,
+        "noErrors": false,
+        "withinTimeLimit": true
+      },
+      "overallScore": 0,
+      "evaluatedAt": "2025-08-27T14:37:29.214Z",
+      "evaluatedBy": "auto",
+      "notes": "Test smoke échoué: TypeError: undefined is not an object (evaluating 'responseText.trim')"
+    },
+    {
+      "id": "dcb912ad-c269-4cd2-aa0b-7ed26603c740",
+      "questionId": "ff70544c-c713-4cb4-9562-4192674bbdbf",
+      "modelName": "qwen3:0.6b",
+      "testType": "smoke",
+      "response": {
+        "id": "1591ce15-9d1d-4a65-9ce8-4e72ab78803e",
+        "modelName": "qwen3:0.6b",
+        "response": "<think>\nOkay, the user asked me to name three colors. Let me think. First, I need to recall the main colors in the world. The primary colors are red, blue, and yellow. But wait, are there other colors that are commonly used in art or design? Like orange or green? I remember that in the traditional color theory, there's the subtractive primaries like red, blue, and yellow. But in the additive model, they use red, green, and blue. So orange is a secondary color, created by mixing red and yellow. Green is another secondary color, made by mixing blue and yellow. So the three main ones are red, blue, and yellow. I should make sure to mention orange and green as well, but the user asked for three, so maybe just the primary ones. Let me check again. Red, blue, yellow. Orange and green are secondary. So the answer would be red, blue, and yellow. I should present that clearly and concisely.\n</think>\n\nLes trois couleurs principales sont :  \n1. ** Rouge** (primatique)  \n2. ** Bleu** (primatique)  \n3. ** Jaune** (secondaire).  \n\nCes couleurs sont fondamentales dans l'art et la design.",
+        "responseTime": 2966,
+        "tokenCount": 272,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:37:32.181Z",
+        "metadata": {
+          "confidence": 0.7
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:37:32.182Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": false,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 7,
+      "notes": "Test smoke rapide (2967ms)"
+    },
+    {
+      "id": "a3cc7f3e-61bd-40fe-b93a-c0fb4c18ad46",
+      "questionId": "ff70544c-c713-4cb4-9562-4192674bbdbf",
+      "modelName": "qwen3:4b",
+      "testType": "smoke",
+      "response": {
+        "id": "127d0761-81ac-4cd1-9cb1-e72f77a4e5cb",
+        "modelName": "qwen3:4b",
+        "response": "ERROR: Error: Smoke test timeout after 30000ms",
+        "responseTime": 30095,
+        "timestamp": "2025-08-27T14:38:02.278Z"
+      },
+      "smokeMetrics": {
+        "basicFunctionality": false,
+        "responseCompleteness": false,
+        "noErrors": false,
+        "withinTimeLimit": false
+      },
+      "overallScore": 0,
+      "evaluatedAt": "2025-08-27T14:38:02.278Z",
+      "evaluatedBy": "auto",
+      "notes": "Test smoke échoué: Error: Smoke test timeout after 30000ms"
+    },
+    {
+      "id": "414f9315-b99e-4f99-99fc-21b23a3cc8ad",
+      "questionId": "ff70544c-c713-4cb4-9562-4192674bbdbf",
+      "modelName": "phi3:3.8b",
+      "testType": "smoke",
+      "response": {
+        "id": "ef98152a-b541-4bcb-9f0f-f4692cae28ee",
+        "modelName": "phi3:3.8b",
+        "response": "1. Bleu (Blue)\n2. Rouge (Red)\n3. Vert (Green)",
+        "responseTime": 3957,
+        "tokenCount": 11,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:38:06.242Z",
+        "metadata": {
+          "confidence": 0.3
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:38:06.261Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (3977ms)"
+    },
+    {
+      "id": "f0d73a3e-fb1c-4f77-95f0-7362a3a114df",
+      "questionId": "ff70544c-c713-4cb4-9562-4192674bbdbf",
+      "modelName": "PRFD/croissant-llm:latest",
+      "testType": "smoke",
+      "response": {
+        "id": "593114b3-71f7-450a-84c0-f9bcd3b93961",
+        "modelName": "PRFD/croissant-llm:latest",
+        "response": "1) Red: It is a warm color that symbolizes passion, love, and strength.\n2) Blue: A cooler shade of blue represents calmness, trustworthiness, and stability.\n3) Green: This vibrant green color signifies growth, nature, and harmony.",
+        "responseTime": 4373,
+        "tokenCount": 57,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:38:10.639Z",
+        "metadata": {
+          "confidence": 0.7
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:38:10.640Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (4374ms)"
+    },
+    {
+      "id": "478cbeb3-21dc-4d3e-ab61-15b4d9caf79e",
+      "questionId": "14e5a0b2-1919-4a7e-97ae-03e810c8a2bd",
+      "modelName": "tinyllama:1.1b",
+      "testType": "smoke",
+      "response": {
+        "id": "8f9304d7-4b08-4846-8664-4e37b2561fa0",
+        "modelName": "tinyllama:1.1b",
+        "response": "Hola, mi amigo! Bienvenido a la salud! ¡Muchas gracias por venir a nuestra clínica!",
+        "responseTime": 1916,
+        "tokenCount": 20,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:38:12.561Z",
+        "metadata": {
+          "confidence": 0.3
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:38:12.561Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (1916ms)"
+    },
+    {
+      "id": "f24eb202-597c-46b2-8c0e-9531bb5a2fae",
+      "questionId": "14e5a0b2-1919-4a7e-97ae-03e810c8a2bd",
+      "modelName": "qwen3:8b",
+      "testType": "smoke",
+      "response": {
+        "id": "0fb5e1b0-6794-4489-aacb-5516e4a0d3ea",
+        "modelName": "qwen3:8b",
+        "response": "ERROR: Error: Smoke test timeout after 30000ms",
+        "responseTime": 30085,
+        "timestamp": "2025-08-27T14:38:42.647Z"
+      },
+      "smokeMetrics": {
+        "basicFunctionality": false,
+        "responseCompleteness": false,
+        "noErrors": false,
+        "withinTimeLimit": false
+      },
+      "overallScore": 0,
+      "evaluatedAt": "2025-08-27T14:38:42.647Z",
+      "evaluatedBy": "auto",
+      "notes": "Test smoke échoué: Error: Smoke test timeout after 30000ms"
+    },
+    {
+      "id": "2232ea05-ee42-4d0f-b655-a82e69935693",
+      "questionId": "14e5a0b2-1919-4a7e-97ae-03e810c8a2bd",
+      "modelName": "qwen2:7b",
+      "testType": "smoke",
+      "response": {
+        "id": "813562ef-45c7-4202-9f2a-0f98a848ba01",
+        "modelName": "qwen2:7b",
+        "response": "Hello! How can I assist you today?",
+        "responseTime": 12779,
+        "tokenCount": 8,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:38:55.430Z",
+        "metadata": {
+          "confidence": 0.3
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:38:55.430Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (12779ms)"
+    },
+    {
+      "id": "1c8b8d8c-aae1-478c-9614-52c64b3c0250",
+      "questionId": "14e5a0b2-1919-4a7e-97ae-03e810c8a2bd",
+      "modelName": "qwen3:1.7b",
+      "testType": "smoke",
+      "response": {
+        "id": "e5ecfa73-9a6c-400f-9dfd-567ed38fb9d7",
+        "modelName": "qwen3:1.7b",
+        "response": "<think>\nOkay, the user asked me to write a simple greeting. Let me think about the best way to respond.\n\nFirst, I need to make sure the greeting is friendly and appropriate. Since they mentioned it's a simple greeting, maybe something straightforward. In French, \"Bonjour\" is a common and simple greeting. It's polite and doesn't require any extra words.\n\nI should check if there's any specific context they're looking for. The user didn't mention any particular situation, so keeping it general is best. Using \"Bonjour\" is perfect because it's concise and widely understood. \n\nI should also consider if they need the greeting in another language, but since they asked for French, I'll stick to that. No need to add anything else. Just the greeting itself. Let me make sure there are no typos. Yep, \"Bonjour\" is correct. Alright, that's the response.\n</think>\n\nBonjour!",
+        "responseTime": 4646,
+        "tokenCount": 217,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:39:00.078Z",
+        "metadata": {
+          "confidence": 0.7
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:39:00.079Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (4647ms)"
+    },
+    {
+      "id": "aea37e38-b012-446e-a671-ae7f93e85631",
+      "questionId": "14e5a0b2-1919-4a7e-97ae-03e810c8a2bd",
+      "modelName": "mistral:latest",
+      "testType": "smoke",
+      "response": {
+        "id": "a5ae2148-c32e-49f7-8da7-3b8569232eee",
+        "modelName": "mistral:latest",
+        "response": " Bonjour, je suis votre assistant virtuel spécialisé en ostéopathie. Comment allez-vous aujourd'hui ? Je suis là pour vous aider avec toutes vos questions ou problèmes liés à l'ostéopathie.",
+        "responseTime": 6504,
+        "tokenCount": 47,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:39:06.584Z",
+        "metadata": {
+          "confidence": 0.5
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:39:06.584Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (6504ms)"
+    },
+    {
+      "id": "4d1f52cd-274e-4ea3-910b-61bc9f51b50a",
+      "questionId": "14e5a0b2-1919-4a7e-97ae-03e810c8a2bd",
+      "modelName": "medllama2:latest",
+      "testType": "smoke",
+      "response": {
+        "id": "e2e0016e-1e0a-4ac3-bfc7-4bdbfd701357",
+        "modelName": "medllama2:latest",
+        "response": "Bonjour! Comment ça va? Comment peut-je vous aider aujourd'hui?",
+        "responseTime": 4390,
+        "tokenCount": 15,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:39:10.976Z",
+        "metadata": {
+          "confidence": 0.3
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:39:10.977Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": false,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 7,
+      "notes": "Test smoke rapide (4392ms)"
+    },
+    {
+      "id": "1b72cbc4-6530-43d3-abcb-f8e7db28a96d",
+      "questionId": "14e5a0b2-1919-4a7e-97ae-03e810c8a2bd",
+      "modelName": "meditron:latest",
+      "testType": "smoke",
+      "response": {
+        "id": "e08c1fbf-e1cc-41e0-b5f9-82faa3697576",
+        "modelName": "meditron:latest",
+        "response": "Write a short note to your assistant.",
+        "responseTime": 3599,
+        "tokenCount": 9,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:39:14.577Z",
+        "metadata": {
+          "confidence": 0.3
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:39:14.578Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (3600ms)"
+    },
+    {
+      "id": "fca12f54-6561-4faa-9826-51e9b9a25cce",
+      "questionId": "14e5a0b2-1919-4a7e-97ae-03e810c8a2bd",
+      "modelName": "alibayram/medgemma:4b",
+      "testType": "smoke",
+      "response": {
+        "id": "49b2c678-c41f-428e-be5a-6a113c03762e",
+        "modelName": "alibayram/medgemma:4b",
+        "response": "Bonjour, comment puis-je vous aider aujourd'hui ?\n",
+        "responseTime": 2494,
+        "tokenCount": 12,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:39:17.073Z",
+        "metadata": {
+          "confidence": 0.3
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:39:17.073Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (2494ms)"
+    },
+    {
+      "id": "cf3b9641-1790-4e4d-a3e1-e6fe26157dc5",
+      "questionId": "14e5a0b2-1919-4a7e-97ae-03e810c8a2bd",
+      "modelName": "llama3.2:3b",
+      "testType": "smoke",
+      "response": {
+        "id": "ce2b1c6a-e8e5-4e4d-8531-2f71374fccfb",
+        "modelName": "llama3.2:3b",
+        "response": "Bonjour, je suis ravi de vous aider avec vos questions ou préoccupations liées à l'ostéopathie. Comment puis-je vous soutenir aujourd'hui ?",
+        "responseTime": 2888,
+        "tokenCount": 34,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:39:19.963Z",
+        "metadata": {
+          "confidence": 0.5
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:39:19.964Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (2889ms)"
+    },
+    {
+      "id": "394d3f0d-65c4-43cd-8e13-7b96ef5fb232",
+      "questionId": "14e5a0b2-1919-4a7e-97ae-03e810c8a2bd",
+      "modelName": "gemma3:latest",
+      "testType": "smoke",
+      "response": {
+        "id": "f0f9a6db-06b3-4a78-92cb-e567bb810305",
+        "modelName": "gemma3:latest",
+        "response": "Hello! Welcome. How can I assist you today?",
+        "responseTime": 3022,
+        "tokenCount": 10,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:39:22.987Z",
+        "metadata": {
+          "confidence": 0.3
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:39:22.988Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (3023ms)"
+    },
+    {
+      "id": "4c64c859-3efc-4ff4-a39b-7d9bd0aebeb2",
+      "questionId": "14e5a0b2-1919-4a7e-97ae-03e810c8a2bd",
+      "modelName": "gemma3:270m",
+      "testType": "smoke",
+      "response": {
+        "id": "c4a5b890-af84-4c5e-aba2-d440569b77cc",
+        "modelName": "gemma3:270m",
+        "response": "Bonjour ! Je suis votre assistant médical spécialisé en ostéopathie. Comment puis-je vous aider aujourd'hui ?\n",
+        "responseTime": 805,
+        "tokenCount": 27,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:39:23.794Z",
+        "metadata": {
+          "confidence": 0.5
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:39:23.795Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (806ms)"
+    },
+    {
+      "id": "050273d6-2285-4f3f-a8a6-8716d7212297",
+      "questionId": "14e5a0b2-1919-4a7e-97ae-03e810c8a2bd",
+      "modelName": "gemma3:1b",
+      "testType": "smoke",
+      "response": {
+        "id": "99a64889-8276-48d4-8316-8cd0c8271afc",
+        "modelName": "gemma3:1b",
+        "response": "Bonjour ! Je suis là pour vous aider. Comment puis-je vous assister aujourd'hui ?",
+        "responseTime": 1279,
+        "tokenCount": 20,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:39:25.076Z",
+        "metadata": {
+          "confidence": 0.3
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:39:25.076Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (1279ms)"
+    },
+    {
+      "id": "af525082-af93-4575-8369-7ff0237d2ff8",
+      "questionId": "14e5a0b2-1919-4a7e-97ae-03e810c8a2bd",
+      "modelName": "deepseek-r1:7b",
+      "testType": "smoke",
+      "response": {
+        "id": "3fc51b7b-46d7-490a-9fe8-9130e5e93c87",
+        "modelName": "deepseek-r1:7b",
+        "response": "<think>\nOkay, so I need to respond to the user's query about me being a medical osteopathic assistant and then provide a simple greeting in Spanish. Let me break this down.\n\nFirst, the user mentioned that they're an assistant medical specialist in osteopathy. That means I should address them properly, perhaps with their title or role. Then, after that, they asked for a simple greeting. So, I need to make sure my response includes both parts: addressing them as a professional and then greeting them.\n\nI think starting with \"¡Hola! ¿Cómo puedo ayudarte hoy?\" would be appropriate because it's friendly and asks how I can assist them today. But wait, the user also specified that they're an assistant medical specialist in osteopathy, so maybe adding something like \" Soy un asistente médico especializado en osteopatía.\" before the greeting to set the context.\n\nPutting it all together: \"Soy un asistente médico especializado en osteopatía. ¡Hola! ¿Cómo puedo ayudarte hoy?\" That should cover both parts of their request—acknowledging their role and then greeting them.\n</think>\n\nSoy un asistente médico especializado en osteopatía. ¡Hola! ¿Cómo puedo ayudarte hoy?",
+        "responseTime": 25915,
+        "tokenCount": 292,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:39:50.992Z",
+        "metadata": {
+          "confidence": 0.7
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:39:50.993Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": false,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 7,
+      "notes": "Test smoke rapide (25916ms)"
+    },
+    {
+      "id": "66c74aa5-dedd-4f9e-a822-598504f32d84",
+      "questionId": "14e5a0b2-1919-4a7e-97ae-03e810c8a2bd",
+      "modelName": "deepseek-r1:1.5b",
+      "testType": "smoke",
+      "response": {
+        "id": "089d45ca-42e1-48f3-9ec3-6b3464c08b36",
+        "modelName": "deepseek-r1:1.5b",
+        "response": "<think>\nOkay, so I need to write a simple medical greeting. Let me think about how to approach this.\n\nFirst, the user mentioned that I'm a specialist in osteopathic pathophysiology. That means my main role is to help people understand their physical conditions and how they're affected by the body's systems. So, when I respond, I should make sure it's professional and clear about what I can do.\n\nThe greeting needs to be simple, so maybe just start with \"Dear [Name],\" or something like that. But since the user didn't provide a name, I'll keep it general.\n\nI should include a brief introduction about my field of expertise. Maybe mention things like joint health, muscle strength, flexibility, etc., to give them an idea of what I can help with.\n\nIt's also important to express enthusiasm and willingness to assist. So, something like \"I am excited to be able to assist you in your journey,\" would work well.\n\nI should avoid any technical jargon or overly complicated sentences. Keep it straightforward and clear so that anyone reading it can understand my role without confusion.\n\nLet me put this together: \"Dear [Name/General], I'm delighted to assist you in your osteopathic pathophysiology journey. I specialize in helping with joint health, muscle strength, flexibility, and more.\" \n\nWait, does that cover everything? It starts with a greeting, introduces my field, mentions specific areas of expertise, and ends with enthusiasm. That seems complete.\n\nI think that's a solid response. It's concise, professional, and covers all the necessary points without any fluff.\n</think>\n\nDear [Name/General],  \nI am delighted to assist you in your osteopathic pathophysiology journey. I specialize in helping you with joint health, muscle strength, flexibility, and more. Thank you for choosing me as a partner in your physical well-being.",
+        "responseTime": 9909,
+        "tokenCount": 459,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:40:00.903Z",
+        "metadata": {
+          "confidence": 0.7
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:40:00.903Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": false,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 7,
+      "notes": "Test smoke rapide (9909ms)"
+    },
+    {
+      "id": "c6dbe55c-44fd-42bb-b637-ff8a469315ef",
+      "questionId": "14e5a0b2-1919-4a7e-97ae-03e810c8a2bd",
+      "modelName": "cniongolo/biomistral:latest",
+      "testType": "smoke",
+      "response": {
+        "id": "d2a9ba58-c68c-4dcd-bd5f-3bbc2aacfddb",
+        "modelName": "cniongolo/biomistral:latest",
+        "response": "Hello! How can I help you today?",
+        "responseTime": 4613,
+        "tokenCount": 8,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:40:05.518Z",
+        "metadata": {
+          "confidence": 0.3
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:40:05.519Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (4614ms)"
+    },
+    {
+      "id": "1ce623d0-5e2f-4030-b9d2-f99762c2e468",
+      "questionId": "14e5a0b2-1919-4a7e-97ae-03e810c8a2bd",
+      "modelName": "lastmass/Qwen3_Medical_GRPO:latest",
+      "testType": "smoke",
+      "response": {
+        "id": "4a295d23-8391-4e95-b2a5-d27c3efb30e4",
+        "modelName": "lastmass/Qwen3_Medical_GRPO:latest",
+        "response": " \r\n|endgreeting|",
+        "responseTime": 2349,
+        "tokenCount": 4,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:40:07.869Z",
+        "metadata": {
+          "confidence": 0.3
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:40:07.869Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": false,
+        "responseCompleteness": false,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 4,
+      "notes": "Test smoke rapide (2349ms)"
+    },
+    {
+      "id": "036edf20-4a99-4be2-b315-9ed494038a5e",
+      "questionId": "14e5a0b2-1919-4a7e-97ae-03e810c8a2bd",
+      "modelName": "qwen3:0.6b",
+      "testType": "smoke",
+      "response": {
+        "id": "222ca86c-05ba-418b-bbac-6db8e13eb1f6",
+        "modelName": "qwen3:0.6b",
+        "response": "<think>\nOkay, the user wants me to write a simple greeting. Let me think. First, I need to make sure it's simple and clear. Maybe start with a friendly opening, like \"Hello!\" or \"Hi there!\" to keep it straightforward.\n\nI should check if there's any specific context or audience in mind. Since the user hasn't provided any details, keeping it general is best. Also, using proper punctuation like periods and commas would make it readable. Let me put that all together in a natural way.\n</think>\n\nBonjour! 😊 C’est une joie de vous voir ! Voulez-vous un peu de conseils ou de réflexions ?",
+        "responseTime": 1940,
+        "tokenCount": 146,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:40:09.811Z",
+        "metadata": {
+          "confidence": 0.7
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:40:09.813Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (1943ms)"
+    },
+    {
+      "id": "e645d3dc-ae0e-4005-a9bc-01f05fe4e2ba",
+      "questionId": "14e5a0b2-1919-4a7e-97ae-03e810c8a2bd",
+      "modelName": "qwen3:4b",
+      "testType": "smoke",
+      "response": {
+        "id": "55944dc4-7014-4796-b78d-cddc2bc8f77d",
+        "modelName": "qwen3:4b",
+        "response": "ERROR: Error: Smoke test timeout after 30000ms",
+        "responseTime": 30002,
+        "timestamp": "2025-08-27T14:40:39.816Z"
+      },
+      "smokeMetrics": {
+        "basicFunctionality": false,
+        "responseCompleteness": false,
+        "noErrors": false,
+        "withinTimeLimit": false
+      },
+      "overallScore": 0,
+      "evaluatedAt": "2025-08-27T14:40:39.816Z",
+      "evaluatedBy": "auto",
+      "notes": "Test smoke échoué: Error: Smoke test timeout after 30000ms"
+    },
+    {
+      "id": "78c7eb8e-2711-4b52-ae6e-8c199bff84d7",
+      "questionId": "14e5a0b2-1919-4a7e-97ae-03e810c8a2bd",
+      "modelName": "phi3:3.8b",
+      "testType": "smoke",
+      "response": {
+        "id": "c1109035-3e26-4e50-9a2a-1c39ace6f9e7",
+        "modelName": "phi3:3.8b",
+        "response": "Bonjour, je suis là pour vous assister avec vos questions d'ostéopathie. Comment puis-je vous aider aujourd'hui ?",
+        "responseTime": 4510,
+        "tokenCount": 28,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:40:44.327Z",
+        "metadata": {
+          "confidence": 0.5
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:40:44.327Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (4510ms)"
+    },
+    {
+      "id": "1d846fe6-1e7f-4c56-9257-5281683291fa",
+      "questionId": "14e5a0b2-1919-4a7e-97ae-03e810c8a2bd",
+      "modelName": "PRFD/croissant-llm:latest",
+      "testType": "smoke",
+      "response": {
+        "id": "d95837d8-7f72-472f-8062-4b98dfdca9f1",
+        "modelName": "PRFD/croissant-llm:latest",
+        "response": " Hello! How can I assist you today?",
+        "responseTime": 2104,
+        "tokenCount": 8,
+        "temperature": 0.1,
+        "timestamp": "2025-08-27T14:40:46.432Z",
+        "metadata": {
+          "confidence": 0.3
+        }
+      },
+      "evaluatedAt": "2025-08-27T14:40:46.432Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (2104ms)"
+    }
+  ],
+  "errors": [],
+  "summary": {
+    "totalTests": 60,
+    "completedTests": 53,
+    "failedTests": 7,
+    "averageScore": 8.377358490566039,
+    "modelRankings": [
+      {
+        "modelName": "gemma3:latest",
+        "averageScore": 10,
+        "rank": 1,
+        "strengths": [
+          "Tests Smoke"
+        ],
+        "weaknesses": []
+      },
+      {
+        "modelName": "phi3:3.8b",
+        "averageScore": 10,
+        "rank": 2,
+        "strengths": [
+          "Tests Smoke"
+        ],
+        "weaknesses": []
+      },
+      {
+        "modelName": "PRFD/croissant-llm:latest",
+        "averageScore": 10,
+        "rank": 3,
+        "strengths": [
+          "Tests Smoke"
+        ],
+        "weaknesses": []
+      },
+      {
+        "modelName": "mistral:latest",
+        "averageScore": 9,
+        "rank": 4,
+        "strengths": [
+          "Tests Smoke"
+        ],
+        "weaknesses": []
+      },
+      {
+        "modelName": "medllama2:latest",
+        "averageScore": 9,
+        "rank": 5,
+        "strengths": [
+          "Tests Smoke"
+        ],
+        "weaknesses": []
+      },
+      {
+        "modelName": "meditron:latest",
+        "averageScore": 9,
+        "rank": 6,
+        "strengths": [
+          "Tests Smoke"
+        ],
+        "weaknesses": []
+      },
+      {
+        "modelName": "llama3.2:3b",
+        "averageScore": 9,
+        "rank": 7,
+        "strengths": [
+          "Tests Smoke"
+        ],
+        "weaknesses": []
+      },
+      {
+        "modelName": "gemma3:1b",
+        "averageScore": 9,
+        "rank": 8,
+        "strengths": [
+          "Tests Smoke"
+        ],
+        "weaknesses": []
+      },
+      {
+        "modelName": "qwen3:0.6b",
+        "averageScore": 9,
+        "rank": 9,
+        "strengths": [
+          "Tests Smoke"
+        ],
+        "weaknesses": []
+      },
+      {
+        "modelName": "qwen2:7b",
+        "averageScore": 8,
+        "rank": 10,
+        "strengths": [
+          "Tests Smoke"
+        ],
+        "weaknesses": []
+      },
+      {
+        "modelName": "qwen3:1.7b",
+        "averageScore": 8,
+        "rank": 11,
+        "strengths": [
+          "Tests Smoke"
+        ],
+        "weaknesses": []
+      },
+      {
+        "modelName": "cniongolo/biomistral:latest",
+        "averageScore": 8,
+        "rank": 12,
+        "strengths": [
+          "Tests Smoke"
+        ],
+        "weaknesses": []
+      },
+      {
+        "modelName": "gemma3:270m",
+        "averageScore": 7.333333333333333,
+        "rank": 13,
+        "strengths": [],
+        "weaknesses": []
+      },
+      {
+        "modelName": "tinyllama:1.1b",
+        "averageScore": 7,
+        "rank": 14,
+        "strengths": [],
+        "weaknesses": []
+      },
+      {
+        "modelName": "alibayram/medgemma:4b",
+        "averageScore": 7,
+        "rank": 15,
+        "strengths": [],
+        "weaknesses": []
+      },
+      {
+        "modelName": "deepseek-r1:1.5b",
+        "averageScore": 7,
+        "rank": 16,
+        "strengths": [],
+        "weaknesses": []
+      },
+      {
+        "modelName": "deepseek-r1:7b",
+        "averageScore": 5.666666666666667,
+        "rank": 17,
+        "strengths": [],
+        "weaknesses": []
+      },
+      {
+        "modelName": "qwen3:8b",
+        "averageScore": 2.3333333333333335,
+        "rank": 18,
+        "strengths": [],
+        "weaknesses": [
+          "Tests Smoke"
+        ]
+      },
+      {
+        "modelName": "qwen3:4b",
+        "averageScore": 2.3333333333333335,
+        "rank": 19,
+        "strengths": [],
+        "weaknesses": [
+          "Tests Smoke"
+        ]
+      },
+      {
+        "modelName": "lastmass/Qwen3_Medical_GRPO:latest",
+        "averageScore": 1.3333333333333333,
+        "rank": 20,
+        "strengths": [],
+        "weaknesses": [
+          "Tests Smoke"
+        ]
+      }
+    ],
+    "categoryPerformance": {
+      "language_understanding": {
+        "averageScore": 8.25,
+        "bestModel": "tinyllama:1.1b",
+        "worstModel": "qwen3:8b"
+      }
+    },
+    "testTypePerformance": {
+      "smoke": {
+        "averageScore": 7.4,
+        "completionRate": 88.33333333333333
+      }
+    }
+  },
+  "completedAt": "2025-08-27T14:40:46.432Z",
+  "timestamp": "2025-08-27T14:40:46.488Z",
+  "ratings": {},
+  "comments": {}
+}

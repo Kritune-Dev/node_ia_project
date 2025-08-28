@@ -1,8 +1,9 @@
 'use client'
 
+import React from 'react'
 import { useState } from 'react'
-import { CheckCircle, AlertTriangle, Info, ArrowUpDown } from 'lucide-react'
-import ModelDetailModal from '../ModelDetailModal'
+import { ChevronDown, ChevronUp, Zap, Globe, Brain, Info, CheckCircle, ArrowUpDown, AlertTriangle } from 'lucide-react'
+import ModelDetailModal from '../models/ModelDetailModal'
 
 type SortOption = 'name' | 'parameters' | 'type'
 type SortDirection = 'asc' | 'desc'

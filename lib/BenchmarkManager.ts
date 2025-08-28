@@ -22,6 +22,10 @@ export class BenchmarkManager {
   private executors: Map<BenchmarkTestType, TestExecutorInterface>;
   private currentExecution: BenchmarkExecution | null = null;
   
+  // Callbacks pour les logs détaillés
+  public onProgressUpdate?: (execution: BenchmarkExecution) => void;
+  public onDetailedLog?: (message: string, type: 'info' | 'success' | 'warning' | 'error') => void;
+  
   constructor() {
     this.executors = new Map<BenchmarkTestType, TestExecutorInterface>();
     this.executors.set(BenchmarkTestType.QUALITATIVE, new QualitativeTestExecutor());
@@ -67,28 +71,57 @@ export class BenchmarkManager {
           throw new Error(`No executor found for test type: ${testType}`);
         }
         
+        const testTypeName = this.getTestTypeName(testType);
         console.log(`Executing ${testType} tests...`);
+        this.onDetailedLog?.(`🎯 Série de tests : ${testTypeName}`, 'info');
         
         // Exécuter les tests pour chaque question
-        for (const question of suite.questions) {
-          try {
-            const results = await executor.execute(question, suite.models, suite.configuration);
-            execution.results.push(...results);
+        for (let questionIndex = 0; questionIndex < suite.questions.length; questionIndex++) {
+          const question = suite.questions[questionIndex];
+          
+          // Log pour chaque modèle
+          for (let modelIndex = 0; modelIndex < suite.models.length; modelIndex++) {
+            const modelName = suite.models[modelIndex];
+            const questionNumber = questionIndex + 1;
             
-            completedTests += results.length;
+            this.onDetailedLog?.(`🤖 Modèle concerné : ${modelName}`, 'info');
+            this.onDetailedLog?.(`[${modelName}] - Question ${questionNumber}`, 'info');
+            this.onDetailedLog?.(`... en cours de réflexion`, 'info');
+            
+            const startTime = Date.now();
+            
+            try {
+              // Exécuter le test pour ce modèle spécifique
+              const results = await executor.execute(question, [modelName], suite.configuration);
+              const duration = Date.now() - startTime;
+              
+              if (results.length > 0 && results[0].response) {
+                this.onDetailedLog?.(`[${modelName}] - Question ${questionNumber} répondue en ${duration}ms`, 'success');
+              } else {
+                this.onDetailedLog?.(`[${modelName}] - Question ${questionNumber} - erreur`, 'error');
+              }
+              
+              execution.results.push(...results);
+              completedTests += results.length;
+              
+            } catch (error) {
+              const duration = Date.now() - startTime;
+              const errorMessage = `Failed to execute ${testType} test for question ${question.id} on model ${modelName}: ${error}`;
+              execution.errors.push(errorMessage);
+              execution.summary.failedTests++;
+              this.onDetailedLog?.(`[${modelName}] - Question ${questionNumber} - erreur après ${duration}ms`, 'error');
+              console.error(errorMessage);
+            }
+            
             execution.progress = Math.round((completedTests / totalTests) * 100);
             execution.summary.completedTests = completedTests;
             
             // Callback de progression si défini
             this.onProgressUpdate?.(execution);
-            
-          } catch (error) {
-            const errorMessage = `Failed to execute ${testType} test for question ${question.id}: ${error}`;
-            execution.errors.push(errorMessage);
-            execution.summary.failedTests++;
-            console.error(errorMessage);
           }
         }
+        
+        this.onDetailedLog?.(`✅ Série ${testTypeName} terminée`, 'success');
       }
       
       // Finaliser l'exécution
@@ -387,7 +420,6 @@ export class BenchmarkManager {
   }
   
   // Callbacks pour les événements
-  public onProgressUpdate?: (execution: BenchmarkExecution) => void;
   public onTestCompleted?: (result: BenchmarkResult) => void;
   public onExecutionCompleted?: (execution: BenchmarkExecution) => void;
   
@@ -406,5 +438,18 @@ export class BenchmarkManager {
   
   getAvailableTestTypes(): BenchmarkTestType[] {
     return Array.from(this.executors.keys());
+  }
+  
+  private getTestTypeName(testType: BenchmarkTestType): string {
+    switch (testType) {
+      case BenchmarkTestType.SMOKE: return 'Smoke Tests';
+      case BenchmarkTestType.QUALITATIVE: return 'Tests Qualitatifs';
+      case BenchmarkTestType.STABILITY: return 'Tests de Stabilité';
+      case BenchmarkTestType.API_IO: return 'Tests API/I-O';
+      case BenchmarkTestType.REAL_DATA: return 'Tests avec Données Réelles';
+      case BenchmarkTestType.PARAMETER: return 'Tests de Paramètres';
+      case BenchmarkTestType.PROMPT_ALTERNATIVE: return 'Tests d\'Alternatives de Prompt';
+      default: return testType;
+    }
   }
 }

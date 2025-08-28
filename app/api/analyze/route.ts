@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     }
 
     const startTime = Date.now()
-    const ollamaUrl = process.env.OLLAMA_BASE_URL || 'http://localhost:11434'
+    const ollamaUrl = process.env.OLLAMA_BASE_URL || 'http://localhost:11436'
 
     // Construire le prompt selon le type d'analyse
     let systemPrompt = ''

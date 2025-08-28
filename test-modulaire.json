@@ -1,0 +1,63 @@
+{
+  "id": "execution-test-modulaire",
+  "suite": {
+    "id": "suite-test-123",
+    "name": "Test Smoke Modulaire",
+    "testTypes": ["SMOKE"],
+    "models": ["qwen3:1.7b", "phi3:mini"]
+  },
+  "models": ["qwen3:1.7b", "phi3:mini"],
+  "status": "completed",
+  "startedAt": "2025-08-27T13:00:00.000Z",
+  "completedAt": "2025-08-27T13:05:00.000Z",
+  "results": [
+    {
+      "id": "result-1",
+      "questionId": "basic_test_1",
+      "modelName": "qwen3:1.7b",
+      "testType": "SMOKE",
+      "response": {
+        "id": "response-1",
+        "modelName": "qwen3:1.7b",
+        "response": "Oui, je fonctionne correctement.",
+        "responseTime": 1500,
+        "tokenCount": 45,
+        "timestamp": "2025-08-27T13:01:00.000Z"
+      },
+      "question": {
+        "text": "Peux-tu me dire si tu fonctionnes correctement ?",
+        "category": "basic",
+        "difficulty": "easy"
+      },
+      "overallScore": 95,
+      "evaluatedAt": "2025-08-27T13:01:00.000Z"
+    },
+    {
+      "id": "result-2",
+      "questionId": "basic_test_1", 
+      "modelName": "phi3:mini",
+      "testType": "SMOKE",
+      "response": {
+        "id": "response-2",
+        "modelName": "phi3:mini",
+        "response": "Oui, je fonctionne parfaitement bien.",
+        "responseTime": 1200,
+        "tokenCount": 38,
+        "timestamp": "2025-08-27T13:02:00.000Z"
+      },
+      "question": {
+        "text": "Peux-tu me dire si tu fonctionnes correctement ?",
+        "category": "basic",
+        "difficulty": "easy"
+      },
+      "overallScore": 98,
+      "evaluatedAt": "2025-08-27T13:02:00.000Z"
+    }
+  ],
+  "summary": {
+    "totalTests": 2,
+    "completedTests": 2,
+    "failedTests": 0,
+    "averageScore": 96.5
+  }
+}

@@ -20,8 +20,8 @@ export class SmokeTestExecutor extends BaseTestExecutor {
     config: BenchmarkConfiguration
   ): Promise<BenchmarkResult[]> {
     const results: BenchmarkResult[] = [];
-    const timeLimit = config.smoke.timeLimit || 10000; // 10 secondes par défaut
-    
+    const timeLimit = config.smoke.timeLimit || 30000; // 30 secondes par défaut
+
     for (const modelName of models) {
       const startTime = Date.now();
       
@@ -99,7 +99,7 @@ export class SmokeTestExecutor extends BaseTestExecutor {
     config: BenchmarkConfiguration,
     actualTime: number
   ): SmokeMetrics {
-    const timeLimit = config.smoke.timeLimit || 10000;
+    const timeLimit = config.smoke.timeLimit || 30000; // 30 secondes par défaut
     const basicChecks = config.smoke.basicChecks || [];
     
     return {
