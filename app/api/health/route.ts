@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 
 // Helper function pour tester une connexion avec une détection d'erreur stricte
 async function testConnection(url: string, serviceName: string): Promise<{ healthy: boolean, error: string | null, models?: number }> {
+  console.log(`[DEBUG] Tentative de connexion à ${url}/api/tags pour ${serviceName}`)
+  
   try {
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 2000) // 2 secondes timeout
@@ -14,7 +16,10 @@ async function testConnection(url: string, serviceName: string): Promise<{ healt
     
     clearTimeout(timeoutId)
     
+    console.log(`[DEBUG] Réponse reçue: status ${response.status}, ok: ${response.ok}`)
+    
     if (!response.ok) {
+      console.log(`[DEBUG] Réponse non OK: ${response.status} ${response.statusText}`)
       return {
         healthy: false,
         error: `HTTP ${response.status}: ${response.statusText}`
@@ -29,8 +34,14 @@ async function testConnection(url: string, serviceName: string): Promise<{ healt
     }
     
   } catch (error: any) {
+    console.log(`[DEBUG] Erreur capturée:`, error)
+    console.log(`[DEBUG] Error name: ${error.name}`)
+    console.log(`[DEBUG] Error message: ${error.message}`)
+    console.log(`[DEBUG] Error cause:`, error.cause)
+    
     // Gestion explicite des erreurs de connexion
     if (error.name === 'AbortError') {
+      console.log(`[DEBUG] Timeout détecté`)
       return {
         healthy: false,
         error: 'Timeout - Service non accessible'
@@ -41,12 +52,14 @@ async function testConnection(url: string, serviceName: string): Promise<{ healt
         error.message?.includes('ECONNREFUSED') ||
         error.message?.includes('fetch failed') ||
         error.message?.includes('Failed to fetch')) {
+      console.log(`[DEBUG] Connexion refusée détectée`)
       return {
         healthy: false,
         error: `${serviceName} non démarré - Connexion refusée`
       }
     }
     
+    console.log(`[DEBUG] Erreur non reconnue`)
     return {
       healthy: false,
       error: error.message || 'Erreur de connexion inconnue'

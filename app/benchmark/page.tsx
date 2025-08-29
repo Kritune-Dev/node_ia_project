@@ -1,8 +1,8 @@
 'use client'
 
 import React from 'react';
-import ModularBenchmarkSystem from '../../components/benchmark/ModularBenchmarkSystem';
+import BenchmarkMain from '../../components/benchmark/BenchmarkMain';
 
 export default function BenchmarkPage() {
-  return <ModularBenchmarkSystem />;
+  return <BenchmarkMain />;
 }

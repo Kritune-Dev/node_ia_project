@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { X, FileText, BarChart3, Target, Calendar, Settings, Brain, Globe, Zap, CheckCircle, Github, ExternalLink, Edit2, Save, Trash2, PlusCircle, MinusCircle, Clock, AlertTriangle, Star, Edit, TrendingUp, XCircle, MessageSquare, Plus } from 'lucide-react'
+import { X, FileText, BarChart3, Target, Calendar, Settings, Brain, Globe, Zap, CheckCircle, Github, ExternalLink, Edit2, Save, Trash2, PlusCircle, MinusCircle, Clock, AlertTriangle, Star, Edit, TrendingUp, XCircle, MessageSquare, Plus, Play } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { useModelCompleteData } from '../../hooks/useModelCompleteData'
@@ -14,7 +14,7 @@ interface ModelDetailModalProps {
 }
 
 export default function ModelDetailModal({ model, isVisible, onClose }: ModelDetailModalProps) {
-  const [activeTab, setActiveTab] = useState<'infos' | 'performance' | 'tests' | 'historique' | 'config'>('infos')
+  const [activeTab, setActiveTab] = useState<'infos' | 'performance' | 'tests' | 'config'>('infos')
   const [isEditingComment, setIsEditingComment] = useState(false)
   const [tempComment, setTempComment] = useState('')
   const [isEditingConfig, setIsEditingConfig] = useState(false)
@@ -136,7 +136,6 @@ export default function ModelDetailModal({ model, isVisible, onClose }: ModelDet
     { id: 'infos', label: 'Informations', icon: FileText },
     { id: 'performance', label: 'Performance', icon: BarChart3 },
     { id: 'tests', label: 'Tests', icon: Target },
-    { id: 'historique', label: 'Historique', icon: Calendar },
     { id: 'config', label: 'Configuration', icon: Settings }
   ]
 
@@ -155,14 +154,22 @@ export default function ModelDetailModal({ model, isVisible, onClose }: ModelDet
             <div>
               <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
                 {getValueWithSource(modelConfig?.displayName, model.displayName || model.name).value}
-                {(completeData?.hasNative || model.hasNative) && (
-                  <Zap className="h-6 w-6 text-yellow-500" />
-                )}
-                {!isConfigured && (
-                  <div title="Modèle non configuré - utilise les valeurs par défaut">
-                    <AlertTriangle className="h-5 w-5 text-orange-500" />
-                  </div>
-                )}
+                <span className={`px-3 py-1 text-sm font-medium rounded-full ${
+                  getValueWithSource(modelConfig?.type, model.type).value === 'medical' 
+                    ? 'bg-red-100 text-red-800' 
+                    : 'bg-blue-100 text-blue-800'
+                }`}>
+                  {getValueWithSource(modelConfig?.type, model.type).value === 'medical' ? 'Médical' : 'Général'}
+                </span>
+                {(() => {
+                  const sizeInGB = model.size ? model.size / (1024 * 1024 * 1024) : 0
+                  return (sizeInGB < 2 || model.sizeFormatted?.includes('MB')) && (
+                    <span className="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 flex items-center gap-1">
+                      <Zap className="w-3 h-3" />
+                      Rapide
+                    </span>
+                  )
+                })()}
               </h2>
               <p className="text-sm text-gray-500">{model.name}</p>
               {completeData && (
@@ -234,27 +241,6 @@ export default function ModelDetailModal({ model, isVisible, onClose }: ModelDet
             <>
               {activeTab === 'infos' && (
                 <div className="space-y-6">
-                  {/* Indicateur de configuration */}
-                  <div className={`p-3 rounded-lg border ${isConfigured ? 'bg-green-50 border-green-200' : 'bg-orange-50 border-orange-200'}`}>
-                    <div className="flex items-center gap-2">
-                      {isConfigured ? 
-                        <CheckCircle className="w-5 h-5 text-green-600" /> : 
-                        <AlertTriangle className="w-5 h-5 text-orange-600" />
-                      }
-                      <span className={`font-medium ${isConfigured ? 'text-green-800' : 'text-orange-800'}`}>
-                        {isConfigured ? 'Modèle configuré manuellement' : 'Configuration automatique (par défaut)'}
-                      </span>
-                      <button
-                        onClick={() => setActiveTab('config')}
-                        className={`ml-auto px-3 py-1 rounded text-sm ${
-                          isConfigured ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-orange-100 text-orange-700 hover:bg-orange-200'
-                        }`}
-                      >
-                        {isConfigured ? 'Modifier' : 'Configurer'}
-                      </button>
-                    </div>
-                  </div>
-
                   {/* Description */}
                   {(() => {
                     const descData = getValueWithSource(modelConfig?.description, model.description)
@@ -384,27 +370,6 @@ export default function ModelDetailModal({ model, isVisible, onClose }: ModelDet
                     )}
                   </div>
 
-                  {/* Services */}
-                  <div>
-                    <h3 className="text-lg font-semibold mb-3">Services disponibles</h3>
-                    <div className="space-y-2">
-                      {(completeData?.services || model.services || []).map((service: any, index: number) => (
-                        <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                          {getServiceIcon(service)}
-                          <div className="flex-1">
-                            <p className="font-medium text-gray-900">{service.name}</p>
-                            <p className="text-sm text-gray-500">{service.type === 'native' ? 'Performances optimales' : 'Service Docker'}</p>
-                          </div>
-                          {service.isNative && (
-                            <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">
-                              ⚡ Préféré
-                            </span>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
                   {/* Links */}
                   {(() => {
                     const githubData = getValueWithSource(modelConfig?.github, model.github)
@@ -505,15 +470,143 @@ export default function ModelDetailModal({ model, isVisible, onClose }: ModelDet
                     </div>
                   </div>
 
-                  {/* Catégories de tests */}
+                  {/* Séries de tests disponibles */}
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">Séries de tests disponibles</h3>
+                    <div className="space-y-3">
+                      {[
+                        { 
+                          id: 'smoke', 
+                          name: 'Tests Smoke', 
+                          description: 'Tests de base rapides pour vérifier le fonctionnement',
+                          estimatedTime: '2-3 min',
+                          category: 'smoke'
+                        },
+                        { 
+                          id: 'qualitative', 
+                          name: 'Tests Qualitatifs', 
+                          description: 'Évaluation approfondie de la qualité des réponses',
+                          estimatedTime: '10-15 min',
+                          category: 'qualitative'
+                        },
+                        { 
+                          id: 'stability', 
+                          name: 'Tests de Stabilité', 
+                          description: 'Vérification de la consistance des réponses',
+                          estimatedTime: '5-8 min',
+                          category: 'stability'
+                        },
+                        { 
+                          id: 'parameters', 
+                          name: 'Tests Paramétriques', 
+                          description: 'Tests avec différents paramètres de génération',
+                          estimatedTime: '8-12 min',
+                          category: 'parameters'
+                        },
+                        { 
+                          id: 'prompt_alternatives', 
+                          name: 'Variantes de Prompts', 
+                          description: 'Tests avec différentes formulations de prompts',
+                          estimatedTime: '6-10 min',
+                          category: 'prompt'
+                        },
+                        { 
+                          id: 'real_data', 
+                          name: 'Données Réelles', 
+                          description: 'Tests sur des cas cliniques authentiques',
+                          estimatedTime: '15-20 min',
+                          category: 'real'
+                        }
+                      ].map((testSerie) => {
+                        // Recherche des tests correspondants à cette série
+                        const relatedTests = completeData.benchmarkHistory.filter(test => 
+                          test.category.toLowerCase().includes(testSerie.category.toLowerCase()) ||
+                          testSerie.category.toLowerCase().includes(test.category.toLowerCase())
+                        )
+                        
+                        const lastTest = relatedTests.length > 0 ? 
+                          relatedTests.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())[0] : null
+                        
+                        const lastTestDate = lastTest ? new Date(lastTest.timestamp) : null
+                        const averageRating = relatedTests.length > 0 ? 
+                          relatedTests.filter(t => t.userRating).reduce((sum, t) => sum + (t.userRating || 0), 0) / relatedTests.filter(t => t.userRating).length : null
+
+                        return (
+                          <div key={testSerie.id} className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow">
+                            <div className="flex items-center justify-between">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-2">
+                                  <h4 className="font-semibold text-gray-900">{testSerie.name}</h4>
+                                  <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
+                                    {testSerie.estimatedTime}
+                                  </span>
+                                </div>
+                                
+                                <div className="grid grid-cols-2 gap-4 text-sm">
+                                  <div>
+                                    <span className="text-gray-500">Dernier test:</span>
+                                    <div className="font-medium">
+                                      {lastTestDate ? (
+                                        <span className="text-gray-900">
+                                          {formatDistanceToNow(lastTestDate, { addSuffix: true, locale: fr })}
+                                        </span>
+                                      ) : (
+                                        <span className="text-gray-400">Jamais testé</span>
+                                      )}
+                                    </div>
+                                  </div>
+                                  
+                                  <div>
+                                    <span className="text-gray-500">Note moyenne:</span>
+                                    <div className="flex items-center gap-1">
+                                      {averageRating ? (
+                                        <>
+                                          <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                                          <span className="font-medium text-gray-900">{averageRating.toFixed(1)}/5</span>
+                                          <span className="text-xs text-gray-500">({relatedTests.filter(t => t.userRating).length})</span>
+                                        </>
+                                      ) : (
+                                        <span className="text-gray-400">Aucune note</span>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              <button
+                                onClick={() => {
+                                  // TODO: Implémenter le lancement de test
+                                  alert(`Lancement des ${testSerie.name} pour ${model.name}`)
+                                }}
+                                className="ml-4 flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                              >
+                                <Play className="w-4 h-4" />
+                                Lancer
+                              </button>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Résultats par série de tests */}
                   {Object.keys(completeData.categories).length > 0 && (
                     <div>
-                      <h3 className="text-lg font-semibold mb-4">Répartition par catégorie</h3>
+                      <h3 className="text-lg font-semibold mb-4">Résultats par série</h3>
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                         {Object.entries(completeData.categories).map(([category, count]) => (
-                          <div key={category} className="bg-gray-50 p-3 rounded-lg">
-                            <div className="font-medium text-gray-900 capitalize">{category}</div>
-                            <div className="text-sm text-gray-600">{count} tests</div>
+                          <div key={category} className="bg-white border border-gray-200 p-3 rounded-lg hover:shadow-sm transition-shadow">
+                            <div className="font-medium text-gray-900 capitalize text-sm">{category}</div>
+                            <div className="text-xs text-gray-600 mt-1">{count} tests effectués</div>
+                            <div className="mt-2 w-full bg-gray-200 rounded-full h-1.5">
+                              <div 
+                                className="bg-blue-600 h-1.5 rounded-full" 
+                                style={{ 
+                                  width: `${Math.min((count / Math.max(...Object.values(completeData.categories))) * 100, 100)}%` 
+                                }}
+                              ></div>
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -522,100 +615,11 @@ export default function ModelDetailModal({ model, isVisible, onClose }: ModelDet
                 </div>
               )}
 
-              {activeTab === 'tests' && completeData && (
+              {activeTab === 'tests' && (
                 <div className="space-y-6">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold">Tests récents</h3>
-                    <div className="text-sm text-gray-600">
-                      {completeData.benchmarkHistory.length} tests au total
-                    </div>
-                  </div>
-
-                  {completeData.benchmarkHistory.length === 0 ? (
-                    <div className="text-center py-12">
-                      <Target className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-gray-900 mb-2">Aucun test trouvé</h3>
-                      <p className="text-gray-600">Ce modèle n'a pas encore été testé dans des benchmarks.</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      {completeData.benchmarkHistory.slice(0, 10).map((test, index) => (
-                        <div key={`${test.benchmarkId}-${test.questionId}`} className="border border-gray-200 rounded-lg p-4">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-2">
-                                {test.success ? 
-                                  <CheckCircle className="w-4 h-4 text-green-500" /> : 
-                                  <XCircle className="w-4 h-4 text-red-500" />
-                                }
-                                <span className="text-sm font-medium">
-                                  {test.category.charAt(0).toUpperCase() + test.category.slice(1)}
-                                </span>
-                                <span className="text-xs text-gray-500">
-                                  {formatDate(test.timestamp)}
-                                </span>
-                              </div>
-                              
-                              <div className="text-sm text-gray-700 mb-2 line-clamp-2">
-                                <strong>Q:</strong> {test.question}
-                              </div>
-                              
-                              {test.success && (
-                                <div className="text-xs text-gray-600 mb-2 line-clamp-3">
-                                  <strong>R:</strong> {test.response}
-                                </div>
-                              )}
-                              
-                              {test.error && (
-                                <div className="text-xs text-red-600 mb-2">
-                                  <strong>Erreur:</strong> {test.error}
-                                </div>
-                              )}
-                              
-                              <div className="flex items-center gap-4 text-xs text-gray-500">
-                                <span>{formatDuration(test.responseTime)}</span>
-                                <span>{test.tokensGenerated} tokens</span>
-                                <span>{Math.round(test.tokensPerSecond)} t/s</span>
-                                {test.userRating && (
-                                  <span className="flex items-center gap-1">
-                                    <Star className="w-3 h-3 text-yellow-500" />
-                                    {test.userRating}/5
-                                  </span>
-                                )}
-                              </div>
-                              
-                              {test.userComment && (
-                                <div className="mt-2 text-xs text-gray-600 bg-gray-50 p-2 rounded">
-                                  <MessageSquare className="w-3 h-3 inline mr-1" />
-                                  {test.userComment}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {activeTab === 'historique' && completeData && (
-                <div className="space-y-6">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold">Historique des benchmarks</h3>
-                    <div className="text-sm text-gray-600">
-                      {completeData.totalBenchmarks} benchmarks
-                    </div>
-                  </div>
-
-                  {completeData.totalBenchmarks === 0 ? (
-                    <div className="text-center py-12">
-                      <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-gray-900 mb-2">Aucun historique</h3>
-                      <p className="text-gray-600">Ce modèle n'a pas encore participé à des benchmarks.</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
+                  {completeData ? (
+                    <>
+                      {/* Statistiques globales */}
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                         <div className="bg-blue-50 p-3 rounded-lg">
                           <div className="text-sm text-blue-600">Premier test</div>
@@ -635,59 +639,196 @@ export default function ModelDetailModal({ model, isVisible, onClose }: ModelDet
                         </div>
                       </div>
 
-                      {/* Grouper par benchmark */}
-                      <div>
-                        <h4 className="font-semibold mb-3">Historique par benchmark</h4>
-                        <div className="space-y-3">
-                          {Object.entries(
-                            completeData.benchmarkHistory.reduce((acc: any, test) => {
-                              if (!acc[test.benchmarkId]) {
-                                acc[test.benchmarkId] = []
-                              }
-                              acc[test.benchmarkId].push(test)
-                              return acc
-                            }, {})
-                          ).slice(0, 5).map(([benchmarkId, tests]: [string, any]) => {
-                            const firstTest = tests[0]
-                            const successCount = tests.filter((t: any) => t.success).length
-                            const avgRating = tests.filter((t: any) => t.userRating).reduce((sum: number, t: any) => sum + t.userRating, 0) / tests.filter((t: any) => t.userRating).length || 0
-                            
-                            return (
-                              <div key={benchmarkId} className="border border-gray-200 rounded-lg p-4">
-                                <div className="flex items-center justify-between mb-2">
-                                  <div className="flex items-center gap-2">
-                                    <Calendar className="w-4 h-4 text-gray-500" />
-                                    <span className="font-medium">Benchmark {benchmarkId.slice(-8)}</span>
-                                    <span className="text-sm text-gray-500">{formatDate(firstTest.timestamp)}</span>
+                      {/* Tests récents */}
+                      {completeData.benchmarkHistory.length > 0 && (
+                        <div>
+                          <h3 className="text-lg font-semibold mb-4">Tests récents</h3>
+                          <div className="space-y-3">
+                            {completeData.benchmarkHistory.slice(0, 5).map((result, index) => (
+                              <div key={index} className="bg-gray-50 p-4 rounded-lg">
+                                <div className="flex items-start justify-between">
+                                  <div className="flex-1">
+                                    <div className="font-medium text-gray-900 capitalize">{result.category}</div>
+                                    <div className="text-sm text-gray-600 mt-1">
+                                      Question: {result.question || 'Test automatisé'}
+                                    </div>
+                                    {result.response && (
+                                      <div className="text-sm text-gray-700 mt-2 p-2 bg-white rounded border">
+                                        {result.response.length > 150 
+                                          ? `${result.response.substring(0, 150)}...` 
+                                          : result.response
+                                        }
+                                      </div>
+                                    )}
                                   </div>
-                                  <div className="flex items-center gap-4 text-sm">
-                                    <span className={`px-2 py-1 rounded-full text-xs ${
-                                      successCount === tests.length ? 'bg-green-100 text-green-800' :
-                                      successCount > tests.length / 2 ? 'bg-yellow-100 text-yellow-800' :
-                                      'bg-red-100 text-red-800'
+                                  <div className="ml-4 text-right">
+                                    <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                                      result.success 
+                                        ? 'bg-green-100 text-green-800' 
+                                        : 'bg-red-100 text-red-800'
                                     }`}>
-                                      {successCount}/{tests.length} réussis
-                                    </span>
-                                    {avgRating > 0 && (
-                                      <span className="flex items-center gap-1">
-                                        <Star className="w-3 h-3 text-yellow-500" />
-                                        {avgRating.toFixed(1)}/5
-                                      </span>
+                                      {result.success ? (
+                                        <>
+                                          <CheckCircle className="w-3 h-3 mr-1" />
+                                          Réussi
+                                        </>
+                                      ) : (
+                                        <>
+                                          <XCircle className="w-3 h-3 mr-1" />
+                                          Échec
+                                        </>
+                                      )}
+                                    </div>
+                                    <div className="text-xs text-gray-500 mt-1">
+                                      {formatDuration(result.responseTime)}
+                                    </div>
+                                    {result.tokensPerSecond && (
+                                      <div className="text-xs text-gray-500">
+                                        {Math.round(result.tokensPerSecond)} t/s
+                                      </div>
+                                    )}
+                                    {result.userRating !== undefined && (
+                                      <div className="flex items-center gap-1 mt-1">
+                                        <Star className="w-3 h-3 text-yellow-500 fill-current" />
+                                        <span className="text-xs text-gray-600">{result.userRating}</span>
+                                      </div>
                                     )}
                                   </div>
                                 </div>
-                                
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs text-gray-600">
-                                  <span>{tests.length} questions testées</span>
-                                  <span>Temps moyen: {formatDuration(tests.reduce((sum: number, t: any) => sum + t.responseTime, 0) / tests.length)}</span>
-                                  <span>Vitesse: {Math.round(tests.reduce((sum: number, t: any) => sum + t.tokensPerSecond, 0) / tests.length)} t/s</span>
-                                  <span>Catégories: {Array.from(new Set(tests.map((t: any) => t.category))).join(', ')}</span>
-                                </div>
+                                {result.timestamp && (
+                                  <div className="text-xs text-gray-400 mt-2">
+                                    {new Date(result.timestamp).toLocaleString('fr-FR')}
+                                  </div>
+                                )}
                               </div>
-                            )
-                          })}
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Historique par benchmark */}
+                      {completeData.benchmarkHistory.length > 0 && (
+                        <div>
+                          <h3 className="text-lg font-semibold mb-4">Historique par benchmark</h3>
+                          <div className="space-y-3">
+                            {Object.entries(
+                              completeData.benchmarkHistory.reduce((acc: any, test) => {
+                                if (!acc[test.benchmarkId]) {
+                                  acc[test.benchmarkId] = []
+                                }
+                                acc[test.benchmarkId].push(test)
+                                return acc
+                              }, {})
+                            ).slice(0, 5).map(([benchmarkId, tests]: [string, any]) => {
+                              const firstTest = tests[0]
+                              const successCount = tests.filter((t: any) => t.success).length
+                              const avgRating = tests.filter((t: any) => t.userRating).reduce((sum: number, t: any) => sum + t.userRating, 0) / tests.filter((t: any) => t.userRating).length || 0
+                              
+                              return (
+                                <div key={benchmarkId} className="border border-gray-200 rounded-lg p-4">
+                                  <div className="flex items-center justify-between mb-2">
+                                    <div className="flex items-center gap-2">
+                                      <Calendar className="w-4 h-4 text-gray-500" />
+                                      <span className="font-medium">Benchmark {benchmarkId.slice(-8)}</span>
+                                      <span className="text-sm text-gray-500">{formatDate(firstTest.timestamp)}</span>
+                                    </div>
+                                    <div className="flex items-center gap-4 text-sm">
+                                      <span className={`px-2 py-1 rounded-full text-xs ${
+                                        successCount === tests.length ? 'bg-green-100 text-green-800' :
+                                        successCount > tests.length / 2 ? 'bg-yellow-100 text-yellow-800' :
+                                        'bg-red-100 text-red-800'
+                                      }`}>
+                                        {successCount}/{tests.length} réussis
+                                      </span>
+                                      {avgRating > 0 && (
+                                        <span className="flex items-center gap-1">
+                                          <Star className="w-3 h-3 text-yellow-500" />
+                                          {avgRating.toFixed(1)}/5
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs text-gray-600">
+                                    <span>{tests.length} questions testées</span>
+                                    <span>Temps moyen: {formatDuration(tests.reduce((sum: number, t: any) => sum + t.responseTime, 0) / tests.length)}</span>
+                                    <span>Vitesse: {Math.round(tests.reduce((sum: number, t: any) => sum + t.tokensPerSecond, 0) / tests.length)} t/s</span>
+                                    <span>Catégories: {Array.from(new Set(tests.map((t: any) => t.category))).join(', ')}</span>
+                                  </div>
+                                </div>
+                              )
+                            })}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Analyse des erreurs */}
+                      {completeData.benchmarkHistory.some(r => !r.success) && (
+                        <div>
+                          <h3 className="text-lg font-semibold mb-4">Analyse des échecs</h3>
+                          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                            <div className="flex items-center gap-2 mb-3">
+                              <AlertTriangle className="w-5 h-5 text-red-600" />
+                              <h4 className="font-medium text-red-800">Problèmes détectés</h4>
+                            </div>
+                            <div className="space-y-2">
+                              {completeData.benchmarkHistory
+                                .filter(r => !r.success)
+                                .slice(0, 3)
+                                .map((result, index) => (
+                                  <div key={index} className="text-sm text-red-700">
+                                    • <span className="capitalize">{result.category}</span>: 
+                                    {result.error ? ` ${result.error}` : ' Échec de génération'}
+                                  </div>
+                                ))
+                              }
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Recommandations d'amélioration */}
+                      <div>
+                        <h3 className="text-lg font-semibold mb-4">Recommandations</h3>
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                          <div className="space-y-2 text-sm text-blue-800">
+                            {completeData.successRate < 70 && (
+                              <div className="flex items-start gap-2">
+                                <AlertTriangle className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                                <span>Taux de réussite faible ({Math.round(completeData.successRate)}%). Vérifiez la configuration du modèle.</span>
+                              </div>
+                            )}
+                            {completeData.avgResponseTime > 10000 && (
+                              <div className="flex items-start gap-2">
+                                <Clock className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                                <span>Temps de réponse élevé ({formatDuration(completeData.avgResponseTime)}). Considérez optimiser les paramètres.</span>
+                              </div>
+                            )}
+                            {completeData.avgUserRating < 3 && completeData.totalRatings > 0 && (
+                              <div className="flex items-start gap-2">
+                                <Star className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                                <span>Note utilisateur faible ({completeData.avgUserRating.toFixed(1)}/5). Révisez la qualité des réponses.</span>
+                              </div>
+                            )}
+                            {Object.keys(completeData.categories).length < 3 && (
+                              <div className="flex items-start gap-2">
+                                <TrendingUp className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                                <span>Peu de catégories testées. Lancez plus de séries de tests pour une évaluation complète.</span>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
+                    </>
+                  ) : (
+                    <div className="text-center py-8">
+                      <div className="text-gray-500 mb-4">Aucun test effectué pour ce modèle</div>
+                      <button 
+                        onClick={() => setActiveTab('performance')}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                      >
+                        Lancer des tests
+                      </button>
                     </div>
                   )}
                 </div>

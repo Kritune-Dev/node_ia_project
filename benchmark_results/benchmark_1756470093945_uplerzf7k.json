@@ -1,0 +1,126 @@
+{
+  "id": "benchmark_1756470093945_uplerzf7k",
+  "suiteId": "e9af7ed4-6551-4dbd-9af8-c0204c8510fb",
+  "status": "completed",
+  "progress": 100,
+  "startedAt": "2025-08-29T12:21:32.255Z",
+  "results": [
+    {
+      "id": "6c5b3798-1806-4f05-8e1d-8656e085c561",
+      "questionId": "dd155be2-39b4-42b8-adb1-7173a34b3bb6",
+      "modelName": "PRFD/croissant-llm:latest",
+      "testType": "smoke",
+      "response": {
+        "id": "824cdf5b-3a0e-43e6-988d-c1eefa17dcc8",
+        "modelName": "PRFD/croissant-llm:latest",
+        "response": "2+2 = ???",
+        "responseTime": 474,
+        "tokenCount": 2,
+        "temperature": 0.1,
+        "timestamp": "2025-08-29T12:21:32.730Z",
+        "metadata": {
+          "confidence": 0.3
+        }
+      },
+      "evaluatedAt": "2025-08-29T12:21:32.730Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": false,
+        "responseCompleteness": false,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 4,
+      "notes": "Test smoke rapide (474ms)"
+    },
+    {
+      "id": "88580109-54ea-4e95-93e3-99204b1038d3",
+      "questionId": "038f052f-e48a-4de4-9dd6-e868015fc389",
+      "modelName": "PRFD/croissant-llm:latest",
+      "testType": "smoke",
+      "response": {
+        "id": "26af3b63-05df-4126-96ad-03814a013601",
+        "modelName": "PRFD/croissant-llm:latest",
+        "response": "1) Red: It is a color that represents passion, energy, and love.\n2) Blue: This color symbolizes calmness, trust, and stability.\n3) Green: It's the most commonly used color in nature because it represents growth, nature, and freshness.",
+        "responseTime": 986,
+        "tokenCount": 58,
+        "temperature": 0.1,
+        "timestamp": "2025-08-29T12:21:33.717Z",
+        "metadata": {
+          "confidence": 0.7
+        }
+      },
+      "evaluatedAt": "2025-08-29T12:21:33.718Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (987ms)"
+    },
+    {
+      "id": "dd0f9e63-690a-46fc-bfb5-636b7cfaf857",
+      "questionId": "3878768a-4d2f-4fe0-96f5-14e0bf7ca1cf",
+      "modelName": "PRFD/croissant-llm:latest",
+      "testType": "smoke",
+      "response": {
+        "id": "b4f25b50-8229-4b72-8e53-02e7141f3738",
+        "modelName": "PRFD/croissant-llm:latest",
+        "response": " Hello! How can I help you?",
+        "responseTime": 215,
+        "tokenCount": 6,
+        "temperature": 0.1,
+        "timestamp": "2025-08-29T12:21:33.934Z",
+        "metadata": {
+          "confidence": 0.3
+        }
+      },
+      "evaluatedAt": "2025-08-29T12:21:33.934Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": false,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 7,
+      "notes": "Test smoke rapide (215ms)"
+    }
+  ],
+  "errors": [],
+  "summary": {
+    "totalTests": 3,
+    "completedTests": 3,
+    "failedTests": 0,
+    "averageScore": 7,
+    "modelRankings": [
+      {
+        "modelName": "PRFD/croissant-llm:latest",
+        "averageScore": 7,
+        "rank": 1,
+        "strengths": [],
+        "weaknesses": []
+      }
+    ],
+    "categoryPerformance": {
+      "language_understanding": {
+        "averageScore": 7,
+        "bestModel": "PRFD/croissant-llm:latest",
+        "worstModel": "PRFD/croissant-llm:latest"
+      }
+    },
+    "testTypePerformance": {
+      "smoke": {
+        "averageScore": 7,
+        "completionRate": 100
+      }
+    }
+  },
+  "completedAt": "2025-08-29T12:21:33.935Z",
+  "timestamp": "2025-08-29T12:21:33.945Z",
+  "ratings": {},
+  "comments": {}
+}

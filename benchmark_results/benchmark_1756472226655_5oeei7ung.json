@@ -1,0 +1,496 @@
+{
+  "id": "benchmark_1756472226655_5oeei7ung",
+  "suiteId": "d005cecb-7c0a-470f-ba5c-9c4b0ea40e96",
+  "status": "completed",
+  "progress": 100,
+  "startedAt": "2025-08-29T12:56:06.372Z",
+  "results": [
+    {
+      "id": "e39f9186-5ea9-4bc8-92e0-71a0045bbb29",
+      "questionId": "a3048004-cce0-427f-aec6-47ac398c4485",
+      "modelName": "gemma3:1b",
+      "testType": "smoke",
+      "response": {
+        "id": "53564850-fad2-471e-88ed-640da3aa258d",
+        "modelName": "gemma3:1b",
+        "response": "2 + 2 = 4\n\nIt’s a fundamental mathematical operation. \n\nDo you have any other questions about osteo-related topics I can help you with?",
+        "responseTime": 771,
+        "tokenCount": 33,
+        "temperature": 0.1,
+        "timestamp": "2025-08-29T12:56:07.144Z",
+        "metadata": {
+          "confidence": 0.5
+        }
+      },
+      "evaluatedAt": "2025-08-29T12:56:07.144Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (771ms)"
+    },
+    {
+      "id": "da4ccff2-1df3-416f-a8a5-b6fd32dfbc42",
+      "questionId": "a3048004-cce0-427f-aec6-47ac398c4485",
+      "modelName": "tinyllama:1.1b",
+      "testType": "smoke",
+      "response": {
+        "id": "9fc8e6ac-0df1-43fa-b295-3d18ba83344e",
+        "modelName": "tinyllama:1.1b",
+        "response": "2 + 2 = 4",
+        "responseTime": 828,
+        "tokenCount": 2,
+        "temperature": 0.1,
+        "timestamp": "2025-08-29T12:56:07.973Z",
+        "metadata": {
+          "confidence": 0.3
+        }
+      },
+      "evaluatedAt": "2025-08-29T12:56:07.974Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": false,
+        "responseCompleteness": false,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 4,
+      "notes": "Test smoke rapide (829ms)"
+    },
+    {
+      "id": "2dce9b3a-f58d-48a0-819e-2f89ed019116",
+      "questionId": "a3048004-cce0-427f-aec6-47ac398c4485",
+      "modelName": "PRFD/croissant-llm:latest",
+      "testType": "smoke",
+      "response": {
+        "id": "cefd7ec0-8919-4269-b120-b1c9a881311d",
+        "modelName": "PRFD/croissant-llm:latest",
+        "response": "2+2 = \\n2 + \\n2 = \\n4\\n-1 = \\n6\\n.",
+        "responseTime": 1678,
+        "tokenCount": 8,
+        "temperature": 0.1,
+        "timestamp": "2025-08-29T12:56:09.652Z",
+        "metadata": {
+          "confidence": 0.3
+        }
+      },
+      "evaluatedAt": "2025-08-29T12:56:09.653Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (1679ms)"
+    },
+    {
+      "id": "68288d12-acee-406a-946e-88d751f357de",
+      "questionId": "a3048004-cce0-427f-aec6-47ac398c4485",
+      "modelName": "qwen3:1.7b",
+      "testType": "smoke",
+      "response": {
+        "id": "01220150-e0ff-479f-b96e-44339c229d5f",
+        "modelName": "qwen3:1.7b",
+        "response": "<think>\nOkay, the user is asking \"What is 2 + 2?\" which is a straightforward arithmetic question. Since I'm an osteopath, I need to make sure my response is both accurate and appropriate for the context.\n\nFirst, the mathematical answer is simple: 2 + 2 equals 4. But I should present it clearly. The user might be testing my knowledge or just curious. I should keep it concise but informative.\n\nI should mention that in mathematics, addition is the operation of combining two numbers. Then state the result. Maybe add a note about the importance of the order in addition, since 2 + 2 is the same as 2 + 2, but that's trivial. Maybe not necessary.\n\nWait, the user is asking in a medical context, so maybe they want to confirm that I can handle basic math. But I should stick to the facts. No need to overcomplicate. Just provide the answer and a brief explanation.\n\nAlso, check if there's any cultural or contextual relevance, but I don't think so. The question is straightforward. Make sure the response is polite and professional, as per the guidelines.\n</think>\n\nEn mathématiques, 2 + 2 équivaut à 4. C'est une opération d'addition où deux nombres sont combinés pour obtenir leur somme. Cette réponse est directe et précise, conformément aux principes de la science médicale.",
+        "responseTime": 5823,
+        "tokenCount": 319,
+        "temperature": 0.1,
+        "timestamp": "2025-08-29T12:56:15.477Z",
+        "metadata": {
+          "confidence": 0.7
+        }
+      },
+      "evaluatedAt": "2025-08-29T12:56:15.478Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": false,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 7,
+      "notes": "Test smoke rapide (5824ms)"
+    },
+    {
+      "id": "8f5da2db-9290-4fb3-b1e1-440845690eb1",
+      "questionId": "a3048004-cce0-427f-aec6-47ac398c4485",
+      "modelName": "deepseek-r1:1.5b",
+      "testType": "smoke",
+      "response": {
+        "id": "f8629cb3-0a3c-4464-87ba-89aaeb0c4cc9",
+        "modelName": "deepseek-r1:1.5b",
+        "response": "<think>\nOkay, so I need to figure out what the user is asking for here. They mentioned that I'm a medical specialist in osteopathic pathophysiology and should respond professionally and precisely. Then they asked, \"What is 2 + 2?\" \n\nHmm, that's straightforward. It seems like they're testing if I can handle simple arithmetic correctly. But wait, maybe there's more to it. They might be trying to see how I handle user requests, especially ones that are basic but could have deeper implications.\n\nI should consider the context. Since I'm a medical specialist, I probably wouldn't get into any real-world scenarios or health-related questions. My main role is to provide accurate information on medical matters. So when they ask \"What is 2 + 2?\" I need to respond clearly and accurately, even though it's just a math problem.\n\nI also have to remember the user's instructions about being professional and precise. Even though this response is straightforward, maintaining that tone is important. Maybe I can phrase it in a way that shows I'm ready for any kind of query they might have, not just mathematical ones.\n\nWait, but 2 + 2 is such a basic question. It doesn't require any medical knowledge to answer correctly. So my response should be correct and concise without adding any unnecessary details. That makes sense because I don't need to engage in any complex discussions or provide information that could be misinterpreted.\n\nI think the key here is to acknowledge their request, respond accurately, and maintain a professional tone. Even though it's simple, adhering strictly to those guidelines will ensure I meet all the user's expectations.\n</think>\n\nThe sum of 2 and 2 is 4.",
+        "responseTime": 6040,
+        "tokenCount": 421,
+        "temperature": 0.1,
+        "timestamp": "2025-08-29T12:56:21.519Z",
+        "metadata": {
+          "confidence": 0.7
+        }
+      },
+      "evaluatedAt": "2025-08-29T12:56:21.520Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": false,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 7,
+      "notes": "Test smoke rapide (6041ms)"
+    },
+    {
+      "id": "eda875f5-bfb9-42ef-a012-a87a6a683e38",
+      "questionId": "b251cca0-302b-45ac-8f8b-529c16df8749",
+      "modelName": "gemma3:1b",
+      "testType": "smoke",
+      "response": {
+        "id": "4536bb5d-c083-42c7-8a50-5024b5f8ee8e",
+        "modelName": "gemma3:1b",
+        "response": "Here are three colors:\n\n1.  Red\n2.  Blue\n3.  Green \n\nDo you have any other questions about osteo-patic care or anything else?",
+        "responseTime": 739,
+        "tokenCount": 31,
+        "temperature": 0.1,
+        "timestamp": "2025-08-29T12:56:22.259Z",
+        "metadata": {
+          "confidence": 0.5
+        }
+      },
+      "evaluatedAt": "2025-08-29T12:56:22.259Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (739ms)"
+    },
+    {
+      "id": "7fea5092-48b8-4d23-8daa-09c9b7ee1342",
+      "questionId": "b251cca0-302b-45ac-8f8b-529c16df8749",
+      "modelName": "tinyllama:1.1b",
+      "testType": "smoke",
+      "response": {
+        "id": "10b6755d-0754-4284-8fc0-0809bbf7f160",
+        "modelName": "tinyllama:1.1b",
+        "response": "Sure, here are three colors:\n\n1. Red - a vibrant and bold color that represents passion, energy, and excitement.\n2. Blue - a calming and soothing color that evokes feelings of peacefulness and tranquility.\n3. Green - a natural and earthy color that symbolizes growth, renewal, and harmony with nature.",
+        "responseTime": 1501,
+        "tokenCount": 75,
+        "temperature": 0.1,
+        "timestamp": "2025-08-29T12:56:23.761Z",
+        "metadata": {
+          "confidence": 0.7
+        }
+      },
+      "evaluatedAt": "2025-08-29T12:56:23.762Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (1502ms)"
+    },
+    {
+      "id": "04b0dd10-bfe0-4d36-8114-986e92ca31b1",
+      "questionId": "b251cca0-302b-45ac-8f8b-529c16df8749",
+      "modelName": "PRFD/croissant-llm:latest",
+      "testType": "smoke",
+      "response": {
+        "id": "69079db5-3000-4377-97e0-902ee2514c40",
+        "modelName": "PRFD/croissant-llm:latest",
+        "response": "1) Red: It is a color that represents passion and energy. It can also symbolize danger or aggression.\n2) Orange: This warm, vibrant color often associated with sunshine and happiness. It has the power to stimulate creativity and inspire action.\n3) Yellow: A cheerful and lively color that represents optimism and joy. It is often used in advertising and signage to create a sense of excitement and energy.",
+        "responseTime": 3025,
+        "tokenCount": 101,
+        "temperature": 0.1,
+        "timestamp": "2025-08-29T12:56:26.788Z",
+        "metadata": {
+          "confidence": 0.7
+        }
+      },
+      "evaluatedAt": "2025-08-29T12:56:26.788Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (3025ms)"
+    },
+    {
+      "id": "00ed8840-a62b-4612-a7b5-8796dbf7e0c2",
+      "questionId": "b251cca0-302b-45ac-8f8b-529c16df8749",
+      "modelName": "qwen3:1.7b",
+      "testType": "smoke",
+      "response": {
+        "id": "d3452aba-b512-4920-ac52-264f4c1dd245",
+        "modelName": "qwen3:1.7b",
+        "response": "<think>\nOkay, the user asked to name three colors. Let me think. The most common colors are red, blue, and green. But wait, maybe they want more specific ones? Or perhaps they want the primary colors? The primary colors in painting are red, blue, and yellow. But the question just says \"colors,\" so maybe the basic ones. Alternatively, maybe they want the three primary colors in the RGB or CMYK model. Hmm. The user might be testing if I know the primary colors. Let me check. In the traditional color model, the primary colors are red, blue, and yellow. But in the additive model (like light), it's red, green, blue. In subtractive (like paint), it's cyan, magenta, yellow. So maybe the answer should include the primary colors from each model? But the question is just \"name three colors,\" so probably the basic ones. Red, blue, green are the most common. Alternatively, maybe the user wants the three primary colors in the traditional sense. I should clarify, but since the user didn't specify, it's safer to go with the most common ones. So the answer would be red, blue, green. But wait, sometimes people refer to the primary colors in the RGB model as red, green, blue. So maybe the user is expecting that. But without more context, it's hard to tell. To be safe, I'll list the three primary colors in the traditional sense, which are red, blue, and yellow. But the user might have expected the basic colors. Alternatively, maybe they want the three primary colors in the RGB model. I need to make sure. Since the user didn't specify, I'll go with the traditional primary colors: red, blue, yellow. But the initial thought was red, blue, green. Hmm. Maybe the user is looking for the three primary colors in the traditional model. Let me confirm. In the traditional color model, the primary colors are red, blue, and yellow. So the answer should be red, blue, yellow. But sometimes people refer to the three primary colors in the RGB model as red, green, blue. So maybe the user is expecting that. However, since the question is in French, maybe they are using the French term for primary colors, which are rouge, bleu, jaune. But the user asked for three colors in English. So the answer should be red, blue, yellow. Alternatively, if they want the three primary colors in the traditional model, that's red, blue, yellow. But if they want the three primary colors in the RGB model, it's red, green, blue. Since the question is general, I'll go with the traditional primary colors: red, blue, yellow. But the user might have expected the basic colors. Wait, the basic colors in the traditional model are red, blue, yellow. So the answer is red, blue, yellow. But sometimes people refer to the three primary colors as red, blue, green. So maybe the user is expecting that. But without more context, it's safer to go with the traditional primary colors. So the answer is red, blue, yellow.\n</think>\n\nLes trois couleurs primaires traditionnelles sont **rouge**, **bleu** et **jaune**. Cependant, si vous souhaitez des couleurs plus générales ou des couleurs primaires dans d'autres modèles (comme RGB ou CMYK), voici d'autres options :  \n- **RGB** : rouge, vert, bleu  \n- **CMYK** : cyan, magenta, jaune  \n- **Couleurs de base en peinture** : rouge, bleu, vert  \n\nSi vous avez un contexte spécifique (par exemple, un modèle de couleurs ou une application), je peux ajuster la réponse !",
+        "responseTime": 14762,
+        "tokenCount": 847,
+        "temperature": 0.1,
+        "timestamp": "2025-08-29T12:56:41.551Z",
+        "metadata": {
+          "confidence": 0.7
+        }
+      },
+      "evaluatedAt": "2025-08-29T12:56:41.552Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": false,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 7,
+      "notes": "Test smoke rapide (14763ms)"
+    },
+    {
+      "id": "033e10bb-47a1-45f8-a35d-eb8cad0e5804",
+      "questionId": "b251cca0-302b-45ac-8f8b-529c16df8749",
+      "modelName": "deepseek-r1:1.5b",
+      "testType": "smoke",
+      "response": {
+        "id": "a3ef40f5-358e-4aa8-9a80-187b2a0a3fc1",
+        "modelName": "deepseek-r1:1.5b",
+        "response": "<think>\nOkay, so I need to come up with three colors and explain them in a way that's clear and precise for someone who studies osteopathic medicine. Let me think about how to approach this.\n\nFirst, I should consider the context: it's about colors used in medical settings, specifically in an osteopathic context. Osteopathic medicine is rooted in the study of the body's structure and function, so maybe the colors relate to physical or structural aspects of the body.\n\nI remember that in many cultures, certain colors are associated with health and well-being. For example, red is often linked to passion and energy, which can be positive but also sometimes seen as a sign of stress. Blue might symbolize calmness and harmony. Maybe green could represent growth and vitality? But I'm not sure if those are the most common or relevant in an osteopathic setting.\n\nWait, another thought: in some contexts, colors like yellow or orange are associated with creativity or positivity. Maybe that's a stretch for osteopathic medicine but still possible. Alternatively, maybe colors related to the body's structure, like red for blood (which is important) or blue for skin color, which can influence health.\n\nI should also think about how these colors might be used in practice. For example, in ophthalmology, colors of eyesight are crucial. So perhaps using a specific color could indicate something about the eye's function. But that's more about diagnosis than explanation.\n\nAnother angle: in some holistic healing practices, colors can represent different aspects of health. Maybe using three primary colors (red, yellow, blue) to represent the three main chakras or energy systems in the body. That could be a way to visualize how different parts function together.\n\nI should also consider if there are any specific terms or symbols used in osteopathic medicine for colors. I'm not sure, but maybe they use certain hues that have symbolic meanings beyond their direct physical properties.\n\nSo, putting it all together: I need three distinct colors with explanations that connect them to the field of osteopathic medicine. They should be clear and precise, avoiding any jargon unless necessary.\n\nI think red is a good choice because it's associated with passion and energy, which can influence how the body functions. Blue might represent calmness and harmony, fitting well within a healthy, balanced approach. Green could symbolize growth and vitality, which are key aspects in osteopathic care.\n\nAlternatively, maybe using colors like yellow (for creativity), orange (for positivity), and purple (for love) as they can convey positive energy levels. But I'm not sure if those have specific medical significance beyond general well-being.\n\nI think the first three I came up with—red, blue, green—are more likely to be relevant in an osteopathic context since they relate directly to physical and emotional health aspects.\n</think>\n\nIn the context of osteopathic medicine, which emphasizes the study of the body's structure and function, three colors that are particularly relevant include red, blue, and green. These colors are chosen based on their symbolic meanings and alignment with key aspects of well-being and health.\n\n1. **Red**: Red is often associated with passion and energy, reflecting the positive influence it can have on physical and emotional states. In osteopathic medicine, red may symbolize the importance of maintaining a healthy, energetic state, which can enhance overall well-being.\n\n2. **Blue**: Blue is linked to calmness and harmony, qualities that are crucial in a healthy, balanced approach. This color might be used to convey the idea of creating a harmonious environment for physical and emotional well-being, aligning with the principles of osteopathic medicine.\n\n3. **Green**: Green represents growth and vitality, which are central themes in osteopathic care. It can symbolize the importance of supporting physical health through proper nutrition and exercise, while also highlighting the role of greenery in mental and emotional balance.\n\nThese colors provide a way to visualize and understand the key aspects of well-being that osteopathic medicine emphasizes—balance, growth, and harmony.",
+        "responseTime": 12246,
+        "tokenCount": 1055,
+        "temperature": 0.1,
+        "timestamp": "2025-08-29T12:56:53.800Z",
+        "metadata": {
+          "confidence": 0.7
+        }
+      },
+      "evaluatedAt": "2025-08-29T12:56:53.800Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": false,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 7,
+      "notes": "Test smoke rapide (12247ms)"
+    },
+    {
+      "id": "3f32d1f8-4548-46a4-8e9a-f560d60b628a",
+      "questionId": "2cf313a0-37d4-47a5-8df9-74f394c1eb67",
+      "modelName": "gemma3:1b",
+      "testType": "smoke",
+      "response": {
+        "id": "3ccd2b88-8836-41c7-a478-8949b2ba2918",
+        "modelName": "gemma3:1b",
+        "response": "Bonjour ! Je suis là pour vous aider. Comment puis-je vous assister aujourd'hui ?",
+        "responseTime": 539,
+        "tokenCount": 20,
+        "temperature": 0.1,
+        "timestamp": "2025-08-29T12:56:54.340Z",
+        "metadata": {
+          "confidence": 0.3
+        }
+      },
+      "evaluatedAt": "2025-08-29T12:56:54.341Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (540ms)"
+    },
+    {
+      "id": "20a749ea-ca95-4405-ab49-d2c2c29cdd77",
+      "questionId": "2cf313a0-37d4-47a5-8df9-74f394c1eb67",
+      "modelName": "tinyllama:1.1b",
+      "testType": "smoke",
+      "response": {
+        "id": "f584441b-7472-498f-985e-18d2f20af9c9",
+        "modelName": "tinyllama:1.1b",
+        "response": "Hey there! Welcome to my medical assistant blog, where I'll be sharing tips and tricks on how to become an effective medical assistant in the field of ostéopathy. Let's get started!",
+        "responseTime": 1284,
+        "tokenCount": 45,
+        "temperature": 0.1,
+        "timestamp": "2025-08-29T12:56:55.625Z",
+        "metadata": {
+          "confidence": 0.5
+        }
+      },
+      "evaluatedAt": "2025-08-29T12:56:55.625Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 10,
+      "notes": "Test smoke rapide (1284ms)"
+    },
+    {
+      "id": "e9e80b00-4186-4b84-adba-33594fa23725",
+      "questionId": "2cf313a0-37d4-47a5-8df9-74f394c1eb67",
+      "modelName": "PRFD/croissant-llm:latest",
+      "testType": "smoke",
+      "response": {
+        "id": "bc52c116-74c6-4bd7-a052-b09f5bf29ce5",
+        "modelName": "PRFD/croissant-llm:latest",
+        "response": " Hello! How can I help you?",
+        "responseTime": 1451,
+        "tokenCount": 6,
+        "temperature": 0.1,
+        "timestamp": "2025-08-29T12:56:57.076Z",
+        "metadata": {
+          "confidence": 0.3
+        }
+      },
+      "evaluatedAt": "2025-08-29T12:56:57.076Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": true,
+        "responseCompleteness": false,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 7,
+      "notes": "Test smoke rapide (1451ms)"
+    },
+    {
+      "id": "e462020e-71da-45f7-b834-b5b846efe545",
+      "questionId": "2cf313a0-37d4-47a5-8df9-74f394c1eb67",
+      "modelName": "qwen3:1.7b",
+      "testType": "smoke",
+      "response": {
+        "id": "b9b26016-2474-4b97-8249-d44d55ef3b1d",
+        "modelName": "qwen3:1.7b",
+        "response": "<think>\nOkay, the user asked to write a simple greeting. Let me think about the best way to respond.\n\nSince I'm an osteopath, I should keep the greeting professional but friendly. Maybe start with a common salutation like \"Hello\" or \"Hi\". Then add a brief, polite message. \n\nI need to make sure it's simple and doesn't include any complex terms. Maybe something like \"Hello, how can I assist you today?\" That's straightforward and open-ended. \n\nWait, the user might want a more formal greeting. \"Dear [Name]\" could be an option, but the user didn't specify a name. So keeping it general is better. \n\nAlternatively, \"Hi there!\" is very simple. But adding a bit more context might be good. \"Hi there! How can I help you today?\" That's concise and friendly. \n\nI should check if there's any specific cultural context, but since it's a general greeting, sticking to common ones is safe. \n\nYes, \"Hi there! How can I help you today?\" seems appropriate. It's simple, friendly, and opens the door for further conversation. No need for extra details unless the user specifies. \n\nI think that's the best approach here.\n</think>\n\nHi there! How can I help you today?",
+        "responseTime": 6284,
+        "tokenCount": 288,
+        "temperature": 0.1,
+        "timestamp": "2025-08-29T12:57:03.361Z",
+        "metadata": {
+          "confidence": 0.7
+        }
+      },
+      "evaluatedAt": "2025-08-29T12:57:03.361Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": false,
+        "responseCompleteness": true,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 7,
+      "notes": "Test smoke rapide (6284ms)"
+    },
+    {
+      "id": "1c63c33e-0346-4f5e-8de3-0de149ddff96",
+      "questionId": "2cf313a0-37d4-47a5-8df9-74f394c1eb67",
+      "modelName": "deepseek-r1:1.5b",
+      "testType": "smoke",
+      "response": {
+        "id": "37eada53-b072-44a9-b4a3-4c6b52812a62",
+        "modelName": "deepseek-r1:1.5b",
+        "response": "<think>\nAlright, the user wants me to write a simple greeting as a medical assistant in osteopathic pathophysiology. They specified that I should respond professionally and precisely.\n\nFirst, I need to make sure my greeting is respectful and acknowledges their role. Using \"Dear [Your Name]\" sounds appropriate for an assistant. \n\nNext, it's important to mention the specific field they're working in: osteopathic pathophysiology. This shows I understand their area of expertise and can provide relevant information.\n\nI should include a friendly closing like \"Best regards,\" followed by my name. It's also good to offer assistance with any questions they might have, which makes them feel supported.\n\nI need to keep the tone concise but polite, avoiding any unnecessary jargon or fluff. Making sure it's clear and direct is key here.\n</think>\n\nDear [Your Name],  \n\nThank you for your time and interest in my work as a medical assistant in osteopathic pathophysiology. I hope this message finds you well.  \n\nBest regards,  \n[Your Full Name]",
+        "responseTime": 3277,
+        "tokenCount": 259,
+        "temperature": 0.1,
+        "timestamp": "2025-08-29T12:57:06.639Z",
+        "metadata": {
+          "confidence": 0.7
+        }
+      },
+      "evaluatedAt": "2025-08-29T12:57:06.639Z",
+      "evaluatedBy": "auto",
+      "smokeMetrics": {
+        "basicFunctionality": false,
+        "responseCompleteness": false,
+        "noErrors": true,
+        "withinTimeLimit": true
+      },
+      "overallScore": 4,
+      "notes": "Test smoke rapide (3277ms)"
+    }
+  ],
+  "errors": [],
+  "summary": {
+    "totalTests": 15,
+    "completedTests": 15,
+    "failedTests": 0,
+    "averageScore": 8,
+    "modelRankings": [
+      {
+        "modelName": "gemma3:1b",
+        "averageScore": 10,
+        "rank": 1,
+        "strengths": [
+          "Tests Smoke"
+        ],
+        "weaknesses": []
+      },
+      {
+        "modelName": "PRFD/croissant-llm:latest",
+        "averageScore": 9,
+        "rank": 2,
+        "strengths": [
+          "Tests Smoke"
+        ],
+        "weaknesses": []
+      },
+      {
+        "modelName": "tinyllama:1.1b",
+        "averageScore": 8,
+        "rank": 3,
+        "strengths": [
+          "Tests Smoke"
+        ],
+        "weaknesses": []
+      },
+      {
+        "modelName": "qwen3:1.7b",
+        "averageScore": 7,
+        "rank": 4,
+        "strengths": [],
+        "weaknesses": []
+      },
+      {
+        "modelName": "deepseek-r1:1.5b",
+        "averageScore": 6,
+        "rank": 5,
+        "strengths": [],
+        "weaknesses": []
+      }
+    ],
+    "categoryPerformance": {
+      "language_understanding": {
+        "averageScore": 7.6,
+        "bestModel": "gemma3:1b",
+        "worstModel": "deepseek-r1:1.5b"
+      }
+    },
+    "testTypePerformance": {
+      "smoke": {
+        "averageScore": 8,
+        "completionRate": 100
+      }
+    }
+  },
+  "completedAt": "2025-08-29T12:57:06.640Z",
+  "timestamp": "2025-08-29T12:57:06.655Z",
+  "ratings": {},
+  "comments": {}
+}
