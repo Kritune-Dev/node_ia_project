@@ -5,7 +5,9 @@
       "name": "Test Rapide (Smoke)",
       "description": "Tests de base pour vérifier le fonctionnement des modèles IA",
       "version": "1.0.0",
-      "testTypes": ["smoke"],
+      "testTypes": [
+        "smoke"
+      ],
       "parameters": {
         "temperature": 0.1,
         "seed": 42,
@@ -27,7 +29,11 @@
           "expectedType": "confirmation",
           "difficulty": "easy",
           "expectedResponse": "Oui, je fonctionne correctement",
-          "keywords": ["oui", "fonctionne", "correctement"],
+          "keywords": [
+            "oui",
+            "fonctionne",
+            "correctement"
+          ],
           "maxResponseLength": 50
         },
         {
@@ -37,7 +43,11 @@
           "expectedType": "french_response",
           "difficulty": "easy",
           "expectedResponse": "Je comprends et parle français correctement.",
-          "keywords": ["français", "comprends", "langue"],
+          "keywords": [
+            "français",
+            "comprends",
+            "langue"
+          ],
           "maxResponseLength": 100
         },
         {
@@ -47,7 +57,9 @@
           "expectedType": "number",
           "difficulty": "easy",
           "expectedResponse": "4",
-          "keywords": ["4"],
+          "keywords": [
+            "4"
+          ],
           "maxResponseLength": 10
         }
       ],
@@ -64,7 +76,9 @@
       "name": "Tests Médicaux",
       "description": "Évaluation des connaissances médicales des modèles IA",
       "version": "1.0.0",
-      "testTypes": ["qualitative"],
+      "testTypes": [
+        "qualitative"
+      ],
       "parameters": {
         "temperature": 0.3,
         "seed": 123,
@@ -83,7 +97,13 @@
           "category": "medical",
           "expectedType": "medical_list",
           "difficulty": "medium",
-          "keywords": ["maux de tête", "essoufflement", "palpitations", "fatigue", "asymptomatique"],
+          "keywords": [
+            "maux de tête",
+            "essoufflement",
+            "palpitations",
+            "fatigue",
+            "asymptomatique"
+          ],
           "maxResponseLength": 300
         },
         {
@@ -92,7 +112,13 @@
           "category": "medical",
           "expectedType": "medical_explanation",
           "difficulty": "hard",
-          "keywords": ["enzyme", "angiotensine", "vasoconstriction", "aldostérone", "rénine"],
+          "keywords": [
+            "enzyme",
+            "angiotensine",
+            "vasoconstriction",
+            "aldostérone",
+            "rénine"
+          ],
           "maxResponseLength": 400
         },
         {
@@ -101,7 +127,13 @@
           "category": "medical",
           "expectedType": "biochemical_process",
           "difficulty": "hard",
-          "keywords": ["glucose", "pyruvate", "ATP", "phosphorylation", "enzyme"],
+          "keywords": [
+            "glucose",
+            "pyruvate",
+            "ATP",
+            "phosphorylation",
+            "enzyme"
+          ],
           "maxResponseLength": 500
         }
       ],
@@ -119,7 +151,9 @@
       "name": "Connaissances Générales",
       "description": "Tests de culture générale et raisonnement",
       "version": "1.0.0",
-      "testTypes": ["qualitative"],
+      "testTypes": [
+        "qualitative"
+      ],
       "parameters": {
         "temperature": 0.7,
         "seed": 456,
@@ -138,7 +172,12 @@
           "category": "general",
           "expectedType": "explanation",
           "difficulty": "medium",
-          "keywords": ["gaz à effet de serre", "CO2", "activités humaines", "combustibles fossiles"],
+          "keywords": [
+            "gaz à effet de serre",
+            "CO2",
+            "activités humaines",
+            "combustibles fossiles"
+          ],
           "maxResponseLength": 250
         },
         {
@@ -147,7 +186,12 @@
           "category": "general",
           "expectedType": "explanation",
           "difficulty": "medium",
-          "keywords": ["machine learning", "algorithmes", "automatisation", "reconnaissance"],
+          "keywords": [
+            "machine learning",
+            "algorithmes",
+            "automatisation",
+            "reconnaissance"
+          ],
           "maxResponseLength": 300
         }
       ],
@@ -165,7 +209,9 @@
       "name": "Tests de Programmation",
       "description": "Évaluation des capacités de génération de code",
       "version": "1.0.0",
-      "testTypes": ["qualitative"],
+      "testTypes": [
+        "qualitative"
+      ],
       "parameters": {
         "temperature": 0.2,
         "seed": 789,
@@ -184,7 +230,13 @@
           "category": "coding",
           "expectedType": "code",
           "difficulty": "medium",
-          "keywords": ["def", "fibonacci", "return", "range", "python"],
+          "keywords": [
+            "def",
+            "fibonacci",
+            "return",
+            "range",
+            "python"
+          ],
           "maxResponseLength": 500
         },
         {
@@ -193,7 +245,13 @@
           "category": "reasoning",
           "expectedType": "logical_reasoning",
           "difficulty": "medium",
-          "keywords": ["tous", "donc", "logique", "transitif", "conclusion"],
+          "keywords": [
+            "tous",
+            "donc",
+            "logique",
+            "transitif",
+            "conclusion"
+          ],
           "maxResponseLength": 200
         }
       ],
@@ -209,9 +267,17 @@
   },
   "metadata": {
     "version": "1.0.0",
-    "lastUpdated": "2025-08-29T12:00:00.000Z",
-    "totalBenchmarks": 4,
-    "supportedTestTypes": ["smoke", "qualitative", "stability", "api_io", "real_data", "parameter", "prompt_alternative"],
+    "lastUpdated": "2025-08-30T01:29:06.770Z",
+    "totalBenchmarks": 5,
+    "supportedTestTypes": [
+      "smoke",
+      "qualitative",
+      "stability",
+      "api_io",
+      "real_data",
+      "parameter",
+      "prompt_alternative"
+    ],
     "description": "Configuration centralisée pour tous les benchmarks du système IA"
   }
 }

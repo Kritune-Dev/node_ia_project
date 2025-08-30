@@ -76,6 +76,24 @@ export function useSystemHealth() {
 }
 
 /**
+ * 📋 Hook pour récupérer les configurations de benchmark
+ */
+export function useBenchmarkConfigs() {
+  const { data, error, isLoading, mutate } = useSWR('/api/benchmark/configs', fetcher, {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: true
+  })
+
+  return {
+    configs: data?.configs || [],
+    metadata: data?.metadata || {},
+    isLoading,
+    error,
+    refresh: mutate
+  }
+}
+
+/**
  * 🎯 Hook pour récupérer l'historique des benchmarks
  */
 export function useBenchmarkHistory() {
@@ -194,6 +212,20 @@ export function useBenchmarkOperations() {
     return response.json()
   }
 
+  const addBenchmarkConfig = async (configData: any) => {
+    const response = await fetch('/api/benchmark/configs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(configData)
+    })
+
+    if (!response.ok) {
+      throw new Error(`Erreur ajout configuration: ${response.status}`)
+    }
+
+    return response.json()
+  }
+
   const deleteBenchmark = async (benchmarkId: string) => {
     const response = await fetch(`/api/benchmark/history/${benchmarkId}`, {
       method: 'DELETE'
@@ -220,5 +252,5 @@ export function useBenchmarkOperations() {
     return response.json()
   }
 
-  return { addBenchmark, deleteBenchmark, executeBenchmark: executeB }
+  return { addBenchmark, addBenchmarkConfig, deleteBenchmark, executeBenchmark: executeB }
 }
