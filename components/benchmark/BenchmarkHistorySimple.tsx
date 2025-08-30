@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Calendar, Clock, TrendingUp, ExternalLink, CheckCircle, XCircle, AlertCircle, RefreshCw } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { Calendar, Clock, TrendingUp, ExternalLink, CheckCircle, XCircle, AlertCircle, RefreshCw } from 'lucide-react'
+import { useBenchmarkHistory } from '../../hooks/useApi'
 
 interface BenchmarkSummary {
   id: string
@@ -24,9 +25,9 @@ interface ModelInfo {
 
 export default function BenchmarkHistorySimple() {
   const router = useRouter()
-  const [benchmarks, setBenchmarks] = useState<BenchmarkSummary[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  
+  // Utilisation du hook API moderne
+  const { benchmarks, isLoading, error, refresh } = useBenchmarkHistory()
   
   // Filtres multiples
   const [selectedModelTypes, setSelectedModelTypes] = useState<string[]>([])
@@ -35,54 +36,33 @@ export default function BenchmarkHistorySimple() {
   const [availableBenchmarkIds, setAvailableBenchmarkIds] = useState<string[]>([])
 
   useEffect(() => {
-    loadBenchmarks()
-  }, [])
-
-  const loadBenchmarks = async () => {
-    try {
-      setLoading(true)
-      const response = await fetch('/api/benchmark/history')
-      
-      if (!response.ok) {
-        throw new Error('Erreur lors du chargement de l\'historique')
-      }
-      
-      const data = await response.json()
-      setBenchmarks(data)
-      console.log('✅ Benchmarks chargés (nouveau format):', data)
-      
+    if (benchmarks && benchmarks.length > 0) {
       // Extraire les séries de tests uniques
       const benchmarkIdsSet = new Set<string>()
-      data.forEach((benchmark: BenchmarkSummary) => {
+      benchmarks.forEach((benchmark: BenchmarkSummary) => {
         benchmark.testSeriesNames?.forEach(name => benchmarkIdsSet.add(name))
       })
       setAvailableBenchmarkIds(Array.from(benchmarkIdsSet))
-      
-    } catch (error) {
-      console.error('Erreur:', error)
-      setError('Impossible de charger l\'historique des benchmarks')
-    } finally {
-      setLoading(false)
     }
-  }
+  }, [benchmarks])
 
   const handleResultClick = (benchmark: BenchmarkSummary) => {
     // Utilise l'ID pour la navigation vers les résultats
     router.push(`/benchmark/results/${benchmark.id}`)
   }
 
-  const filteredAndSortedBenchmarks = benchmarks
-    .filter(benchmark => {
+  const filteredAndSortedBenchmarks = (benchmarks || [])
+    .filter((benchmark: BenchmarkSummary) => {
       // Filtre par types de modèles (basé sur les displayNames des modèles)
       const matchesModelTypes = selectedModelTypes.length === 0 || 
                                 selectedModelTypes.some(type => {
                                   // Pour le moment, on simplifie en supposant que les noms contiennent des indices
-                                  return benchmark.modelsDisplayNames.some(modelName => {
+                                  return benchmark.modelsDisplayNames?.some((modelName: string) => {
                                     const lowerName = modelName.toLowerCase()
                                     return (type === 'medical' && (lowerName.includes('med') || lowerName.includes('bio'))) ||
                                            (type === 'general' && !lowerName.includes('med') && !lowerName.includes('bio') && !lowerName.includes('tiny') && !lowerName.includes('270m') && !lowerName.includes('600m') && !lowerName.includes('1b') && !lowerName.includes('1.5b')) ||
                                            (type === 'rapide' && (lowerName.includes('tiny') || lowerName.includes('270m') || lowerName.includes('600m') || lowerName.includes('1b') || lowerName.includes('1.5b')))
-                                  })
+                                  }) || false
                                 })
       
       // Filtre par séries de tests
@@ -91,7 +71,7 @@ export default function BenchmarkHistorySimple() {
       
       return matchesModelTypes && matchesBenchmarkIds
     })
-    .sort((a, b) => {
+    .sort((a: BenchmarkSummary, b: BenchmarkSummary) => {
       // Tri par date uniquement (plus récent en premier)
       return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     })
@@ -160,7 +140,7 @@ export default function BenchmarkHistorySimple() {
     }
   }
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
         <div className="flex items-center justify-center py-12">
@@ -179,7 +159,7 @@ export default function BenchmarkHistorySimple() {
           <h3 className="text-lg font-semibold text-gray-900 mb-2">Erreur de chargement</h3>
           <p className="text-gray-600 mb-6">{error}</p>
           <button
-            onClick={loadBenchmarks}
+            onClick={() => refresh()}
             className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
           >
             Réessayer
@@ -199,13 +179,13 @@ export default function BenchmarkHistorySimple() {
               📊 Historique des Benchmarks
             </h2>
             <p className="text-gray-600">
-              {benchmarks.length} benchmark(s) trouvé(s)
+              {(benchmarks || []).length} benchmark(s) trouvé(s)
             </p>
           </div>
           
           <div className="flex gap-3">
             <button
-              onClick={loadBenchmarks}
+              onClick={() => refresh()}
               className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
               title="Actualiser"
             >
@@ -292,7 +272,7 @@ export default function BenchmarkHistorySimple() {
         </div>
       ) : (
         <div className="space-y-4">
-          {filteredAndSortedBenchmarks.map((benchmark) => (
+          {filteredAndSortedBenchmarks.map((benchmark: BenchmarkSummary) => (
             <div
               key={benchmark.id}
               className="border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all cursor-pointer hover:border-blue-300"
@@ -333,7 +313,7 @@ export default function BenchmarkHistorySimple() {
                     <div className="mt-4">
                       <h4 className="text-xs font-medium text-gray-500 mb-2">Modèles testés:</h4>
                       <div className="flex flex-wrap gap-2">
-                        {benchmark.modelsDisplayNames.map((modelDisplayName, index) => (
+                        {benchmark.modelsDisplayNames.map((modelDisplayName: string, index: number) => (
                           <span
                             key={index}
                             className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full font-medium"
@@ -350,7 +330,7 @@ export default function BenchmarkHistorySimple() {
                     <div className="mt-3">
                       <h4 className="text-xs font-medium text-gray-500 mb-2">Séries de tests:</h4>
                       <div className="flex flex-wrap gap-2">
-                        {benchmark.testSeriesNames.map((seriesName, index) => (
+                        {benchmark.testSeriesNames.map((seriesName: string, index: number) => (
                           <span
                             key={index}
                             className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full font-medium"

@@ -3,12 +3,12 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { Trophy, ArrowLeft, Settings, History } from 'lucide-react';
-import { useBenchmark } from '../../../hooks/useBenchmark';
+import { useBenchmarkHistory } from '../../../hooks/useApi';
 import BenchmarkRanking from '../../../components/benchmark/BenchmarkRanking';
 
 export default function BenchmarkRankingPage() {
   const router = useRouter();
-  const { executionHistory } = useBenchmark();
+  const { benchmarks } = useBenchmarkHistory();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
@@ -54,7 +54,7 @@ export default function BenchmarkRankingPage() {
 
         {/* Contenu du classement */}
         <BenchmarkRanking 
-          benchmarks={executionHistory}
+          benchmarks={benchmarks || []}
           onSelectBenchmark={(benchmark) => {
             router.push(`/benchmark/results/${benchmark.id}`);
           }}

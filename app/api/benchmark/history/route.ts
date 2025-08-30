@@ -60,9 +60,49 @@ function loadHistoryFile(): HistoryFile {
     }
 
     const data = fs.readFileSync(HISTORY_FILE, 'utf-8');
-    const history = JSON.parse(data) as HistoryFile;
+    const parsedData = JSON.parse(data);
     
-    return history;
+    // Migration depuis l'ancien format
+    if (parsedData.metadata && !parsedData.benchmarks) {
+      console.log('🔄 [HISTORY-API] Migration de l\'ancien format vers le nouveau');
+      const migratedBenchmarks: BenchmarkHistoryItem[] = parsedData.metadata.map((item: any) => ({
+        id: item.id,
+        name: item.displayName || item.testSeries || 'Benchmark',
+        timestamp: item.timestamp,
+        duration: 0, // Pas disponible dans l'ancien format
+        successRate: 0, // Pas disponible dans l'ancien format
+        status: 'completed' as const,
+        modelsDisplayNames: item.models?.map((m: any) => m.displayName || m.name) || [],
+        testSeriesNames: [item.testSeries || 'Test Standard'],
+        modelCount: item.totalModels || 0,
+        questionCount: item.totalQuestions || 0
+      }));
+      
+      const migratedHistory: HistoryFile = {
+        version: "3.0.0",
+        lastUpdated: new Date().toISOString(),
+        benchmarks: migratedBenchmarks
+      };
+      
+      // Sauvegarder le format migré
+      fs.writeFileSync(HISTORY_FILE, JSON.stringify(migratedHistory, null, 2));
+      console.log(`✅ [HISTORY-API] Migration terminée: ${migratedBenchmarks.length} benchmarks migrés`);
+      
+      return migratedHistory;
+    }
+    
+    // Vérifier que benchmarks existe et est un tableau
+    if (!parsedData.benchmarks || !Array.isArray(parsedData.benchmarks)) {
+      console.log('⚠️ [HISTORY-API] Structure invalide, réinitialisation');
+      const defaultHistory: HistoryFile = {
+        version: "3.0.0",
+        lastUpdated: new Date().toISOString(),
+        benchmarks: []
+      }
+      return defaultHistory;
+    }
+    
+    return parsedData as HistoryFile;
   } catch (error) {
     console.error('❌ [HISTORY-API] Erreur lors du chargement de l\'historique:', error);
     const defaultHistory: HistoryFile = {

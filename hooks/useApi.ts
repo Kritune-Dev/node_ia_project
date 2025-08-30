@@ -106,6 +106,7 @@ export function useBenchmarkHistory() {
     benchmarks: data?.benchmarks || [],
     count: data?.count || 0,
     lastUpdated: data?.lastUpdated,
+    version: data?.version,
     isLoading,
     error,
     refresh: mutate
