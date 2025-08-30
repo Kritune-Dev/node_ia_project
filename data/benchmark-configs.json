@@ -1,0 +1,217 @@
+{
+  "benchmarks": {
+    "smoke_test": {
+      "id": "smoke_test",
+      "name": "Test Rapide (Smoke)",
+      "description": "Tests de base pour vérifier le fonctionnement des modèles IA",
+      "version": "1.0.0",
+      "testTypes": ["smoke"],
+      "parameters": {
+        "temperature": 0.1,
+        "seed": 42,
+        "timeout": 30000,
+        "maxTokens": 150,
+        "topP": 0.9,
+        "frequencyPenalty": 0,
+        "presencePenalty": 0
+      },
+      "prompts": {
+        "system": "Tu es un assistant IA qui doit répondre de manière concise et précise. Réponds exactement ce qui est demandé sans ajouter d'informations supplémentaires.",
+        "evaluation": "Évalue la qualité de cette réponse sur une échelle de 1 à 10 en considérant la précision, la concision et la pertinence."
+      },
+      "questions": [
+        {
+          "id": "basic_functionality",
+          "text": "Peux-tu me dire si tu fonctionnes correctement ? Réponds simplement par 'Oui, je fonctionne correctement'.",
+          "category": "basic",
+          "expectedType": "confirmation",
+          "difficulty": "easy",
+          "expectedResponse": "Oui, je fonctionne correctement",
+          "keywords": ["oui", "fonctionne", "correctement"],
+          "maxResponseLength": 50
+        },
+        {
+          "id": "french_communication",
+          "text": "Peux-tu me parler en français ? Écris une phrase simple en français pour confirmer que tu comprends cette langue.",
+          "category": "basic",
+          "expectedType": "french_response",
+          "difficulty": "easy",
+          "expectedResponse": "Je comprends et parle français correctement.",
+          "keywords": ["français", "comprends", "langue"],
+          "maxResponseLength": 100
+        },
+        {
+          "id": "simple_math",
+          "text": "Combien font 2+2 ? Réponds uniquement avec le chiffre.",
+          "category": "basic",
+          "expectedType": "number",
+          "difficulty": "easy",
+          "expectedResponse": "4",
+          "keywords": ["4"],
+          "maxResponseLength": 10
+        }
+      ],
+      "scoring": {
+        "exactMatch": 10,
+        "containsKeywords": 7,
+        "partialMatch": 5,
+        "wrongAnswer": 2,
+        "noResponse": 0
+      }
+    },
+    "medical_test": {
+      "id": "medical_test",
+      "name": "Tests Médicaux",
+      "description": "Évaluation des connaissances médicales des modèles IA",
+      "version": "1.0.0",
+      "testTypes": ["qualitative"],
+      "parameters": {
+        "temperature": 0.3,
+        "seed": 123,
+        "timeout": 60000,
+        "maxTokens": 500,
+        "topP": 0.95
+      },
+      "prompts": {
+        "system": "Tu es un assistant médical expert. Réponds avec précision et rigueur scientifique. Cite tes sources quand possible.",
+        "evaluation": "Évalue la précision médicale, la complétude et la sécurité de cette réponse sur une échelle de 1 à 10."
+      },
+      "questions": [
+        {
+          "id": "hypertension_symptoms",
+          "text": "Quels sont les symptômes principaux de l'hypertension artérielle ?",
+          "category": "medical",
+          "expectedType": "medical_list",
+          "difficulty": "medium",
+          "keywords": ["maux de tête", "essoufflement", "palpitations", "fatigue", "asymptomatique"],
+          "maxResponseLength": 300
+        },
+        {
+          "id": "ace_inhibitors",
+          "text": "Expliquez le mécanisme d'action des inhibiteurs de l'ECA dans le traitement de l'hypertension.",
+          "category": "medical",
+          "expectedType": "medical_explanation",
+          "difficulty": "hard",
+          "keywords": ["enzyme", "angiotensine", "vasoconstriction", "aldostérone", "rénine"],
+          "maxResponseLength": 400
+        },
+        {
+          "id": "glycolysis_steps",
+          "text": "Décrivez les étapes principales de la glycolyse.",
+          "category": "medical",
+          "expectedType": "biochemical_process",
+          "difficulty": "hard",
+          "keywords": ["glucose", "pyruvate", "ATP", "phosphorylation", "enzyme"],
+          "maxResponseLength": 500
+        }
+      ],
+      "scoring": {
+        "excellent": 10,
+        "good": 8,
+        "average": 6,
+        "poor": 4,
+        "incorrect": 2,
+        "dangerous": 0
+      }
+    },
+    "general_knowledge": {
+      "id": "general_knowledge",
+      "name": "Connaissances Générales",
+      "description": "Tests de culture générale et raisonnement",
+      "version": "1.0.0",
+      "testTypes": ["qualitative"],
+      "parameters": {
+        "temperature": 0.7,
+        "seed": 456,
+        "timeout": 45000,
+        "maxTokens": 300,
+        "topP": 0.9
+      },
+      "prompts": {
+        "system": "Tu es un assistant érudit et pédagogue. Explique clairement et de manière accessible.",
+        "evaluation": "Évalue la justesse, la clarté et la complétude de cette réponse sur une échelle de 1 à 10."
+      },
+      "questions": [
+        {
+          "id": "climate_change",
+          "text": "Quelles sont les causes principales du réchauffement climatique ?",
+          "category": "general",
+          "expectedType": "explanation",
+          "difficulty": "medium",
+          "keywords": ["gaz à effet de serre", "CO2", "activités humaines", "combustibles fossiles"],
+          "maxResponseLength": 250
+        },
+        {
+          "id": "artificial_intelligence",
+          "text": "Expliquez le concept d'intelligence artificielle et ses applications principales.",
+          "category": "general",
+          "expectedType": "explanation",
+          "difficulty": "medium",
+          "keywords": ["machine learning", "algorithmes", "automatisation", "reconnaissance"],
+          "maxResponseLength": 300
+        }
+      ],
+      "scoring": {
+        "comprehensive": 10,
+        "good": 8,
+        "basic": 6,
+        "incomplete": 4,
+        "wrong": 2,
+        "offtopic": 0
+      }
+    },
+    "coding_test": {
+      "id": "coding_test",
+      "name": "Tests de Programmation",
+      "description": "Évaluation des capacités de génération de code",
+      "version": "1.0.0",
+      "testTypes": ["qualitative"],
+      "parameters": {
+        "temperature": 0.2,
+        "seed": 789,
+        "timeout": 90000,
+        "maxTokens": 800,
+        "topP": 0.95
+      },
+      "prompts": {
+        "system": "Tu es un expert en programmation. Écris du code propre, commenté et fonctionnel.",
+        "evaluation": "Évalue la qualité du code, sa fonctionnalité et ses commentaires sur une échelle de 1 à 10."
+      },
+      "questions": [
+        {
+          "id": "fibonacci_python",
+          "text": "Écrivez une fonction Python qui calcule la suite de Fibonacci pour n termes.",
+          "category": "coding",
+          "expectedType": "code",
+          "difficulty": "medium",
+          "keywords": ["def", "fibonacci", "return", "range", "python"],
+          "maxResponseLength": 500
+        },
+        {
+          "id": "logical_reasoning",
+          "text": "Si tous les A sont B, et tous les B sont C, que peut-on dire des A par rapport aux C ? Expliquez votre raisonnement.",
+          "category": "reasoning",
+          "expectedType": "logical_reasoning",
+          "difficulty": "medium",
+          "keywords": ["tous", "donc", "logique", "transitif", "conclusion"],
+          "maxResponseLength": 200
+        }
+      ],
+      "scoring": {
+        "perfect": 10,
+        "functional": 8,
+        "partiallyCorrect": 6,
+        "hasIssues": 4,
+        "incorrect": 2,
+        "noCode": 0
+      }
+    }
+  },
+  "metadata": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-08-29T12:00:00.000Z",
+    "totalBenchmarks": 4,
+    "supportedTestTypes": ["smoke", "qualitative", "stability", "api_io", "real_data", "parameter", "prompt_alternative"],
+    "description": "Configuration centralisée pour tous les benchmarks du système IA"
+  }
+}

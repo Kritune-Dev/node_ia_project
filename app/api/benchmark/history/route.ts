@@ -1,304 +1,258 @@
-import { NextRequest, NextResponse } from 'next/server'
-import fs from 'fs'
-import path from 'path'
+import { NextRequest, NextResponse } from 'next/server';
+import fs from 'fs';
+import path from 'path';
 
-const BENCHMARK_DIR = path.join(process.cwd(), 'benchmark_results')
-const HISTORY_FILE = path.join(BENCHMARK_DIR, 'history.json')
+/**
+ * 🎯 BENCHMARK HISTORY API v3.0 - RESTful
+ * GET /api/benchmark/history - Liste avec métadonnées légères
+ * POST /api/benchmark/history - Ajouter un benchmark
+ * DELETE /api/benchmark/history - Supprimer tous les benchmarks
+ */
 
-// Assurer que le répertoire existe
+interface BenchmarkHistoryItem {
+  id: string
+  name: string
+  timestamp: string
+  duration: number
+  successRate: number
+  status: 'completed' | 'failed' | 'running'
+  modelsDisplayNames: string[]
+  testSeriesNames: string[]
+  modelCount: number
+  questionCount: number
+}
+
+interface HistoryFile {
+  version: string
+  lastUpdated: string
+  benchmarks: BenchmarkHistoryItem[]
+}
+
+const BENCHMARK_DIR = path.join(process.cwd(), 'data', 'benchmark_results');
+const HISTORY_FILE = path.join(BENCHMARK_DIR, 'history.json');
+
+/**
+ * 🔧 Assurer que le répertoire existe
+ */
 function ensureBenchmarkDir() {
   if (!fs.existsSync(BENCHMARK_DIR)) {
-    fs.mkdirSync(BENCHMARK_DIR, { recursive: true })
+    console.log('📁 [HISTORY-API] Création du répertoire benchmark_results');
+    fs.mkdirSync(BENCHMARK_DIR, { recursive: true });
   }
 }
 
-// Charger l'historique des benchmarks
-function loadBenchmarkHistory() {
+/**
+ * 📖 Charger le fichier history.json
+ */
+function loadHistoryFile(): HistoryFile {
   try {
-    if (fs.existsSync(HISTORY_FILE)) {
-      const data = fs.readFileSync(HISTORY_FILE, 'utf-8')
-      const parsed = JSON.parse(data)
-      
-      // Validation et nettoyage de la structure
-      if (!parsed || typeof parsed !== 'object') {
-        console.warn('Structure d\'historique invalide, création d\'un nouvel historique')
-        return { benchmarks: [] }
-      }
-      
-      // S'assurer que benchmarks est un tableau
-      if (!Array.isArray(parsed.benchmarks)) {
-        console.warn('Format benchmarks invalide, création d\'un nouveau tableau')
-        return { benchmarks: [] }
-      }
-      
-      // Nettoyer les éventuelles structures imbriquées
-      const cleanBenchmarks = parsed.benchmarks.filter((benchmark: any) => {
-        return benchmark && 
-               typeof benchmark === 'object' && 
-               benchmark.id && 
-               benchmark.timestamp &&
-               !Array.isArray(benchmark.benchmarks) // Éviter les structures imbriquées
-      })
-      
-      if (cleanBenchmarks.length !== parsed.benchmarks.length) {
-        console.warn(`Nettoyage automatique: ${parsed.benchmarks.length - cleanBenchmarks.length} entrées corrompues supprimées`)
-      }
-      
-      return { benchmarks: cleanBenchmarks }
-    }
-    return { benchmarks: [] }
-  } catch (error) {
-    console.error('Erreur lors du chargement de l\'historique:', error)
-    return { benchmarks: [] }
-  }
-}
-
-// Sauvegarder l'historique des benchmarks
-function saveBenchmarkHistory(data: any) {
-  try {
-    ensureBenchmarkDir()
-    fs.writeFileSync(HISTORY_FILE, JSON.stringify(data, null, 2))
-    return true
-  } catch (error) {
-    console.error('Erreur lors de la sauvegarde:', error)
-    return false
-  }
-}
-
-export async function GET() {
-  try {
-    const history = loadBenchmarkHistory()
+    ensureBenchmarkDir();
     
-    // Trier par date (plus récent en premier)
-    history.benchmarks.sort((a: any, b: any) => 
+    if (!fs.existsSync(HISTORY_FILE)) {
+      console.log('📝 [HISTORY-API] Création d\'un nouveau fichier history.json');
+      const defaultHistory: HistoryFile = {
+        version: "3.0.0",
+        lastUpdated: new Date().toISOString(),
+        benchmarks: []
+      }
+      fs.writeFileSync(HISTORY_FILE, JSON.stringify(defaultHistory, null, 2));
+      return defaultHistory;
+    }
+
+    const data = fs.readFileSync(HISTORY_FILE, 'utf-8');
+    const history = JSON.parse(data) as HistoryFile;
+    
+    return history;
+  } catch (error) {
+    console.error('❌ [HISTORY-API] Erreur lors du chargement de l\'historique:', error);
+    const defaultHistory: HistoryFile = {
+      version: "3.0.0",
+      lastUpdated: new Date().toISOString(),
+      benchmarks: []
+    }
+    return defaultHistory;
+  }
+}
+
+/**
+ * 💾 Sauvegarder le fichier history.json
+ */
+function saveHistoryFile(history: HistoryFile): void {
+  try {
+    ensureBenchmarkDir();
+    history.lastUpdated = new Date().toISOString();
+    fs.writeFileSync(HISTORY_FILE, JSON.stringify(history, null, 2));
+    console.log('✅ [HISTORY-API] Historique sauvegardé');
+  } catch (error) {
+    console.error('❌ [HISTORY-API] Erreur lors de la sauvegarde:', error);
+    throw error;
+  }
+}
+
+/**
+ * 📋 GET - Liste avec métadonnées légères
+ */
+export async function GET(request: NextRequest) {
+  console.log('🎯 [HISTORY-API] Requête GET - Liste des benchmarks');
+  
+  try {
+    const history = loadHistoryFile();
+    
+    // Tri par timestamp décroissant (plus récent en premier)
+    const sortedBenchmarks = [...history.benchmarks].sort((a, b) => 
       new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-    )
+    );
 
-    // Adapter le format pour la compatibilité avec BenchmarkHistory.tsx
-    const adaptedBenchmarks = history.benchmarks.map((benchmark: any) => {
-      // Si c'est déjà un nouveau format modulaire avec suite
-      if (benchmark.suite) {
-        return {
-          id: benchmark.id,
-          benchmark_id: benchmark.id,
-          timestamp: benchmark.timestamp,
-          suite_name: benchmark.suite.name,
-          models_tested: benchmark.models?.length || Object.keys(benchmark.results || {}).length,
-          questions_tested: benchmark.summary?.totalTests || 0,
-          results: adaptModularResults(benchmark.results),
-          summary: {
-            total_tests: benchmark.summary?.totalTests || 0,
-            successful_tests: benchmark.summary?.completedTests || 0,
-            failed_tests: benchmark.summary?.failedTests || 0,
-            timeout_tests: 0,
-            average_response_time: calculateAverageResponseTime(benchmark.results),
-            total_duration: calculateTotalDuration(benchmark)
-          },
-          ratings: benchmark.ratings || {},
-          comments: benchmark.comments || {}
-        }
-      }
-      
-      // Retourner tel quel pour les anciens formats déjà compatibles
-      return benchmark
-    })
+    console.log(`✅ [HISTORY-API] ${sortedBenchmarks.length} benchmarks retournés`);
 
-    return NextResponse.json({ benchmarks: adaptedBenchmarks })
+    return NextResponse.json({
+      success: true,
+      benchmarks: sortedBenchmarks,
+      count: sortedBenchmarks.length,
+      version: history.version,
+      lastUpdated: history.lastUpdated,
+      timestamp: new Date().toISOString()
+    });
+
   } catch (error) {
-    console.error('Erreur API benchmark history:', error)
-    return NextResponse.json(
-      { error: 'Erreur lors du chargement de l\'historique' },
-      { status: 500 }
-    )
-  }
-}
-
-// Fonction pour adapter les résultats modulaires au format attendu par l'interface
-function adaptModularResults(modularResults: any[]): any {
-  if (!Array.isArray(modularResults)) {
-    return {}
-  }
-
-  const adapted: any = {}
-  
-  modularResults.forEach((result: any) => {
-    const modelName = result.modelName
-    if (!adapted[modelName]) {
-      adapted[modelName] = {
-        questions: {},
-        total_response_time: 0,
-        average_response_time: 0,
-        average_tokens_per_second: 0,
-        success_rate: 0
-      }
-    }
-
-    adapted[modelName].questions[result.questionId] = {
-      success: result.response.error ? false : true,
-      response: result.response.response,
-      responseTime: result.response.responseTime,
-      tokensGenerated: result.response.tokenCount || 0,
-      tokensPerSecond: result.response.tokenCount && result.response.responseTime 
-        ? (result.response.tokenCount / (result.response.responseTime / 1000)) 
-        : 0,
-      question: result.question?.text || result.questionId,
-      category: result.question?.category || 'unknown',
-      difficulty: result.question?.difficulty || 'medium',
-      service_url: 'http://localhost:11436', // Par défaut
-      isTimeout: result.response.responseTime > 30000,
-      user_rating: 0,
-      user_comment: '',
-      last_updated: result.evaluatedAt || new Date().toISOString()
-    }
-  })
-
-  // Calculer les métriques globales pour chaque modèle
-  Object.keys(adapted).forEach(modelName => {
-    const questions = adapted[modelName].questions
-    const questionValues = Object.values(questions) as any[]
+    console.error('❌ [HISTORY-API] Erreur GET:', error);
     
-    adapted[modelName].total_response_time = questionValues.reduce((sum, q) => sum + q.responseTime, 0)
-    adapted[modelName].average_response_time = questionValues.length > 0 
-      ? adapted[modelName].total_response_time / questionValues.length 
-      : 0
-    adapted[modelName].average_tokens_per_second = questionValues.length > 0
-      ? questionValues.reduce((sum, q) => sum + q.tokensPerSecond, 0) / questionValues.length
-      : 0
-    adapted[modelName].success_rate = questionValues.length > 0
-      ? (questionValues.filter(q => q.success).length / questionValues.length) * 100
-      : 0
-  })
-
-  return adapted
-}
-
-// Calculer le temps de réponse moyen
-function calculateAverageResponseTime(results: any[]): number {
-  if (!Array.isArray(results) || results.length === 0) {
-    return 0
+    return NextResponse.json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Erreur inconnue',
+      benchmarks: [],
+      count: 0
+    }, { status: 500 });
   }
-  
-  const totalTime = results.reduce((sum, result) => {
-    return sum + (result.response?.responseTime || 0)
-  }, 0)
-  
-  return totalTime / results.length
 }
 
-// Calculer la durée totale
-function calculateTotalDuration(benchmark: any): number {
-  if (benchmark.completedAt && benchmark.startedAt) {
-    return new Date(benchmark.completedAt).getTime() - new Date(benchmark.startedAt).getTime()
-  }
-  return 0
-}
-
+/**
+ * ➕ POST - Ajouter un benchmark dans l'historique
+ */
 export async function POST(request: NextRequest) {
+  console.log('🎯 [HISTORY-API] Requête POST - Ajouter un benchmark');
+  
   try {
-    const benchmarkResult = await request.json()
+    const body = await request.json();
+    const {
+      id,
+      name,
+      duration,
+      successRate,
+      status = 'completed',
+      modelsDisplayNames = [],
+      testSeriesNames = [],
+      modelCount,
+      questionCount
+    } = body;
+
+    // Validation des données requises
+    if (!id || !name || duration === undefined || successRate === undefined) {
+      return NextResponse.json({
+        success: false,
+        error: 'Données manquantes: id, name, duration et successRate sont requis'
+      }, { status: 400 });
+    }
+
+    const history = loadHistoryFile();
     
-    // Ajouter un ID unique et timestamp
-    const enrichedResult = {
-      ...benchmarkResult,
-      id: `benchmark_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    // Vérifier si le benchmark existe déjà
+    const existingIndex = history.benchmarks.findIndex(b => b.id === id);
+    
+    const newBenchmark: BenchmarkHistoryItem = {
+      id,
+      name,
       timestamp: new Date().toISOString(),
-      ratings: benchmarkResult.ratings || {},
-      comments: benchmarkResult.comments || {}
+      duration,
+      successRate,
+      status,
+      modelsDisplayNames,
+      testSeriesNames,
+      modelCount: modelCount || modelsDisplayNames.length,
+      questionCount: questionCount || 0
+    };
+
+    if (existingIndex >= 0) {
+      // Mettre à jour le benchmark existant
+      history.benchmarks[existingIndex] = newBenchmark;
+      console.log(`✅ [HISTORY-API] Benchmark ${id} mis à jour`);
+    } else {
+      // Ajouter un nouveau benchmark
+      history.benchmarks.push(newBenchmark);
+      console.log(`✅ [HISTORY-API] Nouveau benchmark ${id} ajouté`);
     }
 
-    const history = loadBenchmarkHistory()
-    
-    // Vérifier que l'historique a la bonne structure
-    if (!history.benchmarks) {
-      history.benchmarks = []
-    }
-    
-    // Ajouter uniquement le résultat du benchmark, pas l'historique entier
-    history.benchmarks.unshift(enrichedResult)
+    saveHistoryFile(history);
 
-    // Limiter à 1000 benchmarks pour éviter les fichiers trop volumineux
-    if (history.benchmarks.length > 1000) {
-      history.benchmarks = history.benchmarks.slice(0, 1000)
-    }
+    return NextResponse.json({
+      success: true,
+      message: existingIndex >= 0 ? 'Benchmark mis à jour' : 'Benchmark ajouté',
+      benchmark: newBenchmark,
+      timestamp: new Date().toISOString()
+    });
 
-    const saved = saveBenchmarkHistory(history)
-    
-    if (!saved) {
-      return NextResponse.json(
-        { error: 'Erreur lors de la sauvegarde' },
-        { status: 500 }
-      )
-    }
-
-    // Sauvegarder seulement le résultat du benchmark individuel (pas l'historique entier)
-    const detailFile = path.join(BENCHMARK_DIR, `${enrichedResult.id}.json`)
-    try {
-      fs.writeFileSync(detailFile, JSON.stringify(enrichedResult, null, 2))
-    } catch (error) {
-      console.error('Erreur lors de la sauvegarde du fichier détaillé:', error)
-      // Ne pas faire échouer la requête si c'est juste le fichier détaillé qui pose problème
-    }
-
-    return NextResponse.json({ 
-      success: true, 
-      benchmark: enrichedResult 
-    })
   } catch (error) {
-    console.error('Erreur lors de la sauvegarde du benchmark:', error)
-    return NextResponse.json(
-      { error: 'Erreur lors de la sauvegarde du benchmark' },
-      { status: 500 }
-    )
+    console.error('❌ [HISTORY-API] Erreur POST:', error);
+    
+    return NextResponse.json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Erreur inconnue'
+    }, { status: 500 });
   }
 }
 
+/**
+ * 🗑️ DELETE - Supprimer tous les benchmarks
+ */
 export async function DELETE(request: NextRequest) {
+  console.log('🎯 [HISTORY-API] Requête DELETE - Suppression de tous les benchmarks');
+  
   try {
-    const { benchmarkId } = await request.json()
+    const history = loadHistoryFile();
+    const deletedCount = history.benchmarks.length;
     
-    if (!benchmarkId) {
-      return NextResponse.json(
-        { error: 'ID de benchmark requis' },
-        { status: 400 }
-      )
+    // Vider l'historique
+    history.benchmarks = [];
+    saveHistoryFile(history);
+
+    // Optionnel: supprimer aussi les fichiers de résultats
+    const url = new URL(request.url);
+    const deleteFiles = url.searchParams.get('deleteFiles') === 'true';
+    
+    if (deleteFiles) {
+      try {
+        const files = fs.readdirSync(BENCHMARK_DIR);
+        const benchmarkFiles = files.filter(file => 
+          file.startsWith('benchmark_') && file.endsWith('.json') && file !== 'history.json'
+        );
+        
+        benchmarkFiles.forEach(file => {
+          const filePath = path.join(BENCHMARK_DIR, file);
+          fs.unlinkSync(filePath);
+        });
+        
+        console.log(`🗑️ [HISTORY-API] ${benchmarkFiles.length} fichiers de résultats supprimés`);
+      } catch (fileError) {
+        console.warn('⚠️ [HISTORY-API] Erreur lors de la suppression des fichiers:', fileError);
+      }
     }
 
-    const history = loadBenchmarkHistory()
-    const benchmarkIndex = history.benchmarks.findIndex(
-      (b: any) => b.id === benchmarkId || b.benchmark_id === benchmarkId
-    )
-    
-    if (benchmarkIndex === -1) {
-      return NextResponse.json(
-        { error: 'Benchmark non trouvé' },
-        { status: 404 }
-      )
-    }
+    console.log(`✅ [HISTORY-API] ${deletedCount} benchmarks supprimés`);
 
-    // Supprimer le benchmark de l'historique
-    history.benchmarks.splice(benchmarkIndex, 1)
-    
-    const saved = saveBenchmarkHistory(history)
-    
-    if (!saved) {
-      return NextResponse.json(
-        { error: 'Erreur lors de la suppression' },
-        { status: 500 }
-      )
-    }
+    return NextResponse.json({
+      success: true,
+      message: `${deletedCount} benchmarks supprimés`,
+      deletedCount,
+      filesDeleted: deleteFiles,
+      timestamp: new Date().toISOString()
+    });
 
-    // Supprimer aussi le fichier détaillé
-    const detailFile = path.join(BENCHMARK_DIR, `${benchmarkId}.json`)
-    if (fs.existsSync(detailFile)) {
-      fs.unlinkSync(detailFile)
-    }
-
-    return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Erreur lors de la suppression du benchmark:', error)
-    return NextResponse.json(
-      { error: 'Erreur lors de la suppression du benchmark' },
-      { status: 500 }
-    )
+    console.error('❌ [HISTORY-API] Erreur DELETE:', error);
+    
+    return NextResponse.json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Erreur inconnue'
+    }, { status: 500 });
   }
 }

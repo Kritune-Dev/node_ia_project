@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { Play, Pause, Square, RotateCcw, Settings, ChevronDown, ChevronUp, Monitor, Eye, EyeOff, Minimize2, Maximize2, RefreshCw, AlertCircle, ArrowUpDown, Zap, Info, CheckCircle } from 'lucide-react'
-import ModelDetailModal from '../models/ModelDetailModal'
+import ModelDetailModal from '../Modal/ModelDetailModal'
 import CustomQuestions, { CustomQuestion } from './CustomQuestions'
 
 interface BenchmarkQuestion {

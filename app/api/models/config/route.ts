@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Erreur GET config:', error)
+    console.error('❌ [CONFIG-API] Erreur GET config:', error)
     return NextResponse.json(
       { 
         success: false, 
@@ -132,7 +132,7 @@ export async function PUT(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Erreur PUT config:', error)
+    console.error('❌ [CONFIG-API] Erreur PUT config:', error)
     return NextResponse.json(
       { 
         success: false, 
@@ -175,7 +175,7 @@ export async function DELETE(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Erreur DELETE config:', error)
+    console.error('❌ [CONFIG-API] Erreur DELETE config:', error)
     return NextResponse.json(
       { 
         success: false, 

@@ -1,0 +1,58 @@
+{
+  "timestamp": "2025-08-29T22:26:47.373Z",
+  "executionId": "1756506407373_ba05869j0qd",
+  "results": [
+    {
+      "benchmarkId": "smoke_test",
+      "model": "alibayram/medgemma:4b",
+      "startTime": "2025-08-29T22:26:43.775Z",
+      "endTime": "2025-08-29T22:26:47.372Z",
+      "duration": 3597,
+      "results": [
+        {
+          "questionId": "basic_functionality",
+          "question": "Peux-tu me dire si tu fonctionnes correctement ? Réponds simplement par 'Oui, je fonctionne correctement'.",
+          "response": "Oui, je fonctionne correctement.\n",
+          "score": 81,
+          "executionTime": 2703,
+          "category": "basic",
+          "difficulty": "easy"
+        },
+        {
+          "questionId": "french_communication",
+          "question": "Peux-tu me parler en français ? Écris une phrase simple en français pour confirmer que tu comprends cette langue.",
+          "response": "Oui, je comprends le français.\n\nJe comprends le français.\n",
+          "score": 64.8,
+          "executionTime": 651,
+          "category": "basic",
+          "difficulty": "easy"
+        },
+        {
+          "questionId": "simple_math",
+          "question": "Combien font 2+2 ? Réponds uniquement avec le chiffre.",
+          "response": "4\n",
+          "score": 45,
+          "executionTime": 242,
+          "category": "basic",
+          "difficulty": "easy"
+        }
+      ],
+      "overallScore": 63.6,
+      "metadata": {
+        "totalQuestions": 3,
+        "successfulQuestions": 3,
+        "failedQuestions": 0,
+        "averageResponseTime": 1198.6666666666667,
+        "configuration": {
+          "temperature": 0.1,
+          "seed": 42,
+          "timeout": 30000,
+          "maxTokens": 150,
+          "topP": 0.9,
+          "frequencyPenalty": 0,
+          "presencePenalty": 0
+        }
+      }
+    }
+  ]
+}

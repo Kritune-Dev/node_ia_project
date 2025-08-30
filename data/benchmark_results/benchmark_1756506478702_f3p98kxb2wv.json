@@ -1,0 +1,47 @@
+{
+  "timestamp": "2025-08-29T22:27:58.702Z",
+  "executionId": "1756506478702_f3p98kxb2wv",
+  "results": [
+    {
+      "benchmarkId": "general_knowledge",
+      "model": "alibayram/medgemma:4b",
+      "startTime": "2025-08-29T22:27:38.642Z",
+      "endTime": "2025-08-29T22:27:58.702Z",
+      "duration": 20060,
+      "results": [
+        {
+          "questionId": "climate_change",
+          "question": "Quelles sont les causes principales du réchauffement climatique ?",
+          "response": "Absolument ! Voici une explication claire et accessible des principales causes du réchauffement climatique :\n\n**Le principal coupable : La combustion des énergies fossiles**\n\n*   **Le problème :** La combustion de combustibles fossiles (charbon, pétrole, gaz naturel) pour produire de l'énergie (électricité, chaleur, carburant pour les transports) libère d'énormes quantités de gaz à effet de serre dans l'atmosphère.\n*   **Les gaz à effet de serre (GES) :** Ces gaz, comme le dioxyde de carbone (CO2), le méthane (CH4) et l'oxyde nitreux (N2O), piègent la chaleur du soleil dans l'atmosphère, comme le verre d'une serre. Plus il y a de GES, plus la température de la planète augmente.\n*   **L'impact :** Le CO2, en particulier, est un gaz à effet de serre puissant et sa concentration dans l'atmosphère a augmenté de manière significative depuis la révolution industrielle, principalement à cause de la combustion de combustibles fossiles.\n\n**Autres causes importantes :**\n\n*   **Déforestation :** Les arbres absorbent le CO2 de l'atmosphère. Lorsque les forêts sont abattues, ce CO2 est relâché et moins de CO2 est absorbé.\n*   **Agriculture :** Certaines pratiques agricoles, comme l'élevage intensif et l'utilisation d",
+          "score": 42.5,
+          "executionTime": 10062,
+          "category": "general",
+          "difficulty": "medium"
+        },
+        {
+          "questionId": "artificial_intelligence",
+          "question": "Expliquez le concept d'intelligence artificielle et ses applications principales.",
+          "response": "Absolument ! Voici une explication claire et accessible du concept d'intelligence artificielle (IA) et de ses applications principales :\n\n**Qu'est-ce que l'Intelligence Artificielle (IA) ?**\n\nL'Intelligence Artificielle (IA) est un domaine de l'informatique qui vise à créer des machines capables de simuler l'intelligence humaine. Autrement dit, on cherche à développer des systèmes informatiques qui peuvent :\n\n*   **Apprendre :** Acquérir des connaissances et améliorer leurs performances au fil du temps.\n*   **Raisonner :** Tirer des conclusions logiques à partir d'informations.\n*   **Résoudre des problèmes :** Trouver des solutions à des défis complexes.\n*   **Percevoir :** Interpréter des données sensorielles (images, sons, texte, etc.).\n*   **Comprendre le langage naturel :** Interagir avec les humains dans leur propre langue.\n\nEn résumé, l'IA cherche à doter les machines de capacités cognitives qui nous distinguent.\n\n**Comment fonctionne l'IA ?**\n\nIl existe différentes approches pour construire des systèmes d'IA. Voici quelques-unes des plus courantes :\n\n*   **Apprentissage automatique (Machine Learning) :** C'est l'approche la plus populaire. Les algorithmes d'apprentissage automatique sont entraînés sur de grandes quantités de données pour identifier des patterns et faire",
+          "score": 35,
+          "executionTime": 9998,
+          "category": "general",
+          "difficulty": "medium"
+        }
+      ],
+      "overallScore": 38.75,
+      "metadata": {
+        "totalQuestions": 2,
+        "successfulQuestions": 2,
+        "failedQuestions": 0,
+        "averageResponseTime": 10030,
+        "configuration": {
+          "temperature": 0.7,
+          "seed": 456,
+          "timeout": 45000,
+          "maxTokens": 300,
+          "topP": 0.9
+        }
+      }
+    }
+  ]
+}

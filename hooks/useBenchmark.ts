@@ -9,8 +9,7 @@ import {
   QuestionCategory,
   DifficultyLevel
 } from '../lib/types/benchmark';
-import { BenchmarkManager } from '../lib/BenchmarkManager';
-import { SmokeTestExecutor, QuickSmokeTestSuite } from '../lib/executors/SmokeTestExecutor';
+import { BenchmarkManager } from '../lib/BenchmarkManagerV2';
 
 export interface UseBenchmarkReturn {
   // État du benchmark
@@ -62,8 +61,22 @@ export function useBenchmark(): UseBenchmarkReturn {
       const manager = new BenchmarkManager();
       
       // Configurer les callbacks
-      manager.onProgressUpdate = (execution: BenchmarkExecution) => {
-        setCurrentExecution({ ...execution });
+      manager.onProgressUpdate = (execution: any) => {
+        // Convertir SimplifiedBenchmarkExecution vers BenchmarkExecution si nécessaire
+        const adaptedExecution: BenchmarkExecution = {
+          ...execution,
+          suiteId: execution.benchmarkId, // Adapter le format
+          suite: {
+            id: execution.benchmarkId,
+            name: `Benchmark ${execution.benchmarkId}`,
+            description: `Benchmark automatique ${execution.benchmarkId}`,
+            testTypes: [],
+            questions: [],
+            models: execution.models,
+            configuration: {} as BenchmarkConfiguration
+          }
+        };
+        setCurrentExecution({ ...adaptedExecution });
       };
       
       benchmarkManagerRef.current = manager;
@@ -143,18 +156,46 @@ export function useBenchmark(): UseBenchmarkReturn {
       setError(null);
       setIsRunning(true);
       
-      const execution = await benchmarkManagerRef.current.executeBenchmarkSuite(suite);
+      // Utiliser la nouvelle méthode executeBenchmark au lieu de executeBenchmarkSuite
+      const execution = await benchmarkManagerRef.current.executeBenchmark(
+        suite.id,
+        suite.models,
+        {
+          iterations: 1,
+          saveResults: true
+        }
+      );
       
-      setCurrentExecution(execution);
+      // Adapter le résultat pour BenchmarkExecution
+      const adaptedExecution: BenchmarkExecution = {
+        id: execution.id,
+        suiteId: execution.benchmarkId,
+        status: execution.status,
+        progress: execution.progress,
+        startedAt: execution.startedAt,
+        completedAt: execution.completedAt,
+        results: execution.results,
+        errors: execution.errors,
+        summary: {
+          totalTests: execution.summary.totalTests,
+          completedTests: execution.summary.completedTests,
+          failedTests: execution.summary.failedTests,
+          averageScore: execution.summary.averageScore,
+          modelRankings: [],
+          categoryPerformance: {} as any, // Simplifié pour la migration
+          testTypePerformance: {} as any // Simplifié pour la migration
+        }
+      };
+      
+      setCurrentExecution(adaptedExecution);
       setIsRunning(false);
       
       // Ajouter à l'historique local
-      const newHistory = [...executionHistory, execution];
+      const newHistory = [...executionHistory, adaptedExecution];
       setExecutionHistory(newHistory);
       
-      // Sauvegarder localement et sur le serveur
+      // Sauvegarder localement
       await saveHistory(newHistory);
-      await saveBenchmarkToServer(execution);
       
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Unknown error');
@@ -164,25 +205,21 @@ export function useBenchmark(): UseBenchmarkReturn {
   }, [executionHistory, saveHistory]);
   
   const stopBenchmark = useCallback(async () => {
-    if (benchmarkManagerRef.current) {
-      await benchmarkManagerRef.current.cancelExecution();
-      setIsRunning(false);
-      setCurrentExecution(null);
-    }
+    // Le nouveau manager ne supporte pas l'annulation pour l'instant
+    setIsRunning(false);
+    setCurrentExecution(null);
   }, []);
   
   const createQuickSmokeTest = useCallback(async (models: string[]) => {
-    const questions = QuickSmokeTestSuite.getEssentialQuestions();
-    const configuration = QuickSmokeTestSuite.getBasicConfiguration();
-    
+    // Créer un test smoke simple sans les executors obsolètes
     const suite: BenchmarkSuite = {
-      id: crypto.randomUUID(),
+      id: 'smoke_test', // Utiliser l'ID du benchmark configuré
       name: 'Test Smoke Rapide',
       description: 'Test rapide pour vérifier le fonctionnement de base des modèles',
       testTypes: [BenchmarkTestType.SMOKE],
-      questions,
+      questions: [], // Les questions sont maintenant dans la config JSON
       models,
-      configuration,
+      configuration: {} as BenchmarkConfiguration, // Configuration centralisée
       createdAt: new Date(),
       updatedAt: new Date()
     };
@@ -246,10 +283,11 @@ export function useBenchmark(): UseBenchmarkReturn {
   }, []);
   
   const getEstimatedDuration = useCallback((suite: BenchmarkSuite): number => {
-    if (benchmarkManagerRef.current) {
-      return benchmarkManagerRef.current.getEstimatedDuration(suite);
-    }
-    return 0;
+    // Estimation simple basée sur le nombre de modèles et questions
+    const baseTimePerTest = 5000; // 5 secondes par test
+    const modelCount = suite.models.length;
+    const questionCount = suite.questions.length || 3; // Fallback si pas de questions
+    return modelCount * questionCount * baseTimePerTest;
   }, []);
   
   const addToHistory = useCallback((execution: BenchmarkExecution) => {

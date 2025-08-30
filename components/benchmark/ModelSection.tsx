@@ -3,7 +3,7 @@
 import React from 'react'
 import { useState } from 'react'
 import { ChevronDown, ChevronUp, Zap, Globe, Brain, Info, CheckCircle, ArrowUpDown, AlertTriangle } from 'lucide-react'
-import ModelDetailModal from '../models/ModelDetailModal'
+import ModelDetailModal from '../Modal/ModelDetailModal'
 
 type SortOption = 'name' | 'parameters' | 'type'
 type SortDirection = 'asc' | 'desc'

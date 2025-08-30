@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Clock, Target, BarChart3, TrendingUp, Medal, ChevronDown, ChevronUp, Filter, X, Trophy, Award, ArrowUpDown, Zap, Info } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import { fr } from 'date-fns/locale'
-import ModelDetailModal from '../models/ModelDetailModal'
+import ModelDetailModal from '../Modal/ModelDetailModal'
 
 interface BenchmarkRankingProps {
   benchmarks: any[]
@@ -19,10 +19,8 @@ interface ModelStats {
   validResponseTimeTests: number // Compteur pour les tests avec temps de réponse valide
   avgResponseTime: number
   avgTokensPerSecond: number
-  avgUserRating: number
-  totalRatings: number
   categories: { [key: string]: number }
-  testSeries: { [key: string]: { total: number, successful: number, avgRating: number, ratings: number } }
+  testSeries: { [key: string]: { total: number, successful: number } }
   lastTested: string
   bestBenchmark: any
   hasNative: boolean
@@ -32,7 +30,7 @@ interface ModelStats {
 }
 
 export default function BenchmarkRanking({ benchmarks, onSelectBenchmark }: BenchmarkRankingProps) {
-  const [rankingMode, setRankingMode] = useState<'overall' | 'speed' | 'accuracy' | 'user_rating' | 'test_series'>('overall')
+  const [rankingMode, setRankingMode] = useState<'overall' | 'speed' | 'accuracy' | 'test_series'>('overall')
   const [categoryFilter, setCategoryFilter] = useState<string>('all')
   const [selectedTestSeries, setSelectedTestSeries] = useState<string>('all')
   const [modelStats, setModelStats] = useState<ModelStats[]>([])
@@ -83,8 +81,6 @@ export default function BenchmarkRanking({ benchmarks, onSelectBenchmark }: Benc
             validResponseTimeTests: 0, // Nouveau compteur pour les tests avec temps valide
             avgResponseTime: 0,
             avgTokensPerSecond: 0,
-            avgUserRating: 0,
-            totalRatings: 0,
             categories: {},
             testSeries: {},
             lastTested: benchmark.timestamp,
@@ -112,12 +108,6 @@ export default function BenchmarkRanking({ benchmarks, onSelectBenchmark }: Benc
             stats[modelName].avgTokensPerSecond += questionData.tokensPerSecond || 0
           }
 
-          // Ajouter les ratings utilisateur
-          if (questionData.user_rating && questionData.user_rating > 0) {
-            stats[modelName].avgUserRating += questionData.user_rating
-            stats[modelName].totalRatings++
-          }
-
           // Catégories
           const category = questionData.category || 'unknown'
           stats[modelName].categories[category] = (stats[modelName].categories[category] || 0) + 1
@@ -125,15 +115,11 @@ export default function BenchmarkRanking({ benchmarks, onSelectBenchmark }: Benc
           // Séries de tests (basé sur la catégorie ou le type de test)
           const testSeries = questionData.testSeries || category
           if (!stats[modelName].testSeries[testSeries]) {
-            stats[modelName].testSeries[testSeries] = { total: 0, successful: 0, avgRating: 0, ratings: 0 }
+            stats[modelName].testSeries[testSeries] = { total: 0, successful: 0 }
           }
           stats[modelName].testSeries[testSeries].total++
           if (questionData.success) {
             stats[modelName].testSeries[testSeries].successful++
-          }
-          if (questionData.user_rating && questionData.user_rating > 0) {
-            stats[modelName].testSeries[testSeries].avgRating += questionData.user_rating
-            stats[modelName].testSeries[testSeries].ratings++
           }
         })
 
@@ -153,16 +139,6 @@ export default function BenchmarkRanking({ benchmarks, onSelectBenchmark }: Benc
       if (stat.successfulTests > 0) {
         stat.avgTokensPerSecond = stat.avgTokensPerSecond / stat.successfulTests
       }
-      if (stat.totalRatings > 0) {
-        stat.avgUserRating = stat.avgUserRating / stat.totalRatings
-      }
-      
-      // Calculer les moyennes des séries de tests
-      Object.values(stat.testSeries).forEach(series => {
-        if (series.ratings > 0) {
-          series.avgRating = series.avgRating / series.ratings
-        }
-      })
     })
 
     setModelStats(Object.values(stats))
@@ -171,10 +147,9 @@ export default function BenchmarkRanking({ benchmarks, onSelectBenchmark }: Benc
   const getOverallScore = (stat: ModelStats): number => {
     const successRate = stat.totalTests > 0 ? (stat.successfulTests / stat.totalTests) * 100 : 0
     const speedScore = stat.avgTokensPerSecond > 0 ? Math.min(stat.avgTokensPerSecond / 10, 100) : 0
-    const userScore = stat.avgUserRating > 0 ? (stat.avgUserRating / 5) * 100 : 0
     
-    // Pondération: 40% réussite, 30% vitesse, 30% note utilisateur
-    return (successRate * 0.4) + (speedScore * 0.3) + (userScore * 0.3)
+    // Pondération: 60% réussite, 40% vitesse
+    return (successRate * 0.6) + (speedScore * 0.4)
   }
 
   const getAvailableTestSeries = (): string[] => {
@@ -218,21 +193,6 @@ export default function BenchmarkRanking({ benchmarks, onSelectBenchmark }: Benc
           const aAccuracy = a.totalTests > 0 ? (a.successfulTests / a.totalTests) * 100 : 0
           const bAccuracy = b.totalTests > 0 ? (b.successfulTests / b.totalTests) * 100 : 0
           return bAccuracy - aAccuracy
-        })
-        break
-      case 'user_rating':
-        sorted = sorted.sort((a, b) => {
-          // Prioritiser d'abord le nombre de ratings, puis la moyenne
-          if (a.totalRatings === 0 && b.totalRatings === 0) return 0
-          if (a.totalRatings === 0) return 1
-          if (b.totalRatings === 0) return -1
-          
-          // Si les deux ont des ratings, trier par moyenne puis par nombre de ratings
-          const ratingDiff = b.avgUserRating - a.avgUserRating
-          if (Math.abs(ratingDiff) < 0.1) {
-            return b.totalRatings - a.totalRatings
-          }
-          return ratingDiff
         })
         break
       case 'test_series':
@@ -322,7 +282,6 @@ export default function BenchmarkRanking({ benchmarks, onSelectBenchmark }: Benc
               <option value="overall">Score global</option>
               <option value="speed">Vitesse</option>
               <option value="accuracy">Précision</option>
-              <option value="user_rating">Meilleures évaluations</option>
               <option value="test_series">Par série de tests</option>
             </select>
             
@@ -398,12 +357,6 @@ export default function BenchmarkRanking({ benchmarks, onSelectBenchmark }: Benc
                     {rankingMode === 'overall' && `${Math.round(getOverallScore(model))}%`}
                     {rankingMode === 'speed' && `${Math.round(model.avgTokensPerSecond)} t/s`}
                     {rankingMode === 'accuracy' && `${Math.round((model.successfulTests / model.totalTests) * 100)}%`}
-                    {rankingMode === 'user_rating' && (
-                      <div className="flex flex-col items-center">
-                        <span>{model.avgUserRating.toFixed(1)}/5 ⭐</span>
-                        <span className="text-xs text-gray-500">({model.totalRatings} avis)</span>
-                      </div>
-                    )}
                     {rankingMode === 'test_series' && (
                       selectedTestSeries === 'all' 
                         ? `${Object.keys(model.testSeries).length} séries`
@@ -485,20 +438,6 @@ export default function BenchmarkRanking({ benchmarks, onSelectBenchmark }: Benc
                       <div className="font-semibold text-lg">{Math.round(model.avgTokensPerSecond)}</div>
                       <div className="text-xs text-gray-400">tokens/sec</div>
                     </div>
-                    <div>
-                      <div className="text-sm text-gray-500">Note utilisateur</div>
-                      <div className="font-semibold text-lg">
-                        {model.totalRatings > 0 ? (
-                          <div className="flex items-center justify-center gap-1">
-                            <span>{model.avgUserRating.toFixed(1)}</span>
-                            <span className="text-yellow-500">⭐</span>
-                          </div>
-                        ) : 'N/A'}
-                      </div>
-                      <div className="text-xs text-gray-400">
-                        {model.totalRatings > 0 ? `${model.totalRatings} avis` : 'Aucun avis'}
-                      </div>
-                    </div>
                   </div>
 
                   <button
@@ -533,11 +472,6 @@ export default function BenchmarkRanking({ benchmarks, onSelectBenchmark }: Benc
                           </div>
                           <div className="text-xs text-gray-500">
                             {seriesData.successful}/{seriesData.total} tests
-                            {seriesData.ratings > 0 && (
-                              <span className="ml-1">
-                                • {seriesData.avgRating.toFixed(1)}⭐
-                              </span>
-                            )}
                           </div>
                         </div>
                       ))}

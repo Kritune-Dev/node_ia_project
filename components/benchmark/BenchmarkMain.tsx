@@ -22,15 +22,14 @@ import {
   Terminal,
   ChevronDown,
   ChevronUp,
-  Activity
+  Activity,
+  Loader2
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
-import { useBenchmark, useBenchmarkQuestions } from '../../hooks/useBenchmark';
-import { BenchmarkTestType, BenchmarkExecution, BenchmarkQuestion, QuestionCategory, DifficultyLevel } from '../../lib/types/benchmark';
+import { useBenchmark } from '../../hooks/useBenchmark';
 import ModelSection from './ModelSection';
-import TestDetailModal from './TestDetailModal';
-import CustomQuestions from './CustomQuestions';
+import TestDetailModal from '../Modal/TestDetailModal';
 
 const BenchmarkMain: React.FC = () => {
   const router = useRouter();
@@ -41,6 +40,10 @@ const BenchmarkMain: React.FC = () => {
   const [benchmarkStartTime, setBenchmarkStartTime] = useState<number>(0);
   const [elapsedTime, setElapsedTime] = useState<number>(0);
   const [estimatedTimeRemaining, setEstimatedTimeRemaining] = useState<number>(0);
+  const [isLocalRunning, setIsLocalRunning] = useState<boolean>(false);
+  const [localProgress, setLocalProgress] = useState<number>(0);
+  const [showExitWarning, setShowExitWarning] = useState<boolean>(false);
+  const [pendingNavigation, setPendingNavigation] = useState<string | null>(null);
   
   const {
     isRunning,
@@ -50,14 +53,9 @@ const BenchmarkMain: React.FC = () => {
     executionHistory,
     startBenchmark,
     stopBenchmark,
-    createQuickSmokeTest,
-    createBenchmarkSuite,
-    getDefaultConfiguration,
     reloadHistory,
     setLogCallback
   } = useBenchmark();
-
-  const { createQuestion, getDefaultQuestions } = useBenchmarkQuestions();
 
   const formatTime = (seconds: number): string => {
     const minutes = Math.floor(seconds / 60);
@@ -88,28 +86,80 @@ const BenchmarkMain: React.FC = () => {
     setIsTerminalOpen(prev => !prev);
   };
 
-  // Ordre des tests de performance (du plus rapide au plus lent)
-  const orderedTestTypes = [
-    BenchmarkTestType.SMOKE,           // 1 - Le plus rapide
-    BenchmarkTestType.API_IO,          // 2 - Tests d'entrée/sortie
-    BenchmarkTestType.QUALITATIVE,     // 3 - Tests qualitatifs
-    BenchmarkTestType.STABILITY,       // 4 - Tests de stabilité
-    BenchmarkTestType.PARAMETER,       // 5 - Tests de paramètres
-    BenchmarkTestType.PROMPT_ALTERNATIVE, // 6 - Tests d'alternatives de prompt
-    BenchmarkTestType.REAL_DATA        // 7 - Le plus lent (données réelles)
-  ];
+  const [availableTestTypes, setAvailableTestTypes] = useState<Array<{
+    id: string;
+    name: string;
+    description: string;
+    questions: Array<any>;
+    parameters: any;
+  }>>([]);
+  const [loadingTestTypes, setLoadingTestTypes] = useState(false);
 
-  const [selectedTestTypes, setSelectedTestTypes] = useState<BenchmarkTestType[]>([BenchmarkTestType.SMOKE]);
+  const [selectedTestTypes, setSelectedTestTypes] = useState<string[]>(['smoke_test']);
   const [selectedModels, setSelectedModels] = useState<string[]>([]);
   const [availableModels, setAvailableModels] = useState<any[]>([]);
-  const [customQuestions, setCustomQuestions] = useState<any[]>([]);
-  const [showCustomQuestions, setShowCustomQuestions] = useState<boolean>(false);
-  const [selectedTestDetail, setSelectedTestDetail] = useState<BenchmarkTestType | null>(null);
-  const [suiteConfig, setSuiteConfig] = useState({
-    name: 'Test Benchmark',
-    description: 'Test personnalisé des modèles LLM',
-    comments: ''
-  });
+  const [selectedTestDetail, setSelectedTestDetail] = useState<string | null>(null);
+
+  // Charger les types de tests disponibles depuis l'API
+  useEffect(() => {
+    const fetchTestTypes = async () => {
+      setLoadingTestTypes(true);
+      try {
+        console.log('🔍 Chargement des types de tests depuis l\'API...');
+        
+        // Liste des types de tests à récupérer (ordre de performance)
+        const testTypeIds = [
+          'smoke_test',           // 1 - Le plus rapide
+          'medical_test',         // 2 - Tests médicaux
+          'general_knowledge',    // 3 - Connaissances générales  
+          'coding_test'           // 4 - Tests de code
+        ];
+        
+        const testTypesData = [];
+        
+        for (const testId of testTypeIds) {
+          try {
+            const response = await fetch(`/api/benchmark/config?benchmarkId=${testId}`);
+            if (response.ok) {
+              const data = await response.json();
+              if (data.success) {
+                testTypesData.push({
+                  id: testId,
+                  name: data.data.name,
+                  description: data.data.description,
+                  questions: data.data.questions,
+                  parameters: data.data.parameters,
+                  testTypes: data.data.testTypes
+                });
+              }
+            }
+          } catch (error) {
+            console.warn(`Échec du chargement de ${testId}:`, error);
+          }
+        }
+        
+        setAvailableTestTypes(testTypesData);
+        console.log(`✅ ${testTypesData.length} types de tests chargés`);
+        
+      } catch (error) {
+        console.error('Erreur lors du chargement des types de tests:', error);
+        // Fallback vers des types de base si l'API échoue
+        setAvailableTestTypes([
+          {
+            id: 'smoke_test',
+            name: 'Test Smoke',
+            description: 'Tests rapides de validation fonctionnelle',
+            questions: [],
+            parameters: { timeout: 30000 }
+          }
+        ]);
+      } finally {
+        setLoadingTestTypes(false);
+      }
+    };
+
+    fetchTestTypes();
+  }, []);
 
   // Charger les modèles disponibles
   useEffect(() => {
@@ -149,6 +199,9 @@ const BenchmarkMain: React.FC = () => {
 
   // Surveiller l'état du benchmark et ajouter des logs
   useEffect(() => {
+    // Ne pas interférer si on utilise notre système local
+    if (isLocalRunning) return;
+    
     if (isRunning && benchmarkStartTime === 0) {
       // Démarrer le benchmark seulement si ce n'est pas déjà démarré
       setBenchmarkStartTime(Date.now());
@@ -179,14 +232,40 @@ const BenchmarkMain: React.FC = () => {
         clearTimeout(redirectTimeout);
         clearTimeout(resetTimeout);
       };
-    } else if (!isRunning && benchmarkStartTime > 0 && progress < 100) {
-      // Benchmark arrêté avant la fin
+    } else if (!isRunning && !isLocalRunning && benchmarkStartTime > 0 && progress < 100) {
+      // Benchmark arrêté avant la fin (seulement si ce n'est pas notre système local)
       addTerminalLog('Benchmark arrêté par l\'utilisateur', 'warning');
       setBenchmarkStartTime(0);
       setElapsedTime(0);
       setEstimatedTimeRemaining(0);
     }
-  }, [isRunning, progress, currentExecution, benchmarkStartTime, router]);
+  }, [isRunning, progress, currentExecution, benchmarkStartTime, router, isLocalRunning]);
+
+  // Gestion de la navigation pendant les tests
+  const handleNavigation = (path: string) => {
+    if (isLocalRunning || isRunning) {
+      setPendingNavigation(path);
+      setShowExitWarning(true);
+    } else {
+      router.push(path as any);
+    }
+  };
+
+  const confirmNavigation = () => {
+    if (pendingNavigation) {
+      setIsLocalRunning(false);
+      setLocalProgress(0);
+      setBenchmarkStartTime(0);
+      router.push(pendingNavigation as any);
+    }
+    setShowExitWarning(false);
+    setPendingNavigation(null);
+  };
+
+  const cancelNavigation = () => {
+    setShowExitWarning(false);
+    setPendingNavigation(null);
+  };
 
   // Mettre à jour le temps écoulé et le temps restant
   useEffect(() => {
@@ -215,85 +294,98 @@ const BenchmarkMain: React.FC = () => {
     }
   }, [error]);
 
-  // Générer automatiquement la description du benchmark
-  useEffect(() => {
-    if (selectedTestTypes.length > 0 && selectedModels.length > 0) {
-      const testNames = selectedTestTypes.map(test => test.replace('_', ' ').toLowerCase()).join(', ');
-      const modelNames = selectedModels.join(', ');
-      const autoDescription = `Benchmark automatisé incluant ${selectedTestTypes.length} type${selectedTestTypes.length > 1 ? 's' : ''} de test${selectedTestTypes.length > 1 ? 's' : ''} (${testNames}) sur ${selectedModels.length} modèle${selectedModels.length > 1 ? 's' : ''} (${modelNames}).`;
-      
-      setSuiteConfig(prev => ({
-        ...prev,
-        description: autoDescription
-      }));
-    }
-  }, [selectedTestTypes, selectedModels]);
-
   const canRunBenchmark = () => {
     if (selectedTestTypes.length === 0 || selectedModels.length === 0) {
       return false;
     }
-    return !isRunning;
+    return !isLocalRunning && !isRunning;
   };
 
   const handleRunBenchmark = async () => {
     if (!canRunBenchmark()) return;
 
-    // Réinitialiser les temps avant de lancer un nouveau benchmark
+    // Réinitialiser les temps et marquer comme en cours
     clearProgressDisplay();
+    setBenchmarkStartTime(Date.now());
+    setIsLocalRunning(true);
+    setLocalProgress(0);
 
     // Ajouter des logs sans ouvrir automatiquement le terminal
     addTerminalLog('Initialisation du benchmark...', 'info');
     addTerminalLog(`Modèles sélectionnés: ${selectedModels.join(', ')}`, 'info');
     addTerminalLog(`Types de tests: ${selectedTestTypes.join(', ')}`, 'info');
 
-    // Générer les questions par défaut pour les types de tests sélectionnés
-    const questions: BenchmarkQuestion[] = [];
-    for (const testType of selectedTestTypes) {
-      addTerminalLog(`Génération des questions pour ${testType}...`, 'info');
-      
-      // Utiliser les questions spécifiques à chaque type de test
-      if (testType === BenchmarkTestType.SMOKE) {
-        // Utiliser les vraies questions du SmokeTestExecutor
-        const smokeQuestions = [
-          createQuestion('What is 2 + 2?', QuestionCategory.LANGUAGE_UNDERSTANDING, DifficultyLevel.EASY),
-          createQuestion('Name three colors.', QuestionCategory.LANGUAGE_UNDERSTANDING, DifficultyLevel.EASY),
-          createQuestion('Write a simple greeting.', QuestionCategory.LANGUAGE_UNDERSTANDING, DifficultyLevel.EASY)
-        ];
-        questions.push(...smokeQuestions);
-      } else {
-        // Pour les autres types de tests, créer des questions de base appropriées
-        const baseQuestions = [
-          `Analysez ce cas : Comment évalueriez-vous l'efficacité d'un traitement médical ?`,
-          `Raisonnement : Expliquez les étapes pour résoudre un problème complexe.`,
-          `Créativité : Proposez une solution innovante à un défi environnemental.`
-        ].map(q => createQuestion(q, QuestionCategory.LANGUAGE_UNDERSTANDING, DifficultyLevel.MEDIUM));
-        questions.push(...baseQuestions);
+    // Exécuter les benchmarks via l'API
+    try {
+      let completedTests = 0;
+      const totalTests = selectedTestTypes.length;
+      let allResults = [];
+
+      addTerminalLog(`📊 Début de l'exécution de ${totalTests} test(s)`, 'info');
+
+      for (const testTypeId of selectedTestTypes) {
+        addTerminalLog(`🔧 Début du benchmark ${testTypeId}... (${completedTests + 1}/${totalTests})`, 'info');
+        
+        const startTime = Date.now();
+        const execution = await fetch('/api/benchmark/execute', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            benchmarkId: testTypeId,
+            models: selectedModels,
+            iterations: 1,
+            saveResults: true
+          })
+        });
+
+        const endTime = Date.now();
+        addTerminalLog(`⏱️ Requête API terminée en ${endTime - startTime}ms`, 'info');
+
+        if (execution.ok) {
+          const result = await execution.json();
+          addTerminalLog(`📨 Réponse API reçue: ${result.success ? 'succès' : 'échec'}`, 'info');
+          
+          if (result.success) {
+            completedTests++;
+            allResults.push(result);
+            const newProgress = (completedTests / totalTests) * 100;
+            setLocalProgress(newProgress);
+            addTerminalLog(`✅ Benchmark ${testTypeId} terminé avec succès!`, 'success');
+            addTerminalLog(`📊 Score moyen: ${result.data.results[0]?.overallScore || 'N/A'}`, 'info');
+            addTerminalLog(`📈 Progression: ${completedTests}/${totalTests} tests complétés (${newProgress.toFixed(0)}%)`, 'info');
+            
+            // Petite pause pour voir la progression
+            await new Promise(resolve => setTimeout(resolve, 500));
+          } else {
+            addTerminalLog(`❌ Erreur lors du benchmark ${testTypeId}: ${result.error}`, 'error');
+          }
+        } else {
+          addTerminalLog(`❌ Erreur HTTP ${execution.status} lors du benchmark ${testTypeId}`, 'error');
+        }
       }
+      
+      addTerminalLog('🎉 Tous les benchmarks terminés!', 'success');
+      
+      // Redirection immédiate vers l'historique des résultats
+      if (allResults.length > 0) {
+        addTerminalLog('🎯 Redirection vers l\'historique des résultats...', 'info');
+        setTimeout(() => {
+          router.push('/benchmark/history' as any);
+        }, 1000);
+      }
+      
+    } catch (error) {
+      addTerminalLog(`💥 Erreur lors de l'exécution: ${error}`, 'error');
+    } finally {
+      // Réinitialiser les états
+      setIsLocalRunning(false);
+      setLocalProgress(0);
+      setBenchmarkStartTime(0);
+      setElapsedTime(0);
+      setEstimatedTimeRemaining(0);
     }
-
-    // Ajouter les questions personnalisées si spécifiées
-    if (customQuestions.length > 0) {
-      addTerminalLog(`Ajout de ${customQuestions.length} questions personnalisées...`, 'info');
-      const customQuestionsList = customQuestions.map(cq => 
-        createQuestion(cq.question, QuestionCategory.LANGUAGE_UNDERSTANDING, DifficultyLevel.MEDIUM)
-      );
-      questions.push(...customQuestionsList);
-    }
-
-    // Utiliser la fonction createBenchmarkSuite pour créer une suite valide
-    addTerminalLog('Création de la suite de tests...', 'info');
-    const suite = createBenchmarkSuite({
-      name: suiteConfig.name,
-      description: suiteConfig.description,
-      testTypes: selectedTestTypes,
-      questions,
-      models: selectedModels,
-      configuration: getDefaultConfiguration()
-    });
-    
-    addTerminalLog('Lancement du benchmark...', 'success');
-    await startBenchmark(suite);
   };
 
   const handleQuickSmokeTest = async () => {
@@ -307,8 +399,32 @@ const BenchmarkMain: React.FC = () => {
     addTerminalLog(`Modèles sélectionnés: ${selectedModels.join(', ')}`, 'info');
     addTerminalLog('Test de validation fonctionnelle en cours...', 'info');
     
-    await createQuickSmokeTest(selectedModels);
-    addTerminalLog('Test Smoke terminé avec succès!', 'success');
+    try {
+      const execution = await fetch('/api/benchmark/execute', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          benchmarkId: 'smoke_test',
+          models: selectedModels,
+          iterations: 1,
+          saveResults: true
+        })
+      });
+
+      if (execution.ok) {
+        const result = await execution.json();
+        if (result.success) {
+          addTerminalLog('✅ Test Smoke terminé avec succès!', 'success');
+          addTerminalLog(`📊 Score moyen: ${result.data.results[0]?.overallScore || 'N/A'}`, 'info');
+        } else {
+          addTerminalLog(`❌ Erreur lors du test Smoke: ${result.error}`, 'error');
+        }
+      }
+    } catch (error) {
+      addTerminalLog(`💥 Erreur lors du test Smoke: ${error}`, 'error');
+    }
   };
 
   const handleModelToggle = (modelName: string) => {
@@ -319,56 +435,14 @@ const BenchmarkMain: React.FC = () => {
     );
   };
 
-  const getTestTypeIcon = (type: BenchmarkTestType) => {
-    const icons = {
-      [BenchmarkTestType.QUALITATIVE]: <FileText className="w-4 h-4" />,
-      [BenchmarkTestType.STABILITY]: <Target className="w-4 h-4" />,
-      [BenchmarkTestType.API_IO]: <BarChart3 className="w-4 h-4" />,
-      [BenchmarkTestType.REAL_DATA]: <TrendingUp className="w-4 h-4" />,
-      [BenchmarkTestType.PARAMETER]: <Settings className="w-4 h-4" />,
-      [BenchmarkTestType.PROMPT_ALTERNATIVE]: <FileText className="w-4 h-4" />,
-      [BenchmarkTestType.SMOKE]: <Zap className="w-4 h-4" />
-    };
-    return icons[type] || <Settings className="w-4 h-4" />;
+  const getTestTypeQuestionCount = (testId: string): number => {
+    const testType = availableTestTypes.find(t => t.id === testId);
+    return testType?.questions.length || 3;
   };
 
-  const getTestTypeDescription = (type: BenchmarkTestType) => {
-    const descriptions = {
-      [BenchmarkTestType.QUALITATIVE]: "Évalue la qualité, pertinence et cohérence des réponses",
-      [BenchmarkTestType.STABILITY]: "Teste la consistance des réponses sur plusieurs itérations",
-      [BenchmarkTestType.API_IO]: "Mesure les performances, la latence et le débit",
-      [BenchmarkTestType.REAL_DATA]: "Tests avec données contextuelles réelles",
-      [BenchmarkTestType.PARAMETER]: "Optimise les paramètres du modèle",
-      [BenchmarkTestType.PROMPT_ALTERNATIVE]: "Compare différentes formulations de prompts",
-      [BenchmarkTestType.SMOKE]: "Tests rapides de validation fonctionnelle"
-    };
-    return descriptions[type] || "Test spécialisé";
-  };
-
-  const getTestTypeQuestionCount = (type: BenchmarkTestType): number => {
-    const questionCounts = {
-      [BenchmarkTestType.SMOKE]: 3,
-      [BenchmarkTestType.API_IO]: 5,
-      [BenchmarkTestType.QUALITATIVE]: 5,
-      [BenchmarkTestType.STABILITY]: 5,
-      [BenchmarkTestType.PARAMETER]: 5,
-      [BenchmarkTestType.PROMPT_ALTERNATIVE]: 5,
-      [BenchmarkTestType.REAL_DATA]: 5
-    };
-    return questionCounts[type] || 3;
-  };
-
-  const getTestTypeTimeout = (type: BenchmarkTestType): number => {
-    const timeouts = {
-      [BenchmarkTestType.SMOKE]: 30,           // 30 secondes
-      [BenchmarkTestType.API_IO]: 60,          // 60 secondes
-      [BenchmarkTestType.QUALITATIVE]: 120,    // 120 secondes
-      [BenchmarkTestType.STABILITY]: 90,       // 90 secondes
-      [BenchmarkTestType.PARAMETER]: 75,       // 75 secondes
-      [BenchmarkTestType.PROMPT_ALTERNATIVE]: 90, // 90 secondes
-      [BenchmarkTestType.REAL_DATA]: 180       // 180 secondes
-    };
-    return timeouts[type] || 30;
+  const getTestTypeTimeout = (testId: string): number => {
+    const testType = availableTestTypes.find(t => t.id === testId);
+    return testType?.parameters?.timeout ? Math.round(testType.parameters.timeout / 1000) : 30;
   };
 
   const calculateEstimatedTime = (): number => {
@@ -377,9 +451,9 @@ const BenchmarkMain: React.FC = () => {
     }
     
     let totalSeconds = 0;
-    for (const testType of selectedTestTypes) {
-      const questionCount = getTestTypeQuestionCount(testType);
-      const timeoutPerQuestion = getTestTypeTimeout(testType);
+    for (const testTypeId of selectedTestTypes) {
+      const questionCount = getTestTypeQuestionCount(testTypeId);
+      const timeoutPerQuestion = getTestTypeTimeout(testTypeId);
       const modelsCount = selectedModels.length;
       
       // Calcul: timeout × questions × modèles pour chaque type de test
@@ -425,21 +499,21 @@ const BenchmarkMain: React.FC = () => {
             {/* Navigation */}
             <div className="flex gap-2">
               <button
-                onClick={() => router.push('/benchmark')}
+                onClick={() => handleNavigation('/benchmark')}
                 className="px-4 py-2 rounded-lg font-medium transition-all bg-blue-500 text-white shadow-lg"
               >
                 <Settings className="w-4 h-4 inline mr-2" />
                 Benchmark
               </button>
               <button
-                onClick={() => router.push('/benchmark/history')}
+                onClick={() => handleNavigation('/benchmark/history')}
                 className="px-4 py-2 rounded-lg font-medium transition-all bg-gray-100 text-gray-700 hover:bg-gray-200"
               >
                 <History className="w-4 h-4 inline mr-2" />
                 Historique
               </button>
               <button
-                onClick={() => router.push('/benchmark/ranking')}
+                onClick={() => handleNavigation('/benchmark/ranking')}
                 className="px-4 py-2 rounded-lg font-medium transition-all bg-gray-100 text-gray-700 hover:bg-gray-200"
               >
                 <Trophy className="w-4 h-4 inline mr-2" />
@@ -468,69 +542,80 @@ const BenchmarkMain: React.FC = () => {
           
           {/* Grille cohérente avec les modèles */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {orderedTestTypes.map((testType, index) => (
-              <div
-                key={testType}
-                className={`
-                  relative p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer group
-                  ${selectedTestTypes.includes(testType) 
-                    ? 'border-blue-500 bg-blue-50 shadow-lg scale-[1.02]' 
-                    : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-md hover:scale-[1.01]'
-                  }
-                `}
-                onClick={() => {
-                  if (selectedTestTypes.includes(testType)) {
-                    setSelectedTestTypes(prev => prev.filter(t => t !== testType));
-                  } else {
-                    setSelectedTestTypes(prev => [...prev, testType]);
-                  }
-                }}
-              >
-                <div className="flex flex-col h-full">
-                  <div className="flex items-start justify-between mb-2">
-                    <div>
-                      <h3 className="font-semibold text-gray-900 leading-tight">
-                        {testType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                      </h3>
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
-                          {getTestTypeQuestionCount(testType)} tests
-                        </span>
+            {loadingTestTypes ? (
+              <div className="col-span-full flex items-center justify-center py-8">
+                <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+                <span className="ml-3 text-gray-600">Chargement des types de tests...</span>
+              </div>
+            ) : availableTestTypes.length === 0 ? (
+              <div className="col-span-full text-center py-8 text-gray-500">
+                Aucun type de test disponible
+              </div>
+            ) : (
+              availableTestTypes.map((testType, index) => (
+                <div
+                  key={testType.id}
+                  className={`
+                    relative p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer group
+                    ${selectedTestTypes.includes(testType.id) 
+                      ? 'border-blue-500 bg-blue-50 shadow-lg scale-[1.02]' 
+                      : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-md hover:scale-[1.01]'
+                    }
+                  `}
+                  onClick={() => {
+                    if (selectedTestTypes.includes(testType.id)) {
+                      setSelectedTestTypes(prev => prev.filter(t => t !== testType.id));
+                    } else {
+                      setSelectedTestTypes(prev => [...prev, testType.id]);
+                    }
+                  }}
+                >
+                  <div className="flex flex-col h-full">
+                    <div className="flex items-start justify-between mb-2">
+                      <div>
+                        <h3 className="font-semibold text-gray-900 leading-tight">
+                          {testType.name}
+                        </h3>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                            {testType.questions.length} tests
+                          </span>
+                        </div>
                       </div>
+                      {selectedTestTypes.includes(testType.id) && (
+                        <CheckCircle className="w-5 h-5 text-blue-500 flex-shrink-0" />
+                      )}
                     </div>
-                    {selectedTestTypes.includes(testType) && (
-                      <CheckCircle className="w-5 h-5 text-blue-500 flex-shrink-0" />
-                    )}
-                  </div>
-                  
-                  <p className="text-sm text-gray-600 mb-3 flex-1">
-                    {getTestTypeDescription(testType)}
-                  </p>
-                  
-                  <div className="flex items-center justify-between text-xs">
-                    <span 
-                      className={`px-2 py-1 rounded-full font-medium ${
-                        index === 0 ? 'bg-green-100 text-green-700' :
-                        index === orderedTestTypes.length - 1 ? 'bg-orange-100 text-orange-700' :
-                        'bg-blue-100 text-blue-700'
-                      }`}
-                    >
-                      {index === 0 ? '⚡ Rapide' : 
-                       index === orderedTestTypes.length - 1 ? '🐌 Long' : '⚖️ Modéré'}
-                    </span>
-                    <button
-                      className="text-blue-600 hover:text-blue-800 font-medium"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedTestDetail(testType);
-                      }}
-                    >
-                      Détails
-                    </button>
+                    
+                    <p className="text-sm text-gray-600 mb-3 flex-1">
+                      {testType.description}
+                    </p>
+                    
+                    <div className="flex items-center justify-between text-xs">
+                      <span 
+                        className={`px-2 py-1 rounded-full font-medium ${
+                          index === 0 ? 'bg-green-100 text-green-700' :
+                          index === availableTestTypes.length - 1 ? 'bg-orange-100 text-orange-700' :
+                          'bg-blue-100 text-blue-700'
+                        }`}
+                      >
+                        {index === 0 ? '⚡ Rapide' : 
+                         index === availableTestTypes.length - 1 ? '🐌 Long' : '⚖️ Modéré'}
+                      </span>
+                      <button
+                        className="text-blue-600 hover:text-blue-800 font-medium"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedTestDetail(testType.id);
+                        }}
+                      >
+                        Détails
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
           
           {/* Message d'aide */}
@@ -548,100 +633,16 @@ const BenchmarkMain: React.FC = () => {
             </div>
           )}
         </div>
-
-        {/* Configuration du test */}
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center">
-              <Settings className="w-5 h-5 text-white" />
-            </div>
-            <h3 className="text-2xl font-semibold text-gray-800">Configuration du Test</h3>
-          </div>
-          
-          <div className="space-y-6">
-            {/* Nom et description */}
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Nom du benchmark
-                </label>
-                <input
-                  type="text"
-                  value={suiteConfig.name}
-                  onChange={(e) => setSuiteConfig(prev => ({ ...prev, name: e.target.value }))}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Ex: Test de performance des modèles"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Commentaires
-                </label>
-                <input
-                  type="text"
-                  value={suiteConfig.comments}
-                  onChange={(e) => setSuiteConfig(prev => ({ ...prev, comments: e.target.value }))}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Commentaires optionnels"
-                />
-              </div>
-            </div>
-            
-            {/* Description automatique */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Description (générée automatiquement)
-              </label>
-              <textarea
-                value={suiteConfig.description}
-                onChange={(e) => setSuiteConfig(prev => ({ ...prev, description: e.target.value }))}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                rows={3}
-                placeholder="La description sera générée automatiquement en fonction de vos sélections..."
-              />
-            </div>
-            
-            {/* Toggle pour questions personnalisées */}
-            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-              <div>
-                <h4 className="font-medium text-gray-800">Questions personnalisées</h4>
-                <p className="text-sm text-gray-600">Ajouter vos propres questions au benchmark</p>
-              </div>
-              <button
-                onClick={() => setShowCustomQuestions(!showCustomQuestions)}
-                className={`p-2 rounded-lg transition-colors ${
-                  showCustomQuestions 
-                    ? 'bg-blue-500 text-white' 
-                    : 'bg-gray-300 text-gray-600 hover:bg-gray-400'
-                }`}
-              >
-                {showCustomQuestions ? (
-                  <ToggleRight className="w-6 h-6" />
-                ) : (
-                  <ToggleLeft className="w-6 h-6" />
-                )}
-              </button>
-            </div>
-            
-            {/* Questions personnalisées */}
-            {showCustomQuestions && (
-              <CustomQuestions
-                onQuestionsChange={setCustomQuestions}
-              />
-            )}
-          </div>
-        </div>
       </div>
 
       {/* Barre de contrôle fixe en bas */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-gray-200 shadow-2xl z-50">
         {/* Barre de progression intégrée */}
-        {(isRunning || (currentExecution && benchmarkStartTime > 0)) && (
+        {(isLocalRunning || isRunning || (currentExecution && benchmarkStartTime > 0)) && (
           <div className="bg-gradient-to-r from-blue-50 to-purple-50 px-6 py-2 border-b border-gray-200">
             <div className="max-w-7xl mx-auto">
               <div className="flex items-center gap-4">
-                {isRunning ? (
+                {(isLocalRunning || isRunning) ? (
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-gradient-to-r from-green-400 to-blue-500 rounded-full animate-bounce"></div>
                     <span className="text-sm font-medium text-gray-700">Test en cours...</span>
@@ -657,7 +658,7 @@ const BenchmarkMain: React.FC = () => {
                   <div className="flex justify-between text-xs mb-1">
                     <div className="flex items-center gap-4">
                       <span className="text-gray-600">Progression</span>
-                      {isRunning && (
+                      {(isLocalRunning || isRunning) && (
                         <>
                           <span className="text-blue-600">
                             ⏱️ {formatTime(elapsedTime)}
@@ -670,12 +671,12 @@ const BenchmarkMain: React.FC = () => {
                         </>
                       )}
                     </div>
-                    <span className="text-blue-600 font-bold">{progress}%</span>
+                    <span className="text-blue-600 font-bold">{isLocalRunning ? localProgress.toFixed(0) : progress}%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div 
                       className="h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all duration-500 ease-out"
-                      style={{ width: `${progress}%` }}
+                      style={{ width: `${isLocalRunning ? localProgress : progress}%` }}
                     ></div>
                   </div>
                 </div>
@@ -774,9 +775,9 @@ const BenchmarkMain: React.FC = () => {
                 
                 <button
                   onClick={handleQuickSmokeTest}
-                  disabled={selectedModels.length === 0 || isRunning}
+                  disabled={selectedModels.length === 0 || isLocalRunning || isRunning}
                   className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
-                    selectedModels.length === 0 || isRunning
+                    selectedModels.length === 0 || isLocalRunning || isRunning
                       ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
                       : 'bg-yellow-500 text-white hover:bg-yellow-600 hover:shadow-lg'
                   }`}
@@ -785,9 +786,12 @@ const BenchmarkMain: React.FC = () => {
                   Test Smoke Rapide
                 </button>
                 
-                {isRunning ? (
+                {(isLocalRunning || isRunning) ? (
                   <button
-                    onClick={stopBenchmark}
+                    onClick={() => {
+                      if (isRunning) stopBenchmark();
+                      if (isLocalRunning) setIsLocalRunning(false);
+                    }}
                     className="px-6 py-2 bg-red-500 text-white rounded-lg font-medium hover:bg-red-600 transition-all hover:shadow-lg"
                   >
                     <Square className="w-4 h-4 inline mr-2" />
@@ -878,6 +882,40 @@ const BenchmarkMain: React.FC = () => {
         isVisible={selectedTestDetail !== null}
         onClose={() => setSelectedTestDetail(null)}
       />
+
+      {/* Modal d'avertissement pour navigation pendant test */}
+      {showExitWarning && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={cancelNavigation}>
+          <div className="bg-white rounded-xl max-w-md w-full mx-4 p-6" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-3 rounded-lg bg-yellow-100">
+                <AlertTriangle className="h-6 w-6 text-yellow-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">Test en cours</h3>
+                <p className="text-sm text-gray-600">Un benchmark est actuellement en cours d'exécution</p>
+              </div>
+            </div>
+            <p className="text-gray-700 mb-6">
+              Si vous quittez cette page maintenant, le test en cours sera interrompu et les résultats partiels seront perdus.
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={cancelNavigation}
+                className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                Rester sur la page
+              </button>
+              <button
+                onClick={confirmNavigation}
+                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+              >
+                Quitter quand même
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

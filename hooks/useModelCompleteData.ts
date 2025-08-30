@@ -75,7 +75,7 @@ export function useModelCompleteData(modelName: string | null) {
     setError(null)
     
     try {
-      const response = await fetch(`/api/models/${encodeURIComponent(name)}/complete`)
+      const response = await fetch(`/api/models/${encodeURIComponent(name)}`)
       
       if (!response.ok) {
         throw new Error('Erreur lors du chargement des données du modèle')

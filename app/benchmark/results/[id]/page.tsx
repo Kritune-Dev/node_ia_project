@@ -18,7 +18,6 @@ import {
   Timer,
   Zap
 } from 'lucide-react';
-import { useBenchmark } from '../../../../hooks/useBenchmark';
 import { useModelConfig } from '../../../../hooks/useModelConfig';
 
 interface TestDetailModalProps {
@@ -95,8 +94,9 @@ function TestDetailModal({ isOpen, onClose, testType, testConfig }: TestDetailMo
 export default function BenchmarkResultsPage() {
   const router = useRouter();
   const params = useParams();
-  const { executionHistory, currentExecution } = useBenchmark();
   const [selectedExecution, setSelectedExecution] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [expandedModels, setExpandedModels] = useState<Set<string>>(new Set());
   const [showAllRankings, setShowAllRankings] = useState(false);
   const [testModalConfig, setTestModalConfig] = useState<{isOpen: boolean, testType: string, config: any}>({
@@ -206,20 +206,64 @@ export default function BenchmarkResultsPage() {
   };
 
   useEffect(() => {
-    const resultId = params.id as string;
-    
-    if (resultId === 'latest' && currentExecution) {
-      setSelectedExecution(currentExecution);
-    } else if (resultId && executionHistory.length > 0) {
-      const execution = executionHistory.find(exec => exec.id === resultId);
-      if (execution) {
-        setSelectedExecution(execution);
-      } else {
-        // Si on ne trouve pas l'exécution, rediriger vers l'historique
-        router.push('/benchmark/history');
+    const loadBenchmarkResult = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const resultId = params.id as string;
+        
+        if (!resultId) {
+          router.push('/benchmark/history');
+          return;
+        }
+        
+        const response = await fetch(`/api/benchmark/results/${resultId}`);
+        
+        if (!response.ok) {
+          throw new Error('Résultat non trouvé');
+        }
+        
+        const data = await response.json();
+        setSelectedExecution(data);
+      } catch (error) {
+        console.error('Erreur lors du chargement:', error);
+        setError('Impossible de charger le résultat du benchmark');
+      } finally {
+        setLoading(false);
       }
-    }
-  }, [params.id, executionHistory, currentExecution, router]);
+    };
+
+    loadBenchmarkResult();
+  }, [params.id, router]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <h2 className="text-xl font-semibold text-gray-700">Chargement des résultats...</h2>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <XCircle className="w-32 h-32 text-red-500 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-gray-700 mb-4">{error}</h2>
+          <button
+            onClick={() => router.push('/benchmark/history')}
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+          >
+            Retour à l'historique
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (!selectedExecution) {
     return (
