@@ -107,8 +107,10 @@ export default function BenchmarkHistorySimple() {
     })
   }
 
-  const formatDuration = (seconds?: number) => {
-    if (!seconds) return 'N/A'
+  const formatDuration = (milliseconds?: number) => {
+    if (!milliseconds) return 'N/A'
+    // Convertir les millisecondes en secondes
+    const seconds = Math.round(milliseconds / 1000)
     const minutes = Math.floor(seconds / 60)
     const remainingSeconds = seconds % 60
     return `${minutes}m ${remainingSeconds}s`

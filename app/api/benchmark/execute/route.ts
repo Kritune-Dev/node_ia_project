@@ -19,24 +19,6 @@ interface CustomQuestion {
   createdAt: string
 }
 
-interface HistoryMetadata {
-  id: string
-  displayName: string
-  timestamp: string
-  testSeries: string
-  totalModels: number
-  totalQuestions: number
-  models: Array<{
-    name: string
-    displayName: string
-  }>
-}
-
-interface History {
-  version: string
-  metadata: HistoryMetadata[]
-}
-
 // Questions de benchmark prédéfinies
 const BENCHMARK_QUESTIONS: BenchmarkQuestion[] = [
   // Tests de base
@@ -177,10 +159,12 @@ async function testModelResponse(modelName: string, prompt: string, serviceUrl: 
   }
 }
 
-// Fonction pour sauvegarder les résultats avec le nouveau format v2.0
+// Fonction pour sauvegarder les résultats avec le nouveau format v3.0
 async function saveBenchmarkResults(results: any) {
   try {
-        const benchmarkResultsDir = path.join(process.cwd(), 'data', 'benchmark_results')
+    console.log('💾 [BENCHMARK-API] Sauvegarde des résultats...')
+    
+    const benchmarkResultsDir = path.join(process.cwd(), 'data', 'benchmark_results')
     
     // Créer le dossier s'il n'existe pas
     if (!fs.existsSync(benchmarkResultsDir)) {
@@ -190,40 +174,55 @@ async function saveBenchmarkResults(results: any) {
     // Sauvegarder le fichier détaillé
     const detailedFilePath = path.join(benchmarkResultsDir, `${results.id}.json`)
     fs.writeFileSync(detailedFilePath, JSON.stringify(results, null, 2))
+    console.log(`💾 [BENCHMARK-API] Fichier détaillé sauvé: ${results.id}.json`)
 
-    // Mettre à jour history.json avec le format v2.0
-    const historyPath = path.join(benchmarkResultsDir, 'history.json')
-    let history: History = { version: '2.0', metadata: [] }
+    // 🎯 NOUVEAU: Utiliser l'API moderne pour l'historique v3.0
+    try {
+      console.log('📡 [BENCHMARK-API] Mise à jour de l\'historique via API...')
+      
+      // Calculer le taux de succès
+      const successRate = results.summary.successful_tests > 0 
+        ? Math.round((results.summary.successful_tests / results.summary.total_tests) * 100)
+        : 0
 
-    if (fs.existsSync(historyPath)) {
-      const existingHistory = JSON.parse(fs.readFileSync(historyPath, 'utf8'))
-      if (existingHistory.version === '2.0') {
-        history = existingHistory
+      // Extraire les noms d'affichage des modèles
+      const modelsDisplayNames = Object.keys(results.results).map(modelName => 
+        results.results[modelName].model_name || modelName
+      )
+
+      const historyEntry = {
+        id: results.id,
+        name: results.displayName || results.testSeries,
+        duration: Math.round(results.summary.total_duration || 0), // 🕐 Utilise la vraie durée totale
+        successRate,
+        status: 'completed',
+        modelsDisplayNames,
+        testSeriesNames: [results.testSeries || results.displayName],
+        modelCount: Object.keys(results.results).length,
+        questionCount: results.summary.total_tests
       }
-    }
 
-    // Ajouter les métadonnées légères
-    const metadata: HistoryMetadata = {
-      id: results.id,
-      displayName: results.displayName,
-      timestamp: results.timestamp,
-      testSeries: results.testSeries,
-      totalModels: Object.keys(results.results).length,
-      totalQuestions: results.summary.total_tests,
-      models: Object.keys(results.results).map(modelName => ({
-        name: modelName,
-        displayName: results.results[modelName].model_name || modelName
-      }))
-    }
+      console.log('📤 [BENCHMARK-API] Données pour l\'historique:', historyEntry)
 
-    history.metadata.unshift(metadata)
-    
-    // Garder seulement les 50 derniers résultats
-    if (history.metadata.length > 50) {
-      history.metadata = history.metadata.slice(0, 50)
-    }
+      // Appel à l'API d'historique moderne
+      const historyResponse = await fetch(`${process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : ''}/api/benchmark/history`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(historyEntry)
+      })
 
-    fs.writeFileSync(historyPath, JSON.stringify(history, null, 2))
+      if (historyResponse.ok) {
+        const historyResult = await historyResponse.json()
+        console.log('✅ [BENCHMARK-API] Historique mis à jour avec succès:', historyResult)
+      } else {
+        console.error('❌ [BENCHMARK-API] Erreur mise à jour historique:', historyResponse.status)
+      }
+    } catch (historyError) {
+      console.error('❌ [BENCHMARK-API] Erreur lors de la mise à jour de l\'historique:', historyError)
+      // Continuer même si l'historique échoue
+    }
     
     return { success: true, benchmarkId: results.id }
   } catch (error) {
@@ -238,12 +237,21 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const { 
+      benchmarkId,
       models, 
       categories, 
       questions: customQuestions, 
       testSeries = 'Test Standard',
-      stream = false 
+      streaming = false 
     } = body
+
+    console.log('📋 [BENCHMARK-API] Paramètres reçus:', {
+      benchmarkId,
+      models: models?.length || 0,
+      categories,
+      hasCustomQuestions: !!customQuestions,
+      streaming
+    })
 
     if (!models || !Array.isArray(models) || models.length === 0) {
       return NextResponse.json(
@@ -252,10 +260,39 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Déterminer les questions à tester
+    // 🎯 NOUVEAU: Charger les questions selon le benchmarkId
     let questionsToTest: BenchmarkQuestion[] = []
+    let benchmarkConfig: any = null
     
-    if (customQuestions && customQuestions.length > 0) {
+    if (benchmarkId) {
+      console.log(`🔧 [BENCHMARK-API] Chargement de la config pour: ${benchmarkId}`)
+      
+      // Charger la configuration depuis le fichier JSON
+      try {
+        const configPath = path.join(process.cwd(), 'data', 'benchmark-configs.json')
+        const configData = JSON.parse(fs.readFileSync(configPath, 'utf-8'))
+        benchmarkConfig = configData.benchmarks[benchmarkId]
+        
+        if (benchmarkConfig) {
+          console.log(`✅ [BENCHMARK-API] Config trouvée:`, benchmarkConfig)
+          // Adapter le format des questions du fichier config
+          questionsToTest = (benchmarkConfig.questions || []).map((q: any) => ({
+            id: q.id,
+            question: q.text || q.question, // Support des deux formats
+            category: q.category,
+            expectedType: q.expectedType,
+            difficulty: q.difficulty || 'medium'
+          }))
+        } else {
+          console.warn(`⚠️ [BENCHMARK-API] Config non trouvée pour ${benchmarkId}, utilisation des questions par défaut`)
+          questionsToTest = BENCHMARK_QUESTIONS.slice(0, 6) // Limiter à 6 questions par défaut
+        }
+      } catch (error) {
+        console.error(`❌ [BENCHMARK-API] Erreur chargement config:`, error)
+        questionsToTest = BENCHMARK_QUESTIONS.slice(0, 6) // Fallback
+      }
+    } else if (customQuestions && customQuestions.length > 0) {
+      console.log(`📝 [BENCHMARK-API] Utilisation de questions personnalisées (${customQuestions.length})`)
       questionsToTest = customQuestions.map((q: CustomQuestion) => ({
         id: q.id,
         question: q.question,
@@ -264,27 +301,37 @@ export async function POST(request: NextRequest) {
         difficulty: 'medium' as const
       }))
     } else {
+      console.log(`📚 [BENCHMARK-API] Utilisation des questions par catégories`)
       questionsToTest = categories ? 
         BENCHMARK_QUESTIONS.filter(q => categories.includes(q.category)) : 
-        BENCHMARK_QUESTIONS
+        BENCHMARK_QUESTIONS.slice(0, 6) // Limiter par défaut
     }
+
+    console.log(`📊 [BENCHMARK-API] Questions sélectionnées: ${questionsToTest.length}`)
+    questionsToTest.forEach((q, index) => {
+      const questionText = q.question || 'Question sans texte'
+      console.log(`  ${index + 1}. [${q.category}] ${questionText.substring(0, 50)}...`)
+    })
 
     if (questionsToTest.length === 0) {
       return NextResponse.json(
-        { error: 'Aucune question trouvée pour les catégories spécifiées' },
+        { error: 'Aucune question trouvée pour la configuration spécifiée' },
         { status: 400 }
       )
     }
 
-    const benchmarkId = `benchmark_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    const executionId = `benchmark_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     const timestamp = new Date().toISOString()
+    const benchmarkStartTime = Date.now() // 🕐 Timestamp de début du benchmark
+    const finalTestSeries = benchmarkConfig?.name || testSeries
     
     // Initialiser les résultats
     const results = {
-      id: benchmarkId,
-      displayName: testSeries,
-      testSeries,
+      id: executionId,
+      displayName: finalTestSeries,
+      testSeries: finalTestSeries,
       timestamp,
+      startTime: benchmarkStartTime, // 🕐 Ajout du temps de début
       summary: {
         total_tests: questionsToTest.length * models.length,
         successful_tests: 0,
@@ -292,19 +339,22 @@ export async function POST(request: NextRequest) {
         total_models: models.length,
         average_response_time: 0,
         average_tokens_per_second: 0,
+        total_duration: 0, // 🕐 Durée totale du benchmark
         categories_tested: Array.from(new Set(questionsToTest.map(q => q.category))),
         models_tested: models
       },
       results: {} as any
     }
 
+    console.log(`🚀 [BENCHMARK-API] Démarrage exécution: ${results.summary.total_tests} tests (${questionsToTest.length} questions × ${models.length} modèles)`)
+
     // Mode streaming
-    if (stream) {
+    if (streaming) {
       const encoder = new TextEncoder()
       const stream = new ReadableStream({
         async start(controller) {
           try {
-            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'start', benchmarkId, totalTests: results.summary.total_tests })}\n\n`))
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'start', benchmarkId: executionId, totalTests: results.summary.total_tests })}\n\n`))
 
             let totalResponseTime = 0
             let totalTokensPerSecond = 0
@@ -375,10 +425,14 @@ export async function POST(request: NextRequest) {
             }
 
             // Calculer les statistiques globales
+            const benchmarkEndTime = Date.now() // 🕐 Timestamp de fin
+            results.summary.total_duration = benchmarkEndTime - benchmarkStartTime // 🕐 Durée totale en ms
             results.summary.successful_tests = successfulTests
             results.summary.failed_tests = results.summary.total_tests - successfulTests
             results.summary.average_response_time = successfulTests > 0 ? totalResponseTime / successfulTests : 0
             results.summary.average_tokens_per_second = successfulTests > 0 ? totalTokensPerSecond / successfulTests : 0
+
+            console.log(`⏱️ [BENCHMARK-API] Durée totale: ${results.summary.total_duration}ms (${Math.round(results.summary.total_duration / 1000)}s)`)
 
             // Sauvegarder les résultats
             const saveResult = await saveBenchmarkResults(results)
@@ -462,10 +516,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Calculer les statistiques globales
+    const benchmarkEndTime = Date.now() // 🕐 Timestamp de fin
+    results.summary.total_duration = benchmarkEndTime - benchmarkStartTime // 🕐 Durée totale en ms
     results.summary.successful_tests = successfulTests
     results.summary.failed_tests = results.summary.total_tests - successfulTests
     results.summary.average_response_time = successfulTests > 0 ? totalResponseTime / successfulTests : 0
     results.summary.average_tokens_per_second = successfulTests > 0 ? totalTokensPerSecond / successfulTests : 0
+
+    console.log(`⏱️ [BENCHMARK-API] Durée totale: ${results.summary.total_duration}ms (${Math.round(results.summary.total_duration / 1000)}s)`)
 
     // Sauvegarder les résultats
     const saveResult = await saveBenchmarkResults(results)
@@ -477,8 +535,12 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error('❌ [BENCHMARK-API] Erreur lors du benchmark:', error)
+    console.error('❌ [BENCHMARK-API] Stack trace:', error instanceof Error ? error.stack : 'Pas de stack trace')
     return NextResponse.json(
-      { error: 'Erreur lors de l\'exécution du benchmark' },
+      { 
+        error: 'Erreur lors de l\'exécution du benchmark',
+        details: error instanceof Error ? error.message : 'Erreur inconnue'
+      },
       { status: 500 }
     )
   }

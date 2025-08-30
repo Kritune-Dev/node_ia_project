@@ -1,0 +1,68 @@
+{
+  "id": "benchmark_1756521454152_50ua1hmcb",
+  "displayName": "Test Rapide (Smoke)",
+  "testSeries": "Test Rapide (Smoke)",
+  "timestamp": "2025-08-30T02:37:34.152Z",
+  "startTime": 1756521454152,
+  "summary": {
+    "total_tests": 3,
+    "successful_tests": 3,
+    "failed_tests": 0,
+    "total_models": 1,
+    "average_response_time": 784.3333333333334,
+    "average_tokens_per_second": 59.21,
+    "total_duration": 2462,
+    "categories_tested": [
+      "basic"
+    ],
+    "models_tested": [
+      "tinyllama:1.1b"
+    ]
+  },
+  "results": {
+    "tinyllama:1.1b": {
+      "model_name": "tinyllama:1.1b",
+      "service_url": "http://localhost:3000",
+      "total_response_time": 2353,
+      "average_response_time": 784.3333333333334,
+      "total_tokens_per_second": 177.63,
+      "average_tokens_per_second": 59.21,
+      "success_rate": 100,
+      "questions": {
+        "basic_functionality": {
+          "question": "Peux-tu me dire si tu fonctionnes correctement ? Réponds simplement par 'Oui, je fonctionne correctement'.",
+          "category": "basic",
+          "difficulty": "easy",
+          "success": true,
+          "response": "Sure, I can confirm that I function properly. 🙂",
+          "responseTime": 982,
+          "tokensPerSecond": 12.22,
+          "model": "tinyllama:1.1b",
+          "isTimeout": false
+        },
+        "french_communication": {
+          "question": "Peux-tu me parler en français ? Écris une phrase simple en français pour confirmer que tu comprends cette langue.",
+          "category": "basic",
+          "difficulty": "easy",
+          "success": true,
+          "response": "Sure, I can definitely speak French.\n\nJe comprends bien le français.\n\nVous parlez bien la france.\n\nMerci ! Je vous réponde.",
+          "responseTime": 421,
+          "tokensPerSecond": 73.04,
+          "model": "tinyllama:1.1b",
+          "isTimeout": false
+        },
+        "simple_math": {
+          "question": "Combien font 2+2 ? Réponds uniquement avec le chiffre.",
+          "category": "basic",
+          "difficulty": "easy",
+          "success": true,
+          "response": "Certainement! La Combine font 2+2 est un mot en 3 caractères qui peut être traduit comme \"plus deux\" ou \"plus une\". Elle est un exemple d'unicode, c'est-à-dire qu'elle a été décrite avec des caractères supplémentaires pour représenter les différents points de croix et l'addition. Combine font 2+2 est donc uniquement disponible dans l'espace Unicode.",
+          "responseTime": 950,
+          "tokensPerSecond": 92.37,
+          "model": "tinyllama:1.1b",
+          "isTimeout": false
+        }
+      }
+    }
+  }
+}

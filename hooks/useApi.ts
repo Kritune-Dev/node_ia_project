@@ -129,7 +129,7 @@ export function useBenchmarkDetails(benchmarkId: string | null) {
   return {
     benchmark: data?.benchmark || null,
     isLoading,
-    error,
+    error: error?.message || null,
     refresh: mutate
   }
 }
@@ -196,7 +196,98 @@ export function useModelOperations() {
 }
 
 /**
- * 📈 Hook pour les opérations sur les benchmarks
+ * � Hook pour exécuter un benchmark avec la nouvelle API
+ */
+export function useBenchmarkExecution() {
+  const executeBenchmark = async (benchmarkId: string, models: string[], options: {
+    iterations?: number;
+    saveResults?: boolean;
+    streaming?: boolean;
+  } = {}) => {
+    const response = await fetch('/api/benchmark/execute', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        benchmarkId,
+        models,
+        iterations: options.iterations || 1,
+        saveResults: options.saveResults !== false
+      })
+    })
+
+    if (!response.ok) {
+      throw new Error(`Erreur exécution benchmark: ${response.status}`)
+    }
+
+    return response.json()
+  }
+
+  const executeBenchmarkStream = async (
+    benchmarkId: string, 
+    models: string[], 
+    onProgress?: (data: any) => void
+  ) => {
+    const response = await fetch('/api/benchmark/execute', {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'text/event-stream'
+      },
+      body: JSON.stringify({
+        benchmarkId,
+        models,
+        streaming: true
+      })
+    })
+
+    if (!response.ok) {
+      throw new Error(`Erreur exécution benchmark stream: ${response.status}`)
+    }
+
+    const reader = response.body?.getReader()
+    const decoder = new TextDecoder()
+
+    if (reader) {
+      let result = null
+      
+      try {
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+
+          const chunk = decoder.decode(value)
+          const lines = chunk.split('\n')
+
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              try {
+                const data = JSON.parse(line.substring(6))
+                onProgress?.(data)
+                
+                if (data.type === 'complete') {
+                  result = data.result
+                }
+              } catch (e) {
+                // Ignorer les lignes mal formées
+              }
+            }
+          }
+        }
+      } finally {
+        reader.releaseLock()
+      }
+      
+      return result
+    }
+    
+    throw new Error('Impossible de lire le stream de réponse')
+  }
+
+  return { executeBenchmark, executeBenchmarkStream }
+}
+
+/**
+ * �📈 Hook pour les opérations sur les benchmarks
  */
 export function useBenchmarkOperations() {
   const addBenchmark = async (benchmarkData: any) => {
