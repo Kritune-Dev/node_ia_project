@@ -1,6 +1,7 @@
 # TODO List v3.4.0 - Système de tests et documentation
 
 ## 🎯 Objectifs principaux
+
 - [ ] Mise en place d'une suite de tests complète et robuste
 - [ ] Documentation API automatisée et maintenue
 - [ ] Intégration CI/CD avec validation automatique
@@ -9,12 +10,12 @@
 ## 🧪 Tests Framework Setup
 
 ### Jest + Testing Configuration
+
 - [ ] **Installation dépendances tests**
   - [ ] `jest`, `@types/jest`
   - [ ] `supertest`, `@types/supertest`
   - [ ] `@testing-library/react`, `@testing-library/jest-dom`
   - [ ] `jest-environment-jsdom`
-  
 - [ ] **Configuration Jest**
   - [ ] `jest.config.js` avec Next.js integration
   - [ ] Setup files pour tests API et React
@@ -22,6 +23,7 @@
   - [ ] Coverage configuration (80%+ target)
 
 ### Test Structure
+
 - [ ] **Dossier `tests/` complet**
   ```
   tests/
@@ -35,6 +37,7 @@
 ## 🔍 Tests API (Priority 1)
 
 ### Core APIs Testing
+
 - [ ] **Health API (`/api/health`)**
   - [ ] Test status healthy/unhealthy/partial
   - [ ] Validation structure response
@@ -60,6 +63,7 @@
   - [ ] `/api/models/[name]/benchmark` - Test scoring CRUD operations
 
 ### Advanced API Testing
+
 - [ ] **Integration tests**
   - [ ] Complete benchmark execution flow
   - [ ] Scoring system end-to-end
@@ -69,6 +73,7 @@
 ## 🎨 Tests Components (Priority 2)
 
 ### Core Components
+
 - [ ] **ModelStatusSimple**
   - [ ] Test models loading state
   - [ ] Test models display/rendering
@@ -87,6 +92,7 @@
   - [ ] Test real-time updates
 
 ### Utility Components
+
 - [ ] **SeriesScoreDisplay/Input**
   - [ ] Test score editing workflow
   - [ ] Test save/cancel/delete operations
@@ -95,6 +101,7 @@
 ## 📚 Documentation API (Priority 2)
 
 ### Auto-Documentation System
+
 - [ ] **JSDoc standardization**
   - [ ] Documenter tous les endpoints avec JSDoc
   - [ ] Format standardisé pour params/responses
@@ -127,12 +134,14 @@
 ## 🔄 CI/CD Integration (Priority 3)
 
 ### Pre-commit Hooks
+
 - [ ] **Husky setup**
   - [ ] Install husky + lint-staged
   - [ ] Pre-commit: tests rapides + lint
   - [ ] Pre-push: suite complète tests API
 
 ### GitHub Actions
+
 - [ ] **Workflow CI**
   - [ ] Tests sur PR/push main
   - [ ] Multiple Node.js versions testing
@@ -155,6 +164,7 @@
 ## 🛡️ Quality Assurance
 
 ### Code Coverage
+
 - [ ] **Coverage targets**
   - [ ] APIs: 90%+ coverage
   - [ ] Components: 80%+ coverage
@@ -162,6 +172,7 @@
   - [ ] Integration coverage reporting
 
 ### Performance Testing
+
 - [ ] **API Performance**
   - [ ] Response time benchmarks (<100ms)
   - [ ] Load testing endpoints critiques
@@ -171,6 +182,7 @@
 ## 🚀 Tools & Scripts Enhancement
 
 ### Development Scripts
+
 - [ ] **`./scripts/dev.sh` updates**
   - [ ] `./scripts/dev.sh test` - Run test suite
   - [ ] `./scripts/dev.sh test-watch` - Watch mode
@@ -178,6 +190,7 @@
   - [ ] `./scripts/dev.sh docs` - Generate documentation
 
 ### Testing Utilities
+
 - [ ] **Mock system**
   - [ ] Ollama service mocks
   - [ ] File system mocks pour tests
@@ -187,24 +200,28 @@
 ## 📋 Implementation Phases
 
 ### Phase 1: Foundation (Week 1)
+
 - [ ] Jest setup + configuration
 - [ ] Basic API tests (health, models)
 - [ ] Test scripts in package.json
 - [ ] Documentation structure
 
 ### Phase 2: Complete API Coverage (Week 2)
+
 - [ ] All endpoints tested
 - [ ] Integration tests
 - [ ] JSDoc documentation
 - [ ] Auto-doc generation
 
 ### Phase 3: Components & E2E (Week 3)
+
 - [ ] React components testing
 - [ ] End-to-end scenarios
 - [ ] Performance benchmarks
 - [ ] Coverage optimization
 
 ### Phase 4: CI/CD & Quality (Week 4)
+
 - [ ] GitHub Actions setup
 - [ ] Pre-commit hooks
 - [ ] Coverage reporting
@@ -213,6 +230,7 @@
 ## 🎯 Success Criteria
 
 ### Quality Metrics
+
 - [ ] **90%+ API test coverage**
 - [ ] **80%+ component test coverage**
 - [ ] **All endpoints documented**
@@ -220,12 +238,14 @@
 - [ ] **Sub-100ms API response times**
 
 ### Developer Experience
+
 - [ ] **One-command testing** (`npm test`)
 - [ ] **Clear error messages** and debugging
 - [ ] **Auto-updating documentation**
 - [ ] **Fast feedback loop** (<30s test run)
 
 ### Maintenance
+
 - [ ] **Tests run in CI/CD**
 - [ ] **Documentation always current**
 - [ ] **Easy to add new tests**
@@ -236,17 +256,20 @@
 ## 📝 Notes Implementation
 
 ### Git Strategy
+
 - [ ] **Branch `feature/testing-v3.4.0`**
 - [ ] **Small, focused commits** par feature
 - [ ] **PR reviews** avec tests validation
 - [ ] **Documentation** updated avec chaque PR
 
 ### Dependencies Impact
+
 - [ ] **Zero runtime impact** (devDependencies only)
 - [ ] **Fast CI builds** (<5min)
 - [ ] **Minimal maintenance overhead**
 
 ### Team Guidelines
+
 - [ ] **Testing conventions** documented
 - [ ] **Mock strategies** standardized
 - [ ] **Coverage expectations** clear

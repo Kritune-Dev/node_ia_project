@@ -3,6 +3,7 @@
 ## ✅ COMPLÉTÉ - Configuration de base Jest
 
 ### Infrastructure mise en place
+
 - **Jest configuré** avec Next.js et TypeScript
 - **Structure de test** créée dans `/tests/`
 - **Scripts npm** ajoutés au package.json
@@ -10,6 +11,7 @@
 - **3 tests fonctionnels** validés
 
 ### Fichiers créés/modifiés
+
 ```
 ├── jest.config.js ✅ (configuré avec Next.js)
 ├── tests/setup/jest.setup.js ✅ (mocks globaux)
@@ -21,10 +23,11 @@
 ```
 
 ### Scripts de test disponibles
+
 ```bash
 npm test                    # Tous les tests
 npm run test:watch         # Mode watch
-npm run test:api           # Tests API seulement  
+npm run test:api           # Tests API seulement
 npm run test:components    # Tests composants
 npm run test:coverage      # Tests avec coverage
 npm run test:ci            # Tests pour CI/CD
@@ -33,6 +36,7 @@ npm run test:ci            # Tests pour CI/CD
 ## 🎯 Tests réussis : 26/26
 
 ### jest-config.test.ts (7 tests)
+
 - ✅ Configuration Jest validée
 - ✅ Variables d'environnement
 - ✅ Mocks globaux fonctionnels
@@ -41,6 +45,7 @@ npm run test:ci            # Tests pour CI/CD
 - ✅ Opérations async
 
 ### health-basic.test.ts (7 tests)
+
 - ✅ Import des dépendances
 - ✅ Environment de test
 - ✅ Mocks fetch configurés
@@ -48,6 +53,7 @@ npm run test:ci            # Tests pour CI/CD
 - ✅ Endpoints API définis
 
 ### health-unit.test.ts (12 tests)
+
 - ✅ Mock validation Ollama/APIs
 - ✅ Structure de réponse Health
 - ✅ Gestion d'erreurs (timeouts, HTTP, connexion)
@@ -57,6 +63,7 @@ npm run test:ci            # Tests pour CI/CD
 ## 🔧 Configuration technique
 
 ### Jest.config.js
+
 ```javascript
 - Environment: jsdom
 - Setup: jest.setup.js avec mocks Next.js
@@ -67,6 +74,7 @@ npm run test:ci            # Tests pour CI/CD
 ```
 
 ### Mocks configurés
+
 ```javascript
 - fetch (global)
 - next/router, next/navigation
@@ -76,7 +84,8 @@ npm run test:ci            # Tests pour CI/CD
 ```
 
 ## 📊 Coverage actuel
-- **Tests**: 26 passés / 26 
+
+- **Tests**: 26 passés / 26
 - **Code coverage**: 0% (normal - tests de mocks pour l'instant)
 - **Suites**: 3 passées / 3
 - **Durée**: ~1.5s
@@ -84,21 +93,25 @@ npm run test:ci            # Tests pour CI/CD
 ## 🔄 Prochaines étapes (Phase 2)
 
 ### 1. Tests d'intégration API réelles
+
 - Créer des tests qui appellent vraiment l'API Health
 - Utiliser supertest avec serveur Next.js local
 - Tests end-to-end de la chaîne complète
 
 ### 2. Tests de composants React
+
 - Tests du ServiceStatus.tsx
 - Tests de ModelStatus.tsx
 - Tests d'intégration frontend/API
 
 ### 3. Tests utilitaires
+
 - Tests de BenchmarkManager
 - Tests de modelDataService
 - Tests des hooks personnalisés
 
 ### 4. Documentation et CI/CD
+
 - README pour les tests
 - Pipeline GitHub Actions
 - Coverage reporting
@@ -123,14 +136,16 @@ npm test tests/api/health-unit.test.ts --verbose
 ## 💡 Notes techniques
 
 ### Problèmes résolus
+
 1. **moduleNameMapping** → **moduleNameMapper** dans Jest
-2. **Polyfills manquants** → Ajout TextEncoder/TextDecoder  
+2. **Polyfills manquants** → Ajout TextEncoder/TextDecoder
 3. **Import direct API route** → Contournement avec mocks
 4. **Node.js v23 warnings** → Ignorés (non-bloquants)
 
 ### Architecture de test établie
+
 - Tests unitaires pour la logique métier
-- Tests de structure pour les APIs  
+- Tests de structure pour les APIs
 - Mocks complets pour isolation
 - Validation TypeScript intégrée
 
