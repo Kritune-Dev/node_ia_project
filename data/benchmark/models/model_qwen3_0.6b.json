@@ -1,0 +1,150 @@
+{
+  "modelId": "qwen3:0.6b",
+  "displayName": "qwen3:0.6b",
+  "notes": {
+    "generale": ""
+  },
+  "resultsSummary": {
+    "test_rapide__smoke_": {
+      "lastScore": 100,
+      "lastExecution": "2025-09-01T00:51:56.680Z",
+      "historyIds": [
+        "benchmark_1756687880413_8dayh4b36",
+        "benchmark_1756687871585_2au5cogcy"
+      ]
+    },
+    "suite__test_rapide__smoke____tests_m_dicaux": {
+      "lastScore": 100,
+      "lastExecution": "2025-09-01T00:51:56.680Z",
+      "historyIds": [
+        "benchmark_1756687880413_8dayh4b36"
+      ]
+    },
+    "tests_m_dicaux": {
+      "lastScore": 100,
+      "lastExecution": "2025-09-01T00:51:56.680Z",
+      "historyIds": [
+        "benchmark_1756687880413_8dayh4b36"
+      ]
+    }
+  },
+  "history": [
+    {
+      "benchmarkId": "benchmark_1756687880413_8dayh4b36",
+      "name": "Suite: Test Rapide (Smoke) + Tests Médicaux",
+      "timestamp": "2025-09-01T00:51:56.680Z",
+      "duration": 21535,
+      "successRate": 100,
+      "isCombinedBenchmark": true,
+      "includedBenchmarks": [
+        "smoke_test",
+        "medical_test"
+      ],
+      "includedBenchmarkNames": [
+        "Test Rapide (Smoke)",
+        "Tests Médicaux"
+      ],
+      "questions": [
+        {
+          "id": "smoke_test_basic_functionality",
+          "question": "Peux-tu me dire si tu fonctionnes correctement ? Réponds simplement par 'Oui, je fonctionne correcte...",
+          "category": "basic",
+          "difficulty": "easy",
+          "response": "<think>\nOkay, the user is asking if I'm functioning correctly and wants a simple answer. Let me start by confirming that I'm functioning correctly. I should respond with \"Oui, je fonctionne correcteme...",
+          "success": true,
+          "responseTime": 1106,
+          "tokensPerSecond": 120.71
+        },
+        {
+          "id": "smoke_test_french_communication",
+          "question": "Peux-tu me parler en français ? Écris une phrase simple en français pour confirmer que tu comprends ...",
+          "category": "basic",
+          "difficulty": "easy",
+          "response": "<think>\nOkay, the user wants me to write a simple French sentence to confirm understanding. Let me think... A common way to do that is \"Je comprends la langue.\" That's pretty straightforward and natur...",
+          "success": true,
+          "responseTime": 1183,
+          "tokensPerSecond": 117.71
+        },
+        {
+          "id": "smoke_test_simple_math",
+          "question": "Combien font 2+2 ? Réponds uniquement avec le chiffre....",
+          "category": "basic",
+          "difficulty": "easy",
+          "response": "<think>\nOkay, the user is asking how many 2+2 make. Let me think. So 2 plus 2, that's 4. But wait, the question says \"Réponds uniquement avec le chiffre,\" which means only with the number. So I need t...",
+          "success": true,
+          "responseTime": 1029,
+          "tokensPerSecond": 107.63
+        },
+        {
+          "id": "medical_test_hypertension_symptoms",
+          "question": "Quels sont les symptômes principaux de l'hypertension artérielle ?...",
+          "category": "medical",
+          "difficulty": "medium",
+          "response": "<think>\nOkay, so the user is asking about the main symptoms of arterial hypertension. Let me start by recalling the basic information I know about hypertension. First, it's a condition where blood pre...",
+          "success": true,
+          "responseTime": 3735,
+          "tokensPerSecond": 129.72
+        },
+        {
+          "id": "medical_test_ace_inhibitors",
+          "question": "Expliquez le mécanisme d'action des inhibiteurs de l'ECA dans le traitement de l'hypertension....",
+          "category": "medical",
+          "difficulty": "hard",
+          "response": "<think>\nOkay, I need to explain the mechanism of action of ACE inhibitors in treating hypertension. Let me start by recalling what I know about ACE inhibitors. They are drugs that block the conversion...",
+          "success": true,
+          "responseTime": 8075,
+          "tokensPerSecond": 109.38
+        },
+        {
+          "id": "medical_test_glycolysis_steps",
+          "question": "Décrivez les étapes principales de la glycolyse....",
+          "category": "medical",
+          "difficulty": "hard",
+          "response": "<think>\nOkay, the user is asking to describe the main steps of glycolysis. Let me start by recalling what I know about glycolysis. I remember it's the metabolic process that breaks down glucose into p...",
+          "success": true,
+          "responseTime": 6407,
+          "tokensPerSecond": 96.46
+        }
+      ]
+    },
+    {
+      "benchmarkId": "benchmark_1756687871585_2au5cogcy",
+      "name": "Test Rapide (Smoke)",
+      "timestamp": "2025-09-01T00:51:16.495Z",
+      "duration": 3883,
+      "successRate": 100,
+      "questions": [
+        {
+          "id": "basic_functionality",
+          "question": "Peux-tu me dire si tu fonctionnes correctement ? Réponds simplement par 'Oui, je fonctionne correcte...",
+          "category": "basic",
+          "difficulty": "easy",
+          "response": "<think>\nOkay, the user wants me to confirm if I function correctly by saying \"Oui, je fonctionne correctement.\" They're probably testing me. I need to respond politely. Let me make sure I'm not making...",
+          "success": true,
+          "responseTime": 1779,
+          "tokensPerSecond": 42.44
+        },
+        {
+          "id": "french_communication",
+          "question": "Peux-tu me parler en français ? Écris une phrase simple en français pour confirmer que tu comprends ...",
+          "category": "basic",
+          "difficulty": "easy",
+          "response": "<think>\nOkay, the user wants a simple French sentence to confirm they understand the language. Let me start by thinking about the correct way to say \"I understand\" in French. The standard expression i...",
+          "success": true,
+          "responseTime": 1200,
+          "tokensPerSecond": 136.88
+        },
+        {
+          "id": "simple_math",
+          "question": "Combien font 2+2 ? Réponds uniquement avec le chiffre....",
+          "category": "basic",
+          "difficulty": "easy",
+          "response": "<think>\nOkay, the user is asking, \"Combien font 2+2 ? Réponds uniquement avec le chiffre.\" So they want the answer in a single digit. Let me think.\n\nFirst, 2 plus 2 equals 4. That's straightforward. S...",
+          "success": true,
+          "responseTime": 904,
+          "tokensPerSecond": 112.28
+        }
+      ]
+    }
+  ]
+}

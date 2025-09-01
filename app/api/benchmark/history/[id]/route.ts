@@ -8,7 +8,8 @@ import path from 'path';
  * DELETE /api/benchmark/history/[id] - Supprimer un benchmark spécifique
  */
 
-const BENCHMARK_DIR = path.join(process.cwd(), 'data', 'benchmark_results');
+const BENCHMARK_DIR = path.join(process.cwd(), 'data', 'benchmark');
+const RESULTS_DIR = path.join(BENCHMARK_DIR, 'results');
 
 /**
  * 📖 GET - Résultats complets d'un benchmark spécifique
@@ -31,7 +32,7 @@ export async function GET(
     }
 
     // Chercher le fichier correspondant
-    const benchmarkFile = path.join(BENCHMARK_DIR, `${id}.json`);
+    const benchmarkFile = path.join(RESULTS_DIR, `${id}.json`);
     
     try {
       const data = await readFile(benchmarkFile, 'utf-8');
@@ -87,7 +88,7 @@ export async function DELETE(
     const fs = await import('fs');
     
     // Supprimer le fichier de résultats
-    const benchmarkFile = path.join(BENCHMARK_DIR, `${id}.json`);
+    const benchmarkFile = path.join(RESULTS_DIR, `${id}.json`);
     
     try {
       await fs.promises.unlink(benchmarkFile);

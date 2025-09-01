@@ -1,0 +1,121 @@
+{
+  "id": "benchmark_1756687871585_2au5cogcy",
+  "displayName": "Test Rapide (Smoke)",
+  "testSeries": "Test Rapide (Smoke)",
+  "benchmarkIds": [
+    "smoke_test"
+  ],
+  "benchmarkNames": [
+    "Test Rapide (Smoke)"
+  ],
+  "timestamp": "2025-09-01T00:51:11.585Z",
+  "startTime": 1756687871585,
+  "summary": {
+    "total_tests": 6,
+    "successful_tests": 6,
+    "failed_tests": 0,
+    "total_models": 2,
+    "average_response_time": 796.3333333333334,
+    "average_tokens_per_second": 65.83,
+    "total_duration": 4909,
+    "categories_tested": [
+      "basic"
+    ],
+    "models_tested": [
+      "gemma3:270m",
+      "qwen3:0.6b"
+    ],
+    "total_questions": 3,
+    "benchmark_count": 1
+  },
+  "results": {
+    "gemma3:270m": {
+      "model_name": "gemma3:270m",
+      "service_url": "http://localhost:3000",
+      "total_response_time": 895,
+      "average_response_time": 298.3333333333333,
+      "total_tokens_per_second": 103.38000000000001,
+      "average_tokens_per_second": 34.46,
+      "success_rate": 100,
+      "questions": {
+        "basic_functionality": {
+          "question": "Peux-tu me dire si tu fonctionnes correctement ? Réponds simplement par 'Oui, je fonctionne correctement'.",
+          "category": "basic",
+          "difficulty": "easy",
+          "success": true,
+          "response": "Oui, je fonctionne correctement.\n",
+          "responseTime": 631,
+          "tokensPerSecond": 13.07,
+          "model": "gemma3:270m",
+          "isTimeout": false
+        },
+        "french_communication": {
+          "question": "Peux-tu me parler en français ? Écris une phrase simple en français pour confirmer que tu comprends cette langue.",
+          "category": "basic",
+          "difficulty": "easy",
+          "success": true,
+          "response": "Oui, je comprends bien. N'hésitez pas à me poser une question ! 😊\n",
+          "responseTime": 193,
+          "tokensPerSecond": 86.79,
+          "model": "gemma3:270m",
+          "isTimeout": false
+        },
+        "simple_math": {
+          "question": "Combien font 2+2 ? Réponds uniquement avec le chiffre.",
+          "category": "basic",
+          "difficulty": "easy",
+          "success": true,
+          "response": "2",
+          "responseTime": 71,
+          "tokensPerSecond": 3.52,
+          "model": "gemma3:270m",
+          "isTimeout": false
+        }
+      }
+    },
+    "qwen3:0.6b": {
+      "model_name": "qwen3:0.6b",
+      "service_url": "http://localhost:3000",
+      "total_response_time": 3883,
+      "average_response_time": 1294.3333333333333,
+      "total_tokens_per_second": 291.6,
+      "average_tokens_per_second": 97.2,
+      "success_rate": 100,
+      "questions": {
+        "basic_functionality": {
+          "question": "Peux-tu me dire si tu fonctionnes correctement ? Réponds simplement par 'Oui, je fonctionne correctement'.",
+          "category": "basic",
+          "difficulty": "easy",
+          "success": true,
+          "response": "<think>\nOkay, the user wants me to confirm if I function correctly by saying \"Oui, je fonctionne correctement.\" They're probably testing me. I need to respond politely. Let me make sure I'm not making up anything and just confirm. Keep it simple and friendly.\n</think>\n\nOui, je fonctionne correctement.",
+          "responseTime": 1779,
+          "tokensPerSecond": 42.44,
+          "model": "qwen3:0.6b",
+          "isTimeout": false
+        },
+        "french_communication": {
+          "question": "Peux-tu me parler en français ? Écris une phrase simple en français pour confirmer que tu comprends cette langue.",
+          "category": "basic",
+          "difficulty": "easy",
+          "success": true,
+          "response": "<think>\nOkay, the user wants a simple French sentence to confirm they understand the language. Let me start by thinking about the correct way to say \"I understand\" in French. The standard expression is \"Je comprends.\" That's straightforward and polite. I should make sure the sentence is short and clear. Maybe something like \"Je comprends.\" But wait, could they want a bit more than just confirming? Maybe adding a bit of enthusiasm? Like \"Je comprends très bien\" to show satisfaction. That would be good. Let me check the grammar again. \"Je comprends très bien\" is correct. Yeah, that's a good option. I think that's all.\n</think>\n\nJe comprends très bien.",
+          "responseTime": 1200,
+          "tokensPerSecond": 136.88,
+          "model": "qwen3:0.6b",
+          "isTimeout": false
+        },
+        "simple_math": {
+          "question": "Combien font 2+2 ? Réponds uniquement avec le chiffre.",
+          "category": "basic",
+          "difficulty": "easy",
+          "success": true,
+          "response": "<think>\nOkay, the user is asking, \"Combien font 2+2 ? Réponds uniquement avec le chiffre.\" So they want the answer in a single digit. Let me think.\n\nFirst, 2 plus 2 equals 4. That's straightforward. So the answer should be 4. I need to make sure there's no trick here. Maybe they want a different number, but no, the question is simple. It's just two plus two. So yeah, 4 is the correct answer.\n</think>\n\n4",
+          "responseTime": 904,
+          "tokensPerSecond": 112.28,
+          "model": "qwen3:0.6b",
+          "isTimeout": false
+        }
+      }
+    }
+  }
+}

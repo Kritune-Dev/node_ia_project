@@ -1,0 +1,214 @@
+{
+  "id": "benchmark_1756688025981_s5n05kd7w",
+  "displayName": "Suite: Test Rapide (Smoke) + Tests Médicaux",
+  "testSeries": "Suite: Test Rapide (Smoke) + Tests Médicaux",
+  "benchmarkIds": [
+    "smoke_test",
+    "medical_test"
+  ],
+  "benchmarkNames": [
+    "Test Rapide (Smoke)",
+    "Tests Médicaux"
+  ],
+  "timestamp": "2025-09-01T00:53:45.981Z",
+  "startTime": 1756688025981,
+  "summary": {
+    "total_tests": 12,
+    "successful_tests": 12,
+    "failed_tests": 0,
+    "total_models": 2,
+    "average_response_time": 8444.25,
+    "average_tokens_per_second": 50.36750000000001,
+    "total_duration": 101460,
+    "categories_tested": [
+      "basic",
+      "medical"
+    ],
+    "models_tested": [
+      "gemma3:1b",
+      "qwen3:1.7b"
+    ],
+    "total_questions": 6,
+    "benchmark_count": 2
+  },
+  "results": {
+    "gemma3:1b": {
+      "model_name": "gemma3:1b",
+      "service_url": "http://localhost:3000",
+      "total_response_time": 37609,
+      "average_response_time": 6268.166666666667,
+      "total_tokens_per_second": 276.74,
+      "average_tokens_per_second": 46.123333333333335,
+      "success_rate": 100,
+      "questions": {
+        "smoke_test_basic_functionality": {
+          "question": "Peux-tu me dire si tu fonctionnes correctement ? Réponds simplement par 'Oui, je fonctionne correctement'.",
+          "category": "basic",
+          "difficulty": "easy",
+          "series": "Test Rapide (Smoke)",
+          "seriesId": "smoke_test",
+          "success": true,
+          "response": "Oui, je fonctionne correctement.\n",
+          "responseTime": 1155,
+          "tokensPerSecond": 7.14,
+          "model": "gemma3:1b",
+          "isTimeout": false
+        },
+        "smoke_test_french_communication": {
+          "question": "Peux-tu me parler en français ? Écris une phrase simple en français pour confirmer que tu comprends cette langue.",
+          "category": "basic",
+          "difficulty": "easy",
+          "series": "Test Rapide (Smoke)",
+          "seriesId": "smoke_test",
+          "success": true,
+          "response": "Oui, bien sûr ! \n\nJe comprends parfaitement le français.\n\nVoici une phrase simple : **Je comprends.** (Je comprends.)",
+          "responseTime": 517,
+          "tokensPerSecond": 56.58,
+          "model": "gemma3:1b",
+          "isTimeout": false
+        },
+        "smoke_test_simple_math": {
+          "question": "Combien font 2+2 ? Réponds uniquement avec le chiffre.",
+          "category": "basic",
+          "difficulty": "easy",
+          "series": "Test Rapide (Smoke)",
+          "seriesId": "smoke_test",
+          "success": true,
+          "response": "4",
+          "responseTime": 152,
+          "tokensPerSecond": 1.64,
+          "model": "gemma3:1b",
+          "isTimeout": false
+        },
+        "medical_test_hypertension_symptoms": {
+          "question": "Quels sont les symptômes principaux de l'hypertension artérielle ?",
+          "category": "medical",
+          "difficulty": "medium",
+          "series": "Tests Médicaux",
+          "seriesId": "medical_test",
+          "success": true,
+          "response": "L'hypertension artérielle, ou hypertension, est une condition où la pression artérielle est trop élevée. Il est important de noter que l'hypertension peut être asymptomatique dans les premières années, ce qui signifie qu'elle peut ne pas provoquer de symptômes immédiatement. Cependant, il est crucial de la surveiller et de la traiter pour prévenir les complications graves.\n\nVoici les symptômes principaux de l'hypertension artérielle, divisés en catégories :\n\n**1. Symptômes Latents ou Incongrus (Peuvent ne pas être immédiatement détectables):**\n\n* **Crampes:** Les crampes musculaires, particulièrement dans les bras, les jambes ou les pieds.\n* **Maux de tête:** Maux de tête fréquents, souvent sans cause identifiable.\n* **Fatigue:** Fatigue persistante et excessive.\n* **Vertiges:** Sensation de faiblesse ou de déséquilibre.\n* **Difficulté à se concentrer:** Difficulté à penser clairement ou à se concentrer.\n* **Blessures plus fréquentes:**  Risque accru de blessures, en particulier aux chevilles.\n* **Dépression:**  Une association possible avec l'hypertension, bien que la relation ne soit pas toujours prouvée.\n\n**2. Symptômes Clairs (Lorsque l'hypertension est diagnostiquée):**\n\n* **Crampes dans le bras, le cou, les épaules ou les jambes:**  Ces crampes sont souvent décrites comme des \"crampes de braison\".\n* **Maux de tête sévères:**  Maux de tête lancinants, souvent sévères.\n* **Vertiges ou étourdissements:**  Sensation de faiblesse ou d'inconfort.\n* **Difficulté à marcher ou à faire du sport:**  Une sensation de faiblesse ou de difficulté à maintenir l'équilibre.\n* **Gonflement des pieds et des chevilles:**  Une augmentation de la pression dans les veines des pieds et des chevilles.\n* **Troubles de la vision:**  Dans les cas plus graves, une pression artérielle élevée peut affecter la vision.\n* **Problèmes cardiaques:**  L'hypertension artérielle peut entraîner des problèmes cardiaques, tels que :\n    * **Maladie coronarienne:**  Blocage des artères coronaires.\n    * **Accident vasculaire cérébral (AVC):**  Dommages aux vaisseaux sanguins cérébraux.\n    * **Insuffisance cardiaque:**  Difficulté à remplir le cœur.\n    * **Cardiomyopathie:**  Endommagement du muscle cardiaque.\n\n**3.  Symptômes Spécifiques chez les Femmes:**\n\n* **Maux de ventre:**  Plus souvent, les femmes atteints d'hypertension peuvent ressentir des douleurs abdominales.\n* **Saignements vaginaux:**  Une augmentation du risque de saignements menstruels irréguliers ou de saignements abondants.\n\n**Important:**\n\n* **La présence de ces symptômes ne signifie pas nécessairement que vous avez de l'hypertension.**  Certaines affections peuvent provoquer des symptômes similaires.\n* **Il est essentiel de consulter un médecin si vous remarquez des changements dans votre état de santé, surtout si vous avez des symptômes inquiétants.**\n* **La surveillance régulière de la pression artérielle est cruciale pour détecter et gérer l'hypertension.**\n\n**Avertissement:** *Je suis un modèle linguistique d'IA et je ne peux pas donner de conseils médicaux. Les informations ci-dessus sont à titre informatif uniquement et ne doivent pas être considérées comme un diagnostic ou une recommandation médicale. Consultez toujours un professionnel de la santé pour obtenir des conseils personnalisés.*\n\n**Où trouver de l'aide:**\n\n* **Votre médecin généraliste:** C'est la première personne à consulter pour discuter de vos symptômes et de votre santé.\n* **Votre médecin traitant:**  Un médecin qui vous connaît bien et qui peut vous aider à gérer votre santé.\n* **L'association nationale de la santé publique (ANSP) :** [https://www.ansp.fr/](https://www.ansp.fr/)\n\nJ'espère que cela vous aidera !",
+          "responseTime": 12619,
+          "tokensPerSecond": 73.02,
+          "model": "gemma3:1b",
+          "isTimeout": false
+        },
+        "medical_test_ace_inhibitors": {
+          "question": "Expliquez le mécanisme d'action des inhibiteurs de l'ECA dans le traitement de l'hypertension.",
+          "category": "medical",
+          "difficulty": "hard",
+          "series": "Tests Médicaux",
+          "seriesId": "medical_test",
+          "success": true,
+          "response": "## Le Mécanisme d'Action des Inhibiteurs de l'ECA dans le Traitement de l'Hypertension\n\nL'hypertension, ou hypertension artérielle élevée, est une condition médicale caractérisée par une pression artérielle excessive. Le traitement de l'hypertension repose souvent sur des médicaments qui réduisent la pression artérielle, et les inhibiteurs de l'ECA (Élévation de la pression artérielle par l'action de l'Élévation) sont une classe de ces médicaments particulièrement efficace. Voici une explication du mécanisme d'action précis :\n\n**1. Qu'est-ce que l'ECA ?**\n\n* **Élévation de la pression artérielle par l'action de l'Élévation (ECA):** L'ECA est un neurotransmetteur (un messager chimique dans le cerveau) qui joue un rôle crucial dans la régulation de la pression artérielle.  Il agit en modulant l'activité des récepteurs de l'adénosine, principalement dans le système nerveux autonome, et influence la libération d'hormones qui contribuent à la pression artérielle.\n\n**2. Comment les Inhibiteurs de l'ECA agissent-ils ?**\n\nLes inhibiteurs de l'ECA ne sont pas des médicaments qui affectent directement le cœur ou les reins. Ils agissent en **inhibant l'activité de la substance P**, un neurotransmetteur clé impliqué dans la réponse du système nerveux autonome à la pression artérielle. Voici les étapes clés de leur action :\n\n* **Blocage de la Substance P :** Les inhibiteurs de l'ECA bloquent l'action de la substance P en se liant à ses récepteurs.\n* **Réduction de la Libération d'Adénosine :**  La substance P est responsable de la libération d'adénosine, un neurotransmetteur qui stimule la libération d'hormones par les glandes surrénales, notamment l'adrénaline et la noradrénaline.\n* **Diminution de la Libération d'Adrénaline et Noradrénaline :** En réduisant la libération de ces hormones, les inhibiteurs de l'ECA diminuent la réponse du système nerveux autonome à l'augmentation de la pression artérielle.\n* **Effet sur la Libération d'Adénosine :** Ils réduisent également la libération d'adénosine, ce qui contribue à la diminution de la pression artérielle.\n\n**3. Les Effets Spécifiques :**\n\n* **Diminution de la tension artérielle :** C'est l'effet principal et le plus important. Les inhibiteurs de l'ECA réduisent la pression artérielle en diminuant la réponse du système nerveux autonome à la pression artérielle.\n* **Réduction de la pression artérielle de manière relativement douce :** Contrairement à certains médicaments antihypertenseurs qui peuvent provoquer une hypotension (baisse de la pression artérielle), les inhibiteurs de l'ECA ont tendance à avoir un impact plus modéré sur la pression artérielle.\n* **Effets secondaires potentiels :** Bien que généralement bien tolérés, ils peuvent provoquer des effets secondaires tels que des maux de tête, des nausées, des vertiges, et, dans de rares cas, des troubles du rythme cardiaque.\n\n**4.  Pourquoi les inhibiteurs de l'ECA sont-ils utilisés ?**\n\n* **Traitement de l'hypertension secondaire :** Ils sont particulièrement utilisés pour traiter l'hypertension secondaire, qui est souvent causée par des conditions médicales sous-jacentes (comme l'insuffisance rénale, l'insuffisance cardiaque, ou des problèmes hormonaux).\n* **Traitement de l'hypertension chronique :** Ils sont également utilisés pour contrôler l'hypertension chronique, où la pression artérielle est élevée mais stable sur une période prolongée.\n* **Utilisation en association avec d'autres médicaments :** Ils sont souvent utilisés en combinaison avec d'autres médicaments antihypertenseurs, comme les bloqueurs des récepteurs de l'angiotensine II, pour une meilleure efficacité.\n\n**En résumé, les inhibiteurs de l'ECA agissent en bloquant l'action de la substance P, ce qui entraîne une diminution de la libération d'adénosine et, par conséquent, une diminution de la pression artérielle.**\n\n**Important :** Cette explication est une simplification.  La pharmacologie des inhibiteurs de l'ECA est complexe et nécessite une compréhension plus approfondie.  Si",
+          "responseTime": 14370,
+          "tokensPerSecond": 69.83,
+          "model": "gemma3:1b",
+          "isTimeout": false
+        },
+        "medical_test_glycolysis_steps": {
+          "question": "Décrivez les étapes principales de la glycolyse.",
+          "category": "medical",
+          "difficulty": "hard",
+          "series": "Tests Médicaux",
+          "seriesId": "medical_test",
+          "success": true,
+          "response": "La glycolyse est une étape cruciale de la voie métabolique pyruvate, qui se produit dans le cytosol des cellules et est essentielle pour la production d'énergie. Voici les étapes principales de la glycolyse :\n\n**1. Absorption du Glucose:**\n\n* **Début du processus:** La glycolyse commence avec l'absorption du glucose, généralement par le transporteur de glucose (GLUT4) dans les cellules.\n* **Formation de Pyruvate:** Le glucose est dégradé en deux molécules de pyruvate, avec libération d'une molécule d'ATP et d'une molécule de NADH.\n\n**2. Formation de Acetyl-CoA:**\n\n* **Réaction de Condensation:** Le pyruvate, maintenant libéré, est ensuite condensé avec une molécule d'acétate (provenant de la respiration cellulaire ou de la dégradation de l'acide lactique) pour former **acetyl-CoA**.  Cette réaction est catalysée par l'enzyme pyruvate kinase.\n\n**3. Glycolyse (la phase principale):**\n\n* **Conversion en Pyruvate Acid:** L'acetyl-CoA se lie à une molécule de coenzyme A (CoA) et est converti en pyruvate acid. Ce processus est catalysé par l'enzyme pyruvate carboxylase.\n* **Formation de Pyruvate Acid:** Pyruvate acid est ensuite converti en pyruvate.\n\n**4. Production d'ATP et de NADH:**\n\n* **Production d'ATP:**  La glycolyse produit une petite quantité d'ATP (adénosine triphosphate), l'énergie primordiale, via un processus appelé **phosphorylation**.  C'est l'étape la plus importante de la glycolyse.\n* **Production de NADH:**  La glycolyse produit également un molécule de NADH (nicotinamide adénine dinucléotide), un transporteur d'électrons qui est crucial pour la production d'énergie à travers la chaîne de transport d'électrons.\n\n**En résumé, les étapes clés sont :**\n\n1. **Absorption du Glucose → Pyruvate Formation**\n2. **Condensation du Glucose → Acetyl-CoA Formation**\n3. **Glycolyse (conversion en Pyruvate Acid) → ATP Production & NADH Production**\n\n**Importance de la Glycolyse:**\n\n* **Production d'énergie:**  La glycolyse est un point de départ essentiel pour la production d'ATP, l'énergie cellulaire.\n* **Préparation pour la voie oxydative:**  Elle est un précurseur pour la voie oxydative, où le pyruvate est converti en acides aminés et en autres composés.\n\n**Note:** La glycolyse est un processus relativement rapide, se terminant en environ 30 minutes.\n\nN'hésitez pas à me poser d'autres questions si vous souhaitez en savoir plus sur un aspect particulier de la glycolyse!",
+          "responseTime": 8796,
+          "tokensPerSecond": 68.53,
+          "model": "gemma3:1b",
+          "isTimeout": false
+        }
+      }
+    },
+    "qwen3:1.7b": {
+      "model_name": "qwen3:1.7b",
+      "service_url": "http://localhost:3000",
+      "total_response_time": 63722,
+      "average_response_time": 10620.333333333334,
+      "total_tokens_per_second": 327.67,
+      "average_tokens_per_second": 54.61166666666667,
+      "success_rate": 100,
+      "questions": {
+        "smoke_test_basic_functionality": {
+          "question": "Peux-tu me dire si tu fonctionnes correctement ? Réponds simplement par 'Oui, je fonctionne correctement'.",
+          "category": "basic",
+          "difficulty": "easy",
+          "series": "Test Rapide (Smoke)",
+          "seriesId": "smoke_test",
+          "success": true,
+          "response": "<think>\nOkay, the user is asking if I function correctly. They want a simple answer. Let me make sure I understand the request. They want to know if I'm working properly, and they want me to respond just with 'Oui, je fonctionne correctement'. \n\nI need to check if my response is accurate. Since I'm an AI, I should confirm that I'm functioning properly. The user might be testing if I'm responsive or if there's any issue. They might be looking for a straightforward confirmation. \n\nI should keep it simple and direct. No need for extra information. Just the confirmation. Let me make sure there's no mistake in the response. The answer is correct, so I'll go with that.\n</think>\n\nOui, je fonctionne correctement.",
+          "responseTime": 4306,
+          "tokensPerSecond": 41.45,
+          "model": "qwen3:1.7b",
+          "isTimeout": false
+        },
+        "smoke_test_french_communication": {
+          "question": "Peux-tu me parler en français ? Écris une phrase simple en français pour confirmer que tu comprends cette langue.",
+          "category": "basic",
+          "difficulty": "easy",
+          "series": "Test Rapide (Smoke)",
+          "seriesId": "smoke_test",
+          "success": true,
+          "response": "<think>\nOkay, the user asked me to talk in French and write a simple sentence to confirm I understand the language. Let me start by understanding the request. They want a confirmation in French.\n\nFirst, I need to make sure the sentence is simple. Common phrases in French for understanding include \"Je comprends\" or \"Je suis capable de comprendre.\" But the user specified a sentence, so maybe something like \"Je comprends le français.\" But wait, the user might want a more complete sentence. Maybe \"Je comprends bien le français.\" To add a touch of formality, \"Je me sens bien capable de comprendre le français.\" But maybe too long. Alternatively, \"Je comprends le français.\" That's straightforward. Let me check if that's correct. Yes, \"Je comprends le français\" is a simple sentence confirming understanding. I should present that as the answer.\n</think>\n\nJe comprends le français.",
+          "responseTime": 3369,
+          "tokensPerSecond": 65.52,
+          "model": "qwen3:1.7b",
+          "isTimeout": false
+        },
+        "smoke_test_simple_math": {
+          "question": "Combien font 2+2 ? Réponds uniquement avec le chiffre.",
+          "category": "basic",
+          "difficulty": "easy",
+          "series": "Test Rapide (Smoke)",
+          "seriesId": "smoke_test",
+          "success": true,
+          "response": "<think>\nOkay, the user is asking \"Combien font 2+2 ?\" which means \"What is 2+2?\" and they want the answer just as a number. Let me think. 2 plus 2 is straightforward. The answer should be 4. I need to make sure there's no trick here. The question is simple, so the answer is definitely 4. I should just output the number without any extra text. Let me double-check. Yep, 2+2 is 4. No complications here. Alright, ready to respond.\n</think>\n\n4",
+          "responseTime": 2019,
+          "tokensPerSecond": 54.73,
+          "model": "qwen3:1.7b",
+          "isTimeout": false
+        },
+        "medical_test_hypertension_symptoms": {
+          "question": "Quels sont les symptômes principaux de l'hypertension artérielle ?",
+          "category": "medical",
+          "difficulty": "medium",
+          "series": "Tests Médicaux",
+          "seriesId": "medical_test",
+          "success": true,
+          "response": "<think>\nOkay, I need to figure out the main symptoms of hypertension. Let me start by recalling what I know. Hypertension is high blood pressure, but it doesn't usually cause symptoms. However, in some cases, people might experience them. \n\nFirst, I remember that sometimes people feel a headache, especially in the morning. That's a common symptom. Then there's dizziness or lightheadedness. Maybe that's related to the blood pressure dropping suddenly. \n\nI think there's also a sense of fatigue or exhaustion. People might feel tired even when they're not doing much. But I'm not sure if that's always the case. \n\nAnother symptom is nose congestion or a stuffy nose. That's when the blood pressure is high, causing the blood vessels to constrict. Then there's chest pain, but I don't know if that's common. \n\nI've heard about aching in the legs or feet, maybe due to poor circulation. Also, vision problems, like blurred vision or even temporary loss of vision. That might be related to the kidneys or the brain. \n\nThere's also the feeling of a pounding heart or palpitations. That's when the heart tries to compensate for the high pressure. \n\nI should check if there are any other symptoms. Maybe the stomach or abdomen feels uncomfortable, or there's a feeling of fullness. Also, the skin might look pale or have a rash. \n\nWait, I think there's a mention of a sudden drop in blood pressure, like a postural hypotension. That's when standing up, the person feels dizzy. \n\nI need to make sure I'm not missing any key points. The main symptoms are usually not noticeable, but some people might have these. Also, the symptoms can vary between individuals. \n\nI should structure this into categories: general symptoms, specific symptoms, and possible complications. But the question is about the main symptoms, so maybe focus on the common ones. \n\nOh, and the answer should be in French, as per the user's request. So I need to translate the points I have into French. Let me make sure the terms are correct. \n\nFor example, \"symptômes principaux\" would be the main symptoms. Then list each symptom with a brief explanation. \n\nI should also mention that hypertension is often asymptomatic, but some people might experience these symptoms. \n\nWait, the user asked for the main symptoms, so maybe list them as a list. Also, note that they are not always present and can vary. \n\nI think that's it. Now, organize the points into a coherent answer in French.\n</think>\n\nLes symptômes principaux de l'hypertension artérielle (hypertension) sont souvent latents et peu fréquents, mais certains patients peuvent en ressentir des signes. Voici les symptômes les plus courants :\n\n### 1. **Symptômes généraux**  \n   - **Toux ou toux persistante** : Due à l'effort des vaisseaux sanguins pour faire face à la pression élevée.  \n   - **Fatigue ou épuisement** : Un sentiment de fatigue intense, même après un repos.  \n   - **Bouleversement ou lourdeur dans le cou** : Un malaise ou une sensation de lourdeur dans le cou.  \n   - **Détresse ou trouble de la concentration** : Difficulté à se concentrer ou à rester concentré.  \n\n### 2. **Symptômes spécifiques**  \n   - **Céphalée (mal de tête)** : Souvent matinale, sans cause spécifique.  \n   - **Douleurs thoraciques** : Des douleurs dans le chest (au niveau du cœur) ou des palpitations (battements du cœur).  \n   - **Douleurs dans les jambes ou les pieds** : Des frissons ou des douleurs soudaines, surtout lors du changement de position (sous la table ou en montant).  \n   - **Vision trouble** : Blouissement ou vision floue, surtout si la pression est très élevée.  \n   - **Nouille ou congestion nasale** : Résultant de la pression artérielle élevée sur les vaisseaux du nez.  \n   - **Douleurs abdominales** : Des douleurs ou une sensation de plénitude dans l'abdomen.  \n\n### 3. **Symptômes liés aux complications**  \n   - **Péritonite ou crampes abdominales** : Si l'hypertension est sévère et n'a pas été diagnostiquée.  \n   - **Dyspn",
+          "responseTime": 17925,
+          "tokensPerSecond": 55.4,
+          "model": "qwen3:1.7b",
+          "isTimeout": false
+        },
+        "medical_test_ace_inhibitors": {
+          "question": "Expliquez le mécanisme d'action des inhibiteurs de l'ECA dans le traitement de l'hypertension.",
+          "category": "medical",
+          "difficulty": "hard",
+          "series": "Tests Médicaux",
+          "seriesId": "medical_test",
+          "success": true,
+          "response": "<think>\nOkay, the user is asking about the mechanism of action of ECA inhibitors in treating hypertension. Let me start by recalling what I know about ECA inhibitors. They are a type of angiotensin II receptor antagonist (ARB), right? Wait, no, actually, they are angiotensin II receptor blockers (ARBs), but the user mentioned ECA, which might be a typo. Let me confirm. ECA inhibitors are actually angiotensin II receptor blockers (ARBs), but sometimes people refer to them as ACE inhibitors. Wait, no, ACE inhibitors are different. Wait, maybe the user is referring to ACE inhibitors, which are another class of antihypertensive drugs. But the term ECA might be a confusion. Let me check.\n\nWait, in French, \"ECA\" could stand for \"érythropénière de l'acétylcholine\" but that's not relevant here. Alternatively, maybe it's an acronym for a specific drug. But in the context of hypertension, the main classes are ACE inhibitors, ARBs, calcium channel blockers, etc. The user might be referring to ACE inhibitors, which are a type of angiotensin-converting enzyme (ACE) inhibitor. So the question is about the mechanism of action of ACE inhibitors in treating hypertension.\n\nSo the user is asking about ECA inhibitors, but maybe they meant ACE inhibitors. Let me proceed under that assumption, but I should mention the possible confusion. The key point is that ACE inhibitors work by inhibiting the enzyme ACE, which converts angiotensin I to angiotensin II. Angiotensin II is a potent vasoconstrictor. By inhibiting this conversion, ACE inhibitors reduce angiotensin II levels, leading to vasodilation and lower blood pressure.\n\nBut wait, the user might be confusing ECA with ACE. In French, \"ECA\" could be \"érythropénière de l'acétylcholine\" but that's not relevant here. Alternatively, maybe it's a misspelling of \"ACE\". So I need to clarify that. But the user might not know the difference between ACE inhibitors and ARBs. So I should explain both classes, but focus on ACE inhibitors as the main point.\n\nSo the mechanism is that ACE inhibitors block the enzyme ACE, preventing the conversion of angiotensin I to angiotensin II. This reduces the vasoconstrictive effects of angiotensin II, leading to decreased blood pressure. They also have a diuretic effect, increasing urine output and reducing blood volume. The duration of action is prolonged, and they are often used in combination with other antihypertensive drugs.\n\nI should also mention that they are particularly useful in patients with heart failure, as they can reduce the workload on the heart. However, they can have side effects like dry cough, hyperkalemia, and decreased renal function. The user might be interested in the specific mechanisms, so I need to detail the enzyme inhibition, the pathway, and the effects on blood pressure.\n\nAlso, the user might be a medical student or someone studying hypertension, so providing a clear, concise explanation is important. I need to structure the answer with an introduction, mechanism of action, specific details, and possible side effects. Make sure to correct any possible confusion between ECA and ACE inhibitors, but keep the answer focused on the intended topic.\n</think>\n\nLes inhibiteurs de l'enzyme de conversion de l'angiotensine (ECA, ou ACE inhibitors) sont des médicaments antihypertensifs qui agissent en **inhibant l'enzyme de conversion de l'angiotensine (ACE)**, qui est responsable de la conversion de l'angiotensine I en angiotensine II. Voici le mécanisme d'action détaillé :\n\n---\n\n### **1. Mécanisme d'action**\n- **Inhibition de l'enzyme ACE** :  \n  L'ACE (angiotensine converting enzyme) est une enzyme qui transforme l'angiotensine I en angiotensine II, un hormone vasoconstricteur puissant. Les inhibiteurs de l'ACE (comme l'**lisinopril**, **perindopril**, **ramipril**) bloquent cette conversion, réduisant ainsi la concentration d'angiotensine II dans le sang.\n  \n- **Réduction de l'effet vasoconstricteur de l'angiotensine II** :  \n  En diminuant la production d'angiotensine II, ces médicaments provoquent une **dilatation vasculaire** (dilatation des artères) et une **réduction de la résistance vascul",
+          "responseTime": 17810,
+          "tokensPerSecond": 58.2,
+          "model": "qwen3:1.7b",
+          "isTimeout": false
+        },
+        "medical_test_glycolysis_steps": {
+          "question": "Décrivez les étapes principales de la glycolyse.",
+          "category": "medical",
+          "difficulty": "hard",
+          "series": "Tests Médicaux",
+          "seriesId": "medical_test",
+          "success": true,
+          "response": "<think>\nOkay, the user wants me to describe the main steps of glycolysis. Let me start by recalling what glycolysis is. It's the process that breaks down glucose to produce energy, right? So the first thing I need to do is outline the steps in order.\n\nI remember that glycolysis happens in the cytoplasm and requires ATP, NAD+, and enzymes. The process is divided into two phases: the first phase is the breakdown of glucose into two molecules of pyruvate, and the second phase is the production of ATP and NADH.\n\nWait, the user might not be familiar with the terms, so I should explain each step clearly. Let me list the steps one by one. Step 1 is the phosphorylation of glucose, which adds energy. Then the steps involve the enzyme phosphofructokinase-1, which is a regulatory enzyme. \n\nNext, the second phase is the conversion of fructose-6-phosphate to fructose-1,6-bisphosphate, which is the key step. Then the cleavage of the glucose molecule into two three-carbon compounds, glyceraldehyde-3-phosphate and dihydroxyacetone phosphate. But wait, dihydroxyacetone phosphate is converted to glyceraldehyde-3-phosphate, so that's part of the process.\n\nThen, the phosphorylation of glyceraldehyde-3-phosphate to 1,3-bisphosphoglycerate, which produces ATP and reduces NAD+ to NADH. This is the main step where ATP is generated. \n\nThen, the oxidation of the two 3-carbon compounds into pyruvate. The first step is the conversion of glyceraldehyde-3-phosphate to 1,3-bisphosphoglycerate, which gives ATP and NADH. Then, the second step is the oxidation of the other molecule, which also produces NADH. \n\nWait, but the second molecule is dihydroxyacetone phosphate, which is converted to glyceraldehyde-3-phosphate. So the overall result is two pyruvate molecules from one glucose. \n\nAlso, the total ATP produced is 2 from the first phase and 2 from the second, but the actual number is 4 ATP, but some sources say 2, so maybe I should mention that. \n\nI need to make sure the steps are in order and explain each part clearly. Also, mention the key enzymes and the role of NAD+ and ATP. \n\nLet me check the steps again. Step 1: phosphorylation of glucose. Step 2: formation of fructose-1,6-bisphosphate. Step 3: cleavage into two three-carbon molecules. Step 4: oxidation and phosphorylation of the molecules, producing ATP and NADH. Step 5: conversion into pyruvate. \n\nWait, the cleavage is part of the first phase. So the steps are: \n\n1. Phosphorylation of glucose to glucose-6-phosphate. \n2. Phosphorylation of fructose-6-phosphate to fructose-1,6-bisphosphate. \n3. Cleavage of fructose-1,6-bisphosphate into two three-carbon molecules. \n4. Oxidation and phosphorylation of the three-carbon molecules, producing ATP and NADH. \n5. Conversion of the two three-carbon molecules into two pyruvate molecules. \n\nBut in reality, the cleavage is part of the first phase, and then the oxidation is the second phase. So the steps are: \n\n1. Phosphorylation of glucose to glucose-6-phosphate. \n2. Phosphorylation of fructose-6-phosphate to fructose-1,6-bisphosphate. \n3. Cleavage of fructose-1,6-bisphosphate into two 3-carbon molecules. \n4. Oxidation and phosphorylation of the 3-carbon molecules, producing ATP and NADH. \n5. Conversion of the 3-carbon molecules into pyruvate. \n\nYes, that makes sense. Also, the ATP produced in each step: 2 ATP from steps 4 and 5, but the actual total is 4 ATP. \n\nI should also mention the role of ATP and NAD+ in the process. The enzyme phosphofructokinase-1 is a regulatory enzyme that controls the flow of the pathway. \n\nSo, putting it all together, the main steps are: phosphorylation, cleavage, oxidation, and conversion to pyruvate, with the production of ATP and NADH. \n\nI need to present this in a clear, step-by-step manner, using simple language, and maybe list each step with the key points. Also,",
+          "responseTime": 18293,
+          "tokensPerSecond": 52.37,
+          "model": "qwen3:1.7b",
+          "isTimeout": false
+        }
+      }
+    }
+  }
+}

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { Play, Settings, CheckCircle, Clock, AlertCircle, Info, Pause, Square } from 'lucide-react'
 import { useModels, useBenchmarkHistory, useBenchmarkConfigs, useBenchmarkExecution } from '../../hooks/useApi'
-import ModelDetailModal from '../Modal/ModelDetailModal'
+import ModelDetailModalSimple from '../Modal/ModelDetailModal'
 import TestDetailModal from '../Modal/TestDetailModal'
 
 interface BenchmarkExecutionState {
@@ -56,137 +56,39 @@ const BenchmarkMain: React.FC<BenchmarkMainProps> = ({
   })
 
   // États pour les modals
-  const [selectedModelForModal, setSelectedModelForModal] = useState<any>(null)
-  const [isModalVisible, setIsModalVisible] = useState(false)
-  const [selectedTestForModal, setSelectedTestForModal] = useState<string | null>(null)
-  const [isTestModalVisible, setIsTestModalVisible] = useState(false)
+  const [selectedModelForDetails, setSelectedModelForDetails] = useState<string | null>(null)
+  const [selectedTestForDetails, setSelectedTestForDetails] = useState<string | null>(null)
+  const [showModelModal, setShowModelModal] = useState(false)
+  const [showTestModal, setShowTestModal] = useState(false)
 
-  // Hooks API
-  const { models, isLoading: modelsLoading, error: modelsError } = useModels()
-  const { benchmarks, refresh: refreshHistory } = useBenchmarkHistory()
-  const { configs: availableBenchmarks, isLoading: configsLoading, error: configsError } = useBenchmarkConfigs()
-  const { executeBenchmark: executeWithNewAPI } = useBenchmarkExecution()
+  // Hooks pour récupérer les données
+  const { models: modelsData, isLoading: modelsLoading, error: modelsError } = useModels()
+  const { configs: benchmarkConfigs, isLoading: configsLoading } = useBenchmarkConfigs()
 
-  // Calculer le temps estimé total
-  const getTotalEstimatedTime = (): number => {
-    if (selectedBenchmarks.length === 0 || selectedModels.length === 0) return 0
-    
-    let totalSeconds = 0
-    selectedBenchmarks.forEach(benchmarkId => {
-      const config = availableBenchmarks.find((b: any) => b.id === benchmarkId)
-      if (config) {
-        totalSeconds += config.estimatedTime * selectedModels.length
-      }
-    })
-    
-    return totalSeconds
-  }
-
-  // Formater le temps en minutes/secondes
-  const formatTime = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60)
-    const secs = seconds % 60
-    if (mins > 0) {
-      return `${mins}min ${secs}s`
-    }
-    return `${secs}s`
-  }
-
-  // Gestion de la sélection des modèles
-  const handleModelToggle = (modelName: string) => {
-    setSelectedModels(prev => {
-      const newSelection = prev.includes(modelName)
-        ? prev.filter(m => m !== modelName)
-        : [...prev, modelName]
-      
-      console.log(`🤖 [MODEL-SELECTION] Toggle ${modelName}: ${prev.includes(modelName) ? 'DÉSÉLECTIONNÉ' : 'SÉLECTIONNÉ'}`)
-      console.log(`🤖 [MODEL-SELECTION] Nouvelle sélection (${newSelection.length}):`, newSelection)
-      
-      return newSelection
-    })
-  }
-
-  // Ouvrir le modal avec détails du modèle
-  const handleModelDetails = (model: any, event: React.MouseEvent) => {
-    event.stopPropagation()
-    setSelectedModelForModal(model)
-    setIsModalVisible(true)
-  }
-
-  // Fermer le modal
-  const handleCloseModal = () => {
-    setIsModalVisible(false)
-    setSelectedModelForModal(null)
-  }
-
-  // Ouvrir le modal avec détails du test
-  const handleTestDetails = (benchmarkId: string, event: React.MouseEvent) => {
-    event.stopPropagation()
-    setSelectedTestForModal(benchmarkId)
-    setIsTestModalVisible(true)
-  }
-
-  // Fermer le modal de test
-  const handleCloseTestModal = () => {
-    setIsTestModalVisible(false)
-    setSelectedTestForModal(null)
-  }
-
-  // Gestion de la sélection des benchmarks
-  const handleBenchmarkToggle = (benchmarkId: string) => {
-    setSelectedBenchmarks(prev => {
-      const newSelection = prev.includes(benchmarkId)
-        ? prev.filter(b => b !== benchmarkId)
-        : [...prev, benchmarkId]
-      
-      console.log(`🧪 [BENCHMARK-SELECTION] Toggle ${benchmarkId}: ${prev.includes(benchmarkId) ? 'DÉSÉLECTIONNÉ' : 'SÉLECTIONNÉ'}`)
-      console.log(`🧪 [BENCHMARK-SELECTION] Nouvelle sélection (${newSelection.length}):`, newSelection)
-      
-      return newSelection
-    })
-  }
-
-  // Sélectionner tous les modèles d'un type
-  const selectModelsByType = (type: string) => {
-    const modelsByType = models.filter((model: any) => model.type === type)
-    const modelNames = modelsByType.map((model: any) => model.name)
-    
-    console.log(`🎯 [MODEL-SELECTION] Sélection par type "${type}":`, {
-      modelsFiltered: modelsByType.length,
-      modelNames
-    })
-    
-    setSelectedModels(prev => {
-      const newSelection = Array.from(new Set([...prev, ...modelNames]))
-      console.log(`🎯 [MODEL-SELECTION] Nouvelle sélection complète (${newSelection.length}):`, newSelection)
-      return newSelection
-    })
-  }
+  const availableModels = modelsData || []
+  const availableBenchmarks = benchmarkConfigs || []
 
   // ****************************************************************************
-  // 🎯 NOUVELLE LOGIQUE D'EXÉCUTION AVEC API MODERNE ET STREAMING
+  // 🎯 NOUVELLE LOGIQUE D'EXÉCUTION AVEC API v3.2.0 OPTIMISÉE
   // ****************************************************************************
 
   /**
-   * 🚀 Exécuter les benchmarks avec streaming pour progression en temps réel
+   * 🚀 Exécuter les benchmarks avec la nouvelle API v3.2.0 (appel unique optimisé)
    */
-  const executeBenchmarkWithNewAPI = async (benchmarkId: string, models: string[]) => {
-    console.log(`🚀 [BENCHMARK-EXEC] ========== APPEL API ==========`)
-    console.log(`🎯 [BENCHMARK-EXEC] BenchmarkId: ${benchmarkId}`)
+  const executeBenchmarkWithNewAPI = async (benchmarkIds: string[], models: string[]) => {
+    console.log(`🚀 [BENCHMARK-EXEC] ========== APPEL API v3.2.0 ==========`)
+    console.log(`🎯 [BENCHMARK-EXEC] BenchmarkIds (${benchmarkIds.length}):`, benchmarkIds)
     console.log(`🤖 [BENCHMARK-EXEC] Modèles (${models.length}):`, models)
     
     const requestBody = {
-      benchmarkId,
+      benchmarkIds,  // ✅ NOUVEAU: Support des benchmarks multiples
       models,
-      iterations: 1,
-      saveResults: true,
       streaming: true
     }
     
-    console.log(`📤 [BENCHMARK-EXEC] Corps de la requête:`, requestBody)
+    console.log(`📤 [BENCHMARK-EXEC] Corps de la requête v3.2.0:`, requestBody)
     
     try {
-      // Utiliser le streaming pour avoir la progression en temps réel
       const response = await fetch('/api/benchmark/execute', {
         method: 'POST',
         headers: {
@@ -206,7 +108,7 @@ const BenchmarkMain: React.FC<BenchmarkMainProps> = ({
       const reader = response.body?.getReader()
       const decoder = new TextDecoder()
       let finalResult = null
-      let currentQuestionIndex = 0
+      let completedQuestions = 0
       let totalQuestions = 0
 
       console.log(`📡 [BENCHMARK-EXEC] Début lecture du stream SSE...`)
@@ -223,75 +125,65 @@ const BenchmarkMain: React.FC<BenchmarkMainProps> = ({
             const chunk = decoder.decode(value)
             const lines = chunk.split('\n')
 
-            console.log(`📨 [BENCHMARK-EXEC] Chunk reçu (${lines.length} lignes):`, chunk)
-
             for (const line of lines) {
               if (line.startsWith('data: ')) {
                 try {
-                  const data = JSON.parse(line.substring(6))
-                  console.log(`📡 [BENCHMARK-EXEC] SSE Event:`, data)
+                  const eventData = JSON.parse(line.substring(6))
+                  console.log(`📊 [BENCHMARK-EXEC] Événement SSE:`, eventData)
 
-                  switch (data.type) {
+                  // Traitement des différents types d'événements
+                  switch (eventData.type) {
                     case 'start':
-                      totalQuestions = data.totalTests || (models.length * 6) // estimation
-                      console.log(`🎬 [BENCHMARK-EXEC] START - Total questions: ${totalQuestions}`)
+                      totalQuestions = eventData.totalTests || 0
+                      console.log(`🚀 [BENCHMARK-EXEC] Début benchmark - Total: ${totalQuestions} tests`)
                       setExecutionState(prev => ({
                         ...prev,
                         totalTests: totalQuestions,
-                        currentBenchmarkId: benchmarkId
+                        progress: 0,
+                        currentBenchmarkId: `Suite de ${benchmarkIds.length} benchmarks`,
+                        currentModel: models[0] || ''
                       }))
                       break
 
                     case 'model_start':
-                      console.log(`🤖 [BENCHMARK-EXEC] MODEL_START - Modèle: ${data.model}`)
+                      console.log(`🤖 [BENCHMARK-EXEC] Début modèle: ${eventData.model}`)
                       setExecutionState(prev => ({
                         ...prev,
-                        currentModel: data.model
+                        currentModel: eventData.model
                       }))
                       break
 
-                    case 'question_start':
-                      console.log(`❓ [BENCHMARK-EXEC] QUESTION_START - Modèle: ${data.model}, Question: ${data.question}`)
+                    case 'series_start':
+                      console.log(`📝 [BENCHMARK-EXEC] Début série: ${eventData.seriesName}`)
                       setExecutionState(prev => ({
                         ...prev,
-                        currentModel: data.model || prev.currentModel
+                        currentBenchmarkId: `${eventData.model} - ${eventData.seriesName}`
                       }))
                       break
 
                     case 'question_complete':
-                      currentQuestionIndex++
-                      const progressPercent = totalQuestions > 0 
-                        ? Math.round((currentQuestionIndex / totalQuestions) * 100)
-                        : 0
-                      
-                      console.log(`✅ [BENCHMARK-EXEC] QUESTION_COMPLETE - ${currentQuestionIndex}/${totalQuestions} (${progressPercent}%)`)
+                      completedQuestions++
+                      const progressPercent = totalQuestions > 0 ? Math.round((completedQuestions / totalQuestions) * 100) : 0
+                      console.log(`✅ [BENCHMARK-EXEC] Question terminée - Progression: ${completedQuestions}/${totalQuestions} (${progressPercent}%)`)
                       
                       setExecutionState(prev => ({
                         ...prev,
-                        completedTests: currentQuestionIndex,
+                        completedTests: completedQuestions,
                         progress: progressPercent
                       }))
                       break
 
                     case 'complete':
-                      finalResult = data.results || data.result
-                      console.log(`🎉 [BENCHMARK-EXEC] COMPLETE - Résultat final reçu`)
-                      setExecutionState(prev => ({
-                        ...prev,
-                        progress: 100,
-                        completedTests: totalQuestions
-                      }))
+                      finalResult = eventData.results
+                      console.log(`🎉 [BENCHMARK-EXEC] Benchmark terminé avec succès`)
                       break
 
                     case 'error':
-                      console.error(`💥 [BENCHMARK-EXEC] ERROR:`, data.error)
-                      throw new Error(data.error)
-                      
-                    default:
-                      console.log(`🔍 [BENCHMARK-EXEC] Event non géré:`, data.type, data)
+                      console.error(`❌ [BENCHMARK-EXEC] Erreur SSE:`, eventData.error)
+                      throw new Error(eventData.error)
                   }
-                } catch (e) {
-                  console.warn(`🔍 [BENCHMARK-EXEC] Ligne SSE mal formée:`, line, e)
+                } catch (parseError) {
+                  console.warn(`⚠️ [BENCHMARK-EXEC] Ligne SSE mal formée:`, line)
                 }
               }
             }
@@ -306,8 +198,7 @@ const BenchmarkMain: React.FC<BenchmarkMainProps> = ({
         throw new Error('Aucun résultat reçu via le streaming')
       }
 
-      console.log(`✅ [BENCHMARK-EXEC] Benchmark ${benchmarkId} terminé avec succès`)
-      console.log(`📊 [BENCHMARK-EXEC] Résultat final:`, finalResult)
+      console.log(`✅ [BENCHMARK-EXEC] Tous les benchmarks terminés avec succès`)
       return finalResult
       
     } catch (error) {
@@ -317,7 +208,7 @@ const BenchmarkMain: React.FC<BenchmarkMainProps> = ({
   }
 
   /**
-   * 🎯 Lancer une série de benchmarks
+   * 🎯 Lancer une série de benchmarks (NOUVELLE VERSION OPTIMISÉE)
    */
   const handleRunBenchmark = async () => {
     if (selectedModels.length === 0 || selectedBenchmarks.length === 0) {
@@ -325,33 +216,19 @@ const BenchmarkMain: React.FC<BenchmarkMainProps> = ({
       return
     }
 
-    // 📊 LOGS DÉTAILLÉS POUR DIAGNOSTIC
-    console.log(`🚀 [BENCHMARK-MAIN] ========== DÉMARRAGE DES BENCHMARKS ==========`)
+    console.log(`🚀 [BENCHMARK-MAIN] ========== DÉMARRAGE OPTIMISÉ v3.2.0 ==========`)
     console.log(`📋 [BENCHMARK-MAIN] Modèles sélectionnés (${selectedModels.length}):`, selectedModels)
     console.log(`🧪 [BENCHMARK-MAIN] Tests sélectionnés (${selectedBenchmarks.length}):`, selectedBenchmarks)
-    
-    // Détails des configurations
-    selectedBenchmarks.forEach(benchmarkId => {
-      const config = availableBenchmarks.find((b: any) => b.id === benchmarkId)
-      console.log(`📝 [BENCHMARK-MAIN] Test "${benchmarkId}":`, {
-        name: config?.name,
-        description: config?.description,
-        questionCount: config?.questionCount,
-        estimatedTime: config?.estimatedTime
-      })
-    })
     
     // Calculer le nombre estimé de questions total
     const estimatedTotalQuestions = selectedBenchmarks.reduce((total, benchmarkId) => {
       const config = availableBenchmarks.find((b: any) => b.id === benchmarkId)
       const questions = (config?.questionCount || 6) * selectedModels.length
-      console.log(`🔢 [BENCHMARK-MAIN] ${benchmarkId}: ${config?.questionCount || 6} questions × ${selectedModels.length} modèles = ${questions} questions`)
       return total + questions
     }, 0)
 
     console.log(`📊 [BENCHMARK-MAIN] TOTAL ESTIMÉ: ${estimatedTotalQuestions} questions`)
-    console.log(`⏱️ [BENCHMARK-MAIN] Temps estimé total: ${formatTime(getTotalEstimatedTime())}`)
-    console.log(`🚀 [BENCHMARK-MAIN] ========================================`)
+    console.log(`🚀 [BENCHMARK-MAIN] *** APPEL UNIQUE API v3.2.0 ***`)
 
     // Initialiser l'état d'exécution
     setExecutionState({
@@ -370,137 +247,148 @@ const BenchmarkMain: React.FC<BenchmarkMainProps> = ({
     onRunStart?.()
 
     try {
-      const allResults: any[] = []
-      let completedTests = 0
-
-      for (const benchmarkId of selectedBenchmarks) {
-        const config = availableBenchmarks.find((b: any) => b.id === benchmarkId)
-        
-        console.log(`🎯 [BENCHMARK-MAIN] ======= DÉBUT TEST: ${benchmarkId} =======`)
-        console.log(`📝 [BENCHMARK-MAIN] Nom: ${config?.name || benchmarkId}`)
-        console.log(`🤖 [BENCHMARK-MAIN] Modèles pour ce test:`, selectedModels)
-        
-        // Mettre à jour l'état actuel
-        setExecutionState(prev => ({
-          ...prev,
-          currentBenchmarkId: benchmarkId,
-          currentModel: selectedModels[0] || '',
-        }))
-        
-        const startTime = Date.now()
-        
-        try {
-          console.log(`📡 [BENCHMARK-MAIN] Envoi requête API pour ${benchmarkId}...`)
-          const result = await executeBenchmarkWithNewAPI(benchmarkId, selectedModels)
-          const endTime = Date.now()
-          
-          console.log(`✅ [BENCHMARK-MAIN] ${config?.name} terminé en ${endTime - startTime}ms`)
-          console.log(`📊 [BENCHMARK-MAIN] Résultat du test:`, result)
-          
-          allResults.push({
-            benchmarkId,
-            result,
-            duration: endTime - startTime,
-            timestamp: new Date().toISOString()
-          })
-          
-        } catch (error) {
-          console.error(`❌ [BENCHMARK-MAIN] Erreur dans ${config?.name}:`, error)
-          
-          const errorResult = {
-            benchmarkId,
-            error: error instanceof Error ? error.message : 'Erreur inconnue',
-            duration: 0,
-            timestamp: new Date().toISOString()
-          }
-          
-          allResults.push(errorResult)
-          
-          // Ajouter l'erreur à l'état
-          setExecutionState(prev => ({
-            ...prev,
-            errors: [...prev.errors, `${config?.name || benchmarkId}: ${errorResult.error}`]
-          }))
-        }
-
-        completedTests++
-        const progressPercent = Math.round((completedTests / selectedBenchmarks.length) * 100)
-        
-        console.log(`📈 [BENCHMARK-MAIN] Progression: ${completedTests}/${selectedBenchmarks.length} tests terminés (${progressPercent}%)`)
-        
-        // Mettre à jour le progrès
-        setExecutionState(prev => ({
-          ...prev,
-          completedTests,
-          progress: progressPercent,
-          results: allResults
-        }))
-      }
-
-      console.log(`🎉 [BENCHMARK-MAIN] ========== TOUS LES BENCHMARKS TERMINÉS ==========`)
-      console.log(`📊 [BENCHMARK-MAIN] Résultats finaux: ${allResults.length} tests exécutés`)
-      console.log(`📋 [BENCHMARK-MAIN] Détail des résultats:`, allResults)
+      const startTime = Date.now()
       
-      // Rafraîchir l'historique après un délai pour laisser l'API sauvegarder
-      setTimeout(async () => {
-        await refreshHistory()
-        console.log(`🔄 [BENCHMARK-MAIN] Historique rafraîchi`)
-      }, 1000)
+      console.log(`📡 [BENCHMARK-MAIN] ✨ APPEL API UNIQUE POUR TOUS LES BENCHMARKS ✨`)
+      // ✅ NOUVELLE APPROCHE: UN SEUL APPEL POUR TOUS LES BENCHMARKS
+      const result = await executeBenchmarkWithNewAPI(selectedBenchmarks, selectedModels)
       
-      onRunComplete?.(allResults)
-
-    } catch (error) {
-      console.error('💥 [BENCHMARK-MAIN] Erreur globale:', error)
+      const endTime = Date.now()
+      const totalDuration = endTime - startTime
       
-      setExecutionState(prev => ({
-        ...prev,
-        errors: [...prev.errors, `Erreur globale: ${error instanceof Error ? error.message : 'Erreur inconnue'}`]
-      }))
-    } finally {
-      // Finaliser l'exécution
+      console.log(`✅ [BENCHMARK-MAIN] TOUS LES BENCHMARKS TERMINÉS en ${totalDuration}ms`)
+      console.log(`📊 [BENCHMARK-MAIN] Résultat global:`, result)
+      
+      // Mettre à jour l'état final
       setExecutionState(prev => ({
         ...prev,
         isRunning: false,
+        progress: 100,
         currentBenchmarkId: null,
-        currentModel: null
+        currentModel: null,
+        results: [result]
+      }))
+      
+      onRunComplete?.(result)
+      
+    } catch (error) {
+      console.error(`❌ [BENCHMARK-MAIN] Erreur globale:`, error)
+      setExecutionState(prev => ({
+        ...prev,
+        isRunning: false,
+        errors: [...prev.errors, error instanceof Error ? error.message : 'Erreur inconnue']
       }))
     }
   }
 
+  // ****************************************************************************
+  // 🎯 FONCTIONS D'INTERFACE ET UTILITAIRES
+  // ****************************************************************************
 
+  const formatTime = (seconds: number): string => {
+    if (seconds < 60) return `${seconds}s`
+    if (seconds < 3600) return `${Math.floor(seconds / 60)}m ${seconds % 60}s`
+    return `${Math.floor(seconds / 3600)}h ${Math.floor((seconds % 3600) / 60)}m`
+  }
 
+  const getTotalEstimatedTime = (): number => {
+    return selectedBenchmarks.reduce((total, benchmarkId) => {
+      const config = availableBenchmarks.find((b: any) => b.id === benchmarkId)
+      return total + (config?.estimatedTime || 30) * selectedModels.length
+    }, 0)
+  }
 
+  const handleModelToggle = (modelName: string) => {
+    setSelectedModels(prev => 
+      prev.includes(modelName)
+        ? prev.filter(m => m !== modelName)
+        : [...prev, modelName]
+    )
+  }
 
-  /**
-   * 🛑 Annuler l'exécution en cours
-   */
-  const handleCancelExecution = () => {
-    console.log('🛑 [BENCHMARK-MAIN] Annulation de l\'exécution demandée')
+  const handleBenchmarkToggle = (benchmarkId: string) => {
+    setSelectedBenchmarks(prev => 
+      prev.includes(benchmarkId)
+        ? prev.filter(b => b !== benchmarkId)
+        : [...prev, benchmarkId]
+    )
+  }
+
+  const selectAllModels = () => {
+    const availableModelNames = availableModels
+      .filter((model: any) => model.status === 'ready')
+      .map((model: any) => model.name)
+    setSelectedModels(availableModelNames)
+  }
+
+  const selectAllBenchmarks = () => {
+    setSelectedBenchmarks(availableBenchmarks.map((b: any) => b.id))
+  }
+
+  // Sélectionner tous les modèles d'un type (fonction de l'ancien design)
+  const selectModelsByType = (type: string) => {
+    const modelsByType = availableModels.filter((model: any) => model.type === type && model.status === 'ready')
+    const modelNames = modelsByType.map((model: any) => model.name)
     
-    setExecutionState(prev => ({
-      ...prev,
-      isRunning: false,
-      currentBenchmarkId: null,
-      currentModel: null,
-      errors: [...prev.errors, 'Exécution annulée par l\'utilisateur']
-    }))
+    console.log(`🎯 [MODEL-SELECTION] Sélection par type "${type}":`, {
+      modelsFiltered: modelsByType.length,
+      modelNames
+    })
+    
+    setSelectedModels(prev => {
+      const newSelection = Array.from(new Set([...prev, ...modelNames]))
+      console.log(`🎯 [MODEL-SELECTION] Nouvelle sélection complète (${newSelection.length}):`, newSelection)
+      return newSelection
+    })
   }
 
-  // Vérifier si on peut lancer les tests
-  const canRunTests = !executionState.isRunning && selectedModels.length > 0 && selectedBenchmarks.length > 0
-
-  // Formats d'affichage
-  const getCurrentDisplayName = () => {
-    if (executionState.currentBenchmarkId) {
-      const config = availableBenchmarks.find((b: any) => b.id === executionState.currentBenchmarkId)
-      return config?.name || executionState.currentBenchmarkId
+  // Fonction pour obtenir la couleur du type de modèle
+  const getTypeColor = (type: string) => {
+    switch (type) {
+      case 'medical': return 'bg-blue-100 text-blue-800'
+      case 'rapide': return 'bg-green-100 text-green-800'
+      case 'general': return 'bg-purple-100 text-purple-800'
+      default: return 'bg-gray-100 text-gray-800'
     }
-    return ''
   }
+
+  const getTypeLabel = (type: string) => {
+    switch (type) {
+      case 'medical': return 'Médical'
+      case 'rapide': return 'Rapide'
+      case 'general': return 'Général'
+      default: return type
+    }
+  }
+
+  if (modelsLoading || configsLoading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Chargement des configurations...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (modelsError) {
+    return (
+      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+        <div className="flex items-center">
+          <AlertCircle className="w-5 h-5 text-red-500 mr-2" />
+          <span className="text-red-700">Erreur lors du chargement des modèles: {modelsError.message}</span>
+        </div>
+      </div>
+    )
+  }
+
+  const loadedModels = availableModels.filter((model: any) => model.status === 'ready')
 
   return (
     <div className="space-y-8">
-      {/* Section Modèles */}
+
+      {/* Sélection des modèles */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -528,21 +416,23 @@ const BenchmarkMain: React.FC<BenchmarkMainProps> = ({
             >
               Généraux
             </button>
+            <button
+              onClick={selectAllModels}
+              className="px-3 py-1 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors"
+            >
+              Tout sélectionner
+            </button>
           </div>
         </div>
-
-        {modelsLoading ? (
-          <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <span className="ml-3 text-gray-600">Chargement des modèles...</span>
-          </div>
-        ) : modelsError ? (
-          <div className="text-red-600 p-4 bg-red-50 rounded-lg">
-            Erreur lors du chargement des modèles: {modelsError.message}
+        
+        {loadedModels.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            <AlertCircle className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+            <p>Aucun modèle chargé disponible</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {models.map((model: any) => (
+            {loadedModels.map((model: any) => (
               <div
                 key={model.name}
                 className={`p-4 border rounded-lg cursor-pointer transition-all ${
@@ -556,98 +446,136 @@ const BenchmarkMain: React.FC<BenchmarkMainProps> = ({
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
                       <h3 className="font-medium text-gray-900">{model.displayName || model.name}</h3>
-                      <button
-                        onClick={(e) => handleModelDetails(model, e)}
-                        className="p-1 hover:bg-gray-100 rounded-full transition-colors"
-                        title="Voir les détails"
-                      >
-                        <Info className="w-4 h-4 text-gray-500 hover:text-blue-600" />
-                      </button>
-                    </div>
-                    <div className="flex items-center space-x-2 mt-1">
-                      <span className={`px-2 py-1 text-xs rounded-full ${
-                        model.type === 'rapide' ? 'bg-green-100 text-green-700' :
-                        model.type === 'medical' ? 'bg-blue-100 text-blue-700' :
-                        'bg-purple-100 text-purple-700'
-                      }`}>
-                        {model.type}
+                      <span className={`px-2 py-1 text-xs rounded-full ${getTypeColor(model.type)}`}>
+                        {getTypeLabel(model.type)}
                       </span>
-                      <span className="text-xs text-gray-500">{model.parameters}</span>
+                    </div>
+                    <p className="text-sm text-gray-600 mt-1">{model.description}</p>
+                    <div className="flex items-center space-x-4 mt-2">
+                      <div className="flex items-center text-xs text-gray-500">
+                        <span className="font-medium">{model.family}</span>
+                        <span className="mx-1">•</span>
+                        <span>{model.size}</span>
+                      </div>
+                      {model.benchmarkScore && (
+                        <div className="flex items-center text-xs text-green-600">
+                          <span className="font-medium">Score: {model.benchmarkScore}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
-                  {selectedModels.includes(model.name) && (
-                    <CheckCircle className="w-5 h-5 text-blue-600 ml-2" />
-                  )}
+                  <div className="ml-3 flex items-center space-x-2">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setSelectedModelForDetails(model.name)
+                        setShowModelModal(true)
+                      }}
+                      className="text-gray-400 hover:text-blue-600"
+                    >
+                      <Info className="w-4 h-4" />
+                    </button>
+                    {selectedModels.includes(model.name) && (
+                      <CheckCircle className="w-5 h-5 text-blue-600" />
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         )}
+        
+        {selectedModels.length > 0 && (
+          <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+            <p className="text-sm text-gray-600">
+              <strong>{selectedModels.length}</strong> modèle(s) sélectionné(s)
+            </p>
+          </div>
+        )}
       </div>
 
-      {/* Section Tests */}
+      {/* Sélection des benchmarks */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-xl font-semibold text-gray-900">Types de Tests</h2>
             <p className="text-gray-600 mt-1">{selectedBenchmarks.length} test(s) sélectionné(s)</p>
           </div>
+          <button
+            onClick={selectAllBenchmarks}
+            className="px-3 py-1 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors"
+          >
+            Tout sélectionner
+          </button>
         </div>
-
-        {configsLoading ? (
-          <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <span className="ml-3 text-gray-600">Chargement des configurations...</span>
-          </div>
-        ) : configsError ? (
-          <div className="text-red-600 p-4 bg-red-50 rounded-lg">
-            Erreur lors du chargement des configurations: {configsError.message}
+        
+        {availableBenchmarks.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            <AlertCircle className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+            <p>Aucun benchmark disponible</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {availableBenchmarks.map((benchmark: any) => (
-            <div
-              key={benchmark.id}
-              className={`p-4 border rounded-lg cursor-pointer transition-all ${
-                selectedBenchmarks.includes(benchmark.id)
-                  ? 'border-blue-500 bg-blue-50 shadow-md'
-                  : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
-              }`}
-              onClick={() => handleBenchmarkToggle(benchmark.id)}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-medium text-gray-900">{benchmark.name}</h3>
-                    <button
-                      onClick={(e) => handleTestDetails(benchmark.id, e)}
-                      className="p-1 hover:bg-gray-100 rounded-full transition-colors"
-                      title="Voir les détails du test"
-                    >
-                      <Info className="w-4 h-4 text-gray-500 hover:text-blue-600" />
-                    </button>
-                  </div>
-                  <p className="text-sm text-gray-600 mt-1">{benchmark.description}</p>
-                  <div className="flex items-center space-x-4 mt-2">
-                    <div className="flex items-center space-x-1">
-                      <Clock className="w-4 h-4 text-gray-400" />
-                      <span className="text-xs text-gray-500">{formatTime(benchmark.estimatedTime)}</span>
+            {availableBenchmarks.map((benchmark: any) => (
+              <div
+                key={benchmark.id}
+                className={`p-4 border rounded-lg cursor-pointer transition-all ${
+                  selectedBenchmarks.includes(benchmark.id)
+                    ? 'border-blue-500 bg-blue-50 shadow-md'
+                    : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
+                }`}
+                onClick={() => handleBenchmarkToggle(benchmark.id)}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-medium text-gray-900">{benchmark.name}</h3>
+                      <span className={`px-2 py-1 text-xs rounded-full ${
+                        benchmark.difficulty === 'easy' ? 'bg-green-100 text-green-800' :
+                        benchmark.difficulty === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-red-100 text-red-800'
+                      }`}>
+                        {benchmark.difficulty}
+                      </span>
                     </div>
-                    <span className={`px-2 py-1 text-xs rounded-full ${
-                      benchmark.difficulty === 'easy' ? 'bg-green-100 text-green-700' :
-                      benchmark.difficulty === 'medium' ? 'bg-yellow-100 text-yellow-700' :
-                      'bg-red-100 text-red-700'
-                    }`}>
-                      {benchmark.difficulty}
-                    </span>
+                    <p className="text-sm text-gray-600 mt-1">{benchmark.description}</p>
+                    <div className="flex items-center space-x-4 mt-2">
+                      <div className="flex items-center text-xs text-gray-500">
+                        <Clock className="w-3 h-3 mr-1" />
+                        <span>{formatTime(benchmark.estimatedTime * selectedModels.length)}</span>
+                      </div>
+                      <div className="flex items-center text-xs text-gray-500">
+                        <span>{benchmark.questionCount} questions</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="ml-3 flex items-center space-x-2">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setSelectedTestForDetails(benchmark.id)
+                        setShowTestModal(true)
+                      }}
+                      className="text-gray-400 hover:text-blue-600"
+                    >
+                      <Info className="w-4 h-4" />
+                    </button>
+                    {selectedBenchmarks.includes(benchmark.id) && (
+                      <CheckCircle className="w-5 h-5 text-blue-600" />
+                    )}
                   </div>
                 </div>
-                {selectedBenchmarks.includes(benchmark.id) && (
-                  <CheckCircle className="w-5 h-5 text-blue-600 ml-2" />
-                )}
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+        )}
+        
+        {selectedBenchmarks.length > 0 && (
+          <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+            <p className="text-sm text-gray-600">
+              <strong>{selectedBenchmarks.length}</strong> test(s) sélectionné(s) • 
+              Temps estimé total: <strong>{formatTime(getTotalEstimatedTime())}</strong>
+            </p>
           </div>
         )}
       </div>
@@ -665,7 +593,7 @@ const BenchmarkMain: React.FC<BenchmarkMainProps> = ({
                 <div className="flex items-center space-x-2">
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
                   <span className="text-sm text-blue-600">
-                    {getCurrentDisplayName()} - {executionState.progress}%
+                    {executionState.progress}%
                   </span>
                 </div>
               )}
@@ -681,24 +609,27 @@ const BenchmarkMain: React.FC<BenchmarkMainProps> = ({
           </div>
 
           <div className="flex space-x-3">
-            {executionState.isRunning ? (
-              <button
-                onClick={handleCancelExecution}
-                className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center space-x-2"
-              >
-                <Square className="w-4 h-4" />
-                <span>Arrêter</span>
-              </button>
-            ) : (
-              <button
-                onClick={handleRunBenchmark}
-                disabled={!canRunTests}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
-              >
-                <Play className="w-4 h-4" />
-                <span>Lancer les Tests</span>
-              </button>
-            )}
+            <button
+              onClick={handleRunBenchmark}
+              disabled={executionState.isRunning || selectedModels.length === 0 || selectedBenchmarks.length === 0}
+              className={`px-6 py-2 rounded-lg font-medium text-white transition-colors flex items-center space-x-2 ${
+                executionState.isRunning || selectedModels.length === 0 || selectedBenchmarks.length === 0
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-blue-600 hover:bg-blue-700'
+              }`}
+            >
+              {executionState.isRunning ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  <span>Exécution en cours...</span>
+                </>
+              ) : (
+                <>
+                  <Play className="w-4 h-4" />
+                  <span>Lancer les Tests</span>
+                </>
+              )}
+            </button>
           </div>
         </div>
 
@@ -720,6 +651,12 @@ const BenchmarkMain: React.FC<BenchmarkMainProps> = ({
                 {executionState.progress}% complété
               </span>
             </div>
+            
+            {executionState.currentBenchmarkId && (
+              <div className="text-sm text-blue-600">
+                Test en cours: <span className="font-medium">{executionState.currentBenchmarkId}</span>
+              </div>
+            )}
             
             {executionState.currentModel && (
               <div className="text-sm text-blue-600">
@@ -765,19 +702,28 @@ const BenchmarkMain: React.FC<BenchmarkMainProps> = ({
         )}
       </div>
 
-      {/* Modal de détails du modèle */}
-      <ModelDetailModal
-        model={selectedModelForModal}
-        isVisible={isModalVisible}
-        onClose={handleCloseModal}
-      />
+      {/* Modals */}
+      {showModelModal && selectedModelForDetails && (
+        <ModelDetailModalSimple
+          model={availableModels.find((m: any) => m.name === selectedModelForDetails)}
+          isVisible={showModelModal}
+          onClose={() => {
+            setShowModelModal(false)
+            setSelectedModelForDetails(null)
+          }}
+        />
+      )}
 
-      {/* Modal de détails du test */}
-      <TestDetailModal
-        testType={selectedTestForModal}
-        isVisible={isTestModalVisible}
-        onClose={handleCloseTestModal}
-      />
+      {showTestModal && selectedTestForDetails && (
+        <TestDetailModal
+          testType={selectedTestForDetails}
+          isVisible={showTestModal}
+          onClose={() => {
+            setShowTestModal(false)
+            setSelectedTestForDetails(null)
+          }}
+        />
+      )}
     </div>
   )
 }

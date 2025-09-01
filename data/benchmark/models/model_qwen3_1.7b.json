@@ -1,0 +1,110 @@
+{
+  "modelId": "qwen3:1.7b",
+  "displayName": "qwen3:1.7b",
+  "notes": {
+    "generale": ""
+  },
+  "resultsSummary": {
+    "suite__test_rapide__smoke____tests_m_dicaux": {
+      "lastScore": 100,
+      "lastExecution": "2025-09-01T00:55:27.447Z",
+      "historyIds": [
+        "benchmark_1756688025981_s5n05kd7w"
+      ]
+    },
+    "test_rapide__smoke_": {
+      "lastScore": 100,
+      "lastExecution": "2025-09-01T00:55:27.447Z",
+      "historyIds": [
+        "benchmark_1756688025981_s5n05kd7w"
+      ]
+    },
+    "tests_m_dicaux": {
+      "lastScore": 100,
+      "lastExecution": "2025-09-01T00:55:27.447Z",
+      "historyIds": [
+        "benchmark_1756688025981_s5n05kd7w"
+      ]
+    }
+  },
+  "history": [
+    {
+      "benchmarkId": "benchmark_1756688025981_s5n05kd7w",
+      "name": "Suite: Test Rapide (Smoke) + Tests Médicaux",
+      "timestamp": "2025-09-01T00:55:27.447Z",
+      "duration": 63722,
+      "successRate": 100,
+      "isCombinedBenchmark": true,
+      "includedBenchmarks": [
+        "smoke_test",
+        "medical_test"
+      ],
+      "includedBenchmarkNames": [
+        "Test Rapide (Smoke)",
+        "Tests Médicaux"
+      ],
+      "questions": [
+        {
+          "id": "smoke_test_basic_functionality",
+          "question": "Peux-tu me dire si tu fonctionnes correctement ? Réponds simplement par 'Oui, je fonctionne correcte...",
+          "category": "basic",
+          "difficulty": "easy",
+          "response": "<think>\nOkay, the user is asking if I function correctly. They want a simple answer. Let me make sure I understand the request. They want to know if I'm working properly, and they want me to respond j...",
+          "success": true,
+          "responseTime": 4306,
+          "tokensPerSecond": 41.45
+        },
+        {
+          "id": "smoke_test_french_communication",
+          "question": "Peux-tu me parler en français ? Écris une phrase simple en français pour confirmer que tu comprends ...",
+          "category": "basic",
+          "difficulty": "easy",
+          "response": "<think>\nOkay, the user asked me to talk in French and write a simple sentence to confirm I understand the language. Let me start by understanding the request. They want a confirmation in French.\n\nFirs...",
+          "success": true,
+          "responseTime": 3369,
+          "tokensPerSecond": 65.52
+        },
+        {
+          "id": "smoke_test_simple_math",
+          "question": "Combien font 2+2 ? Réponds uniquement avec le chiffre....",
+          "category": "basic",
+          "difficulty": "easy",
+          "response": "<think>\nOkay, the user is asking \"Combien font 2+2 ?\" which means \"What is 2+2?\" and they want the answer just as a number. Let me think. 2 plus 2 is straightforward. The answer should be 4. I need to...",
+          "success": true,
+          "responseTime": 2019,
+          "tokensPerSecond": 54.73
+        },
+        {
+          "id": "medical_test_hypertension_symptoms",
+          "question": "Quels sont les symptômes principaux de l'hypertension artérielle ?...",
+          "category": "medical",
+          "difficulty": "medium",
+          "response": "<think>\nOkay, I need to figure out the main symptoms of hypertension. Let me start by recalling what I know. Hypertension is high blood pressure, but it doesn't usually cause symptoms. However, in som...",
+          "success": true,
+          "responseTime": 17925,
+          "tokensPerSecond": 55.4
+        },
+        {
+          "id": "medical_test_ace_inhibitors",
+          "question": "Expliquez le mécanisme d'action des inhibiteurs de l'ECA dans le traitement de l'hypertension....",
+          "category": "medical",
+          "difficulty": "hard",
+          "response": "<think>\nOkay, the user is asking about the mechanism of action of ECA inhibitors in treating hypertension. Let me start by recalling what I know about ECA inhibitors. They are a type of angiotensin II...",
+          "success": true,
+          "responseTime": 17810,
+          "tokensPerSecond": 58.2
+        },
+        {
+          "id": "medical_test_glycolysis_steps",
+          "question": "Décrivez les étapes principales de la glycolyse....",
+          "category": "medical",
+          "difficulty": "hard",
+          "response": "<think>\nOkay, the user wants me to describe the main steps of glycolysis. Let me start by recalling what glycolysis is. It's the process that breaks down glucose to produce energy, right? So the first...",
+          "success": true,
+          "responseTime": 18293,
+          "tokensPerSecond": 52.37
+        }
+      ]
+    }
+  ]
+}

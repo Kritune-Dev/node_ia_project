@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Calendar, Clock, TrendingUp, ExternalLink, CheckCircle, XCircle, AlertCircle, RefreshCw } from 'lucide-react'
-import { useBenchmarkHistory } from '../../hooks/useApi'
+import { Calendar, Clock, TrendingUp, ExternalLink, CheckCircle, XCircle, AlertCircle, RefreshCw, Trash2, MoreVertical, Play } from 'lucide-react'
+import { useBenchmarkHistory, useBenchmarkOperations } from '../../hooks/useApi'
 
 interface BenchmarkSummary {
   id: string
@@ -26,8 +26,14 @@ interface ModelInfo {
 export default function BenchmarkHistorySimple() {
   const router = useRouter()
   
-  // Utilisation du hook API moderne
+  // Utilisation des hooks API modernes
   const { benchmarks, isLoading, error, refresh } = useBenchmarkHistory()
+  const { deleteBenchmark, deleteAllBenchmarks } = useBenchmarkOperations()
+  
+  // États locaux
+  const [expandedMenus, setExpandedMenus] = useState<Set<string>>(new Set())
+  const [deletingBenchmarks, setDeletingBenchmarks] = useState<Set<string>>(new Set())
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null)
   
   // Filtres multiples
   const [selectedModelTypes, setSelectedModelTypes] = useState<string[]>([])
@@ -46,9 +52,55 @@ export default function BenchmarkHistorySimple() {
     }
   }, [benchmarks])
 
+  // Fermer les menus quand on clique ailleurs
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setExpandedMenus(new Set())
+    }
+    
+    if (expandedMenus.size > 0) {
+      document.addEventListener('click', handleClickOutside)
+      return () => document.removeEventListener('click', handleClickOutside)
+    }
+  }, [expandedMenus])
+
   const handleResultClick = (benchmark: BenchmarkSummary) => {
     // Utilise l'ID pour la navigation vers les résultats
     router.push(`/benchmark/results/${benchmark.id}`)
+  }
+
+  const handleDeleteBenchmark = async (benchmarkId: string, deleteFiles: boolean = false) => {
+    try {
+      setDeletingBenchmarks(prev => {
+        const newSet = new Set(prev)
+        newSet.add(benchmarkId)
+        return newSet
+      })
+      await deleteBenchmark(benchmarkId, deleteFiles)
+      await refresh() // Actualiser la liste
+      setShowDeleteConfirm(null)
+    } catch (error) {
+      console.error('Erreur lors de la suppression:', error)
+      alert('Erreur lors de la suppression du benchmark')
+    } finally {
+      setDeletingBenchmarks(prev => {
+        const newSet = new Set(prev)
+        newSet.delete(benchmarkId)
+        return newSet
+      })
+    }
+  }
+
+  const toggleMenu = (benchmarkId: string) => {
+    setExpandedMenus(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(benchmarkId)) {
+        newSet.delete(benchmarkId)
+      } else {
+        newSet.add(benchmarkId)
+      }
+      return newSet
+    })
   }
 
   const filteredAndSortedBenchmarks = (benchmarks || [])
@@ -75,6 +127,13 @@ export default function BenchmarkHistorySimple() {
       // Tri par date uniquement (plus récent en premier)
       return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     })
+
+  // Créer la liste combinée avec les tests en cours
+  const allItems = []
+
+  
+  // Ajouter les benchmarks terminés
+  allItems.push(...filteredAndSortedBenchmarks)
 
   const toggleModelType = (type: string) => {
     setSelectedModelTypes(prev => 
@@ -260,7 +319,7 @@ export default function BenchmarkHistorySimple() {
       </div>
 
       {/* Liste des benchmarks */}
-      {filteredAndSortedBenchmarks.length === 0 ? (
+      {allItems.length === 0 ? (
         <div className="text-center py-12">
           <Clock className="w-12 h-12 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
@@ -274,48 +333,60 @@ export default function BenchmarkHistorySimple() {
         </div>
       ) : (
         <div className="space-y-4">
-          {filteredAndSortedBenchmarks.map((benchmark: BenchmarkSummary) => (
+          {allItems.map((item: any) => (
             <div
-              key={benchmark.id}
-              className="border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all cursor-pointer hover:border-blue-300"
-              onClick={() => handleResultClick(benchmark)}
+              key={item.id}
+              className={`border border-gray-200 rounded-xl p-6 transition-all ${
+                item.isCurrentTest 
+                  ? 'border-blue-300 bg-blue-50 shadow-lg'
+                  : 'hover:shadow-lg cursor-pointer hover:border-blue-300'
+              }`}
+              onClick={item.isCurrentTest ? undefined : () => handleResultClick(item)}
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
+                    {item.isCurrentTest && (
+                      <Play className="w-5 h-5 text-blue-600 animate-pulse" />
+                    )}
                     <h3 className="text-lg font-semibold text-gray-900">
-                      {benchmark.name}
+                      {item.name}
+                      {item.isCurrentTest && ' (En cours)'}
                     </h3>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${getStatusColor(benchmark.status)}`}>
-                      {getStatusIcon(benchmark.status)}
-                      {benchmark.status === 'completed' ? 'Terminé' : 
-                       benchmark.status === 'failed' ? 'Échoué' : 'En cours'}
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${getStatusColor(item.status)}`}>
+                      {getStatusIcon(item.status)}
+                      {item.status === 'completed' ? 'Terminé' : 
+                       item.status === 'failed' ? 'Échoué' : 'En cours'}
                     </span>
                   </div>
 
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
                     <div className="flex items-center gap-2 text-gray-600">
                       <Calendar className="w-4 h-4" />
-                      <span>{formatDate(benchmark.timestamp)}</span>
+                      <span>{formatDate(item.timestamp)}</span>
                     </div>
                     
                     <div className="flex items-center gap-2 text-gray-600">
                       <TrendingUp className="w-4 h-4" />
-                      <span>{benchmark.successRate.toFixed(1)}% moyenne</span>
+                      <span>
+                        {item.isCurrentTest 
+                          ? 'En cours...' 
+                          : `${item.successRate.toFixed(1)}% moyenne`}
+                      </span>
                     </div>
                     
                     <div className="flex items-center gap-2 text-gray-600">
                       <Clock className="w-4 h-4" />
-                      <span>{formatDuration(benchmark.duration)}</span>
+                      <span>{formatDuration(item.duration)}</span>
                     </div>
                   </div>
 
                   {/* Badges des modèles */}
-                  {benchmark.modelsDisplayNames && benchmark.modelsDisplayNames.length > 0 && (
+                  {item.modelsDisplayNames && item.modelsDisplayNames.length > 0 && (
                     <div className="mt-4">
                       <h4 className="text-xs font-medium text-gray-500 mb-2">Modèles testés:</h4>
                       <div className="flex flex-wrap gap-2">
-                        {benchmark.modelsDisplayNames.map((modelDisplayName: string, index: number) => (
+                        {item.modelsDisplayNames.map((modelDisplayName: string, index: number) => (
                           <span
                             key={index}
                             className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full font-medium"
@@ -328,11 +399,11 @@ export default function BenchmarkHistorySimple() {
                   )}
 
                   {/* Badges des séries de tests */}
-                  {benchmark.testSeriesNames && benchmark.testSeriesNames.length > 0 && (
+                  {item.testSeriesNames && item.testSeriesNames.length > 0 && (
                     <div className="mt-3">
                       <h4 className="text-xs font-medium text-gray-500 mb-2">Séries de tests:</h4>
                       <div className="flex flex-wrap gap-2">
-                        {benchmark.testSeriesNames.map((seriesName: string, index: number) => (
+                        {item.testSeriesNames.map((seriesName: string, index: number) => (
                           <span
                             key={index}
                             className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full font-medium"
@@ -347,11 +418,73 @@ export default function BenchmarkHistorySimple() {
                 </div>
 
                 <div className="ml-4 flex items-center gap-2">
-                  <ExternalLink className="w-5 h-5 text-gray-400" />
+                  {!item.isCurrentTest && (
+                    <div className="relative">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          toggleMenu(item.id)
+                        }}
+                        className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                        title="Options"
+                      >
+                        <MoreVertical className="w-4 h-4" />
+                      </button>
+                      
+                      {/* Menu contextuel */}
+                      {expandedMenus.has(item.id) && (
+                        <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[150px]">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setShowDeleteConfirm(item.id)
+                              toggleMenu(item.id)
+                            }}
+                            className="w-full px-4 py-2 text-left text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2"
+                            disabled={deletingBenchmarks.has(item.id)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                            {deletingBenchmarks.has(item.id) ? 'Suppression...' : 'Supprimer'}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  
+                  {!item.isCurrentTest && <ExternalLink className="w-5 h-5 text-gray-400" />}
                 </div>
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Modal de confirmation de suppression */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 max-w-md mx-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Confirmer la suppression
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Êtes-vous sûr de vouloir supprimer ce benchmark ? Cette action est irréversible.
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowDeleteConfirm(null)}
+                className="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={() => handleDeleteBenchmark(showDeleteConfirm, false)}
+                className="px-4 py-2 text-white bg-red-500 hover:bg-red-600 rounded-lg transition-colors"
+                disabled={deletingBenchmarks.has(showDeleteConfirm)}
+              >
+                {deletingBenchmarks.has(showDeleteConfirm) ? 'Suppression...' : 'Supprimer'}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

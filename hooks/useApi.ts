@@ -196,98 +196,209 @@ export function useModelOperations() {
 }
 
 /**
- * � Hook pour exécuter un benchmark avec la nouvelle API
+ * 🎯 Hook pour l'état des tests en cours (pendingTest.json)
+ */
+export function usePendingTests() {
+  const { data, error, isLoading, mutate } = useSWR('/api/benchmark/pending', fetcher, {
+    refreshInterval: 2000, // Refresh toutes les 2s pendant les tests
+    revalidateOnFocus: true
+  })
+
+  return {
+    currentTest: data?.currentTest || null,
+    queue: data?.queue || [],
+    queueLength: data?.queueLength || 0,
+    isRunning: data?.isRunning || false,
+    history: data?.history || {},
+    isLoading,
+    error,
+    refresh: mutate
+  }
+}
+
+/**
+ * 🚀 Hook unifié pour exécuter un benchmark avec tracking
  */
 export function useBenchmarkExecution() {
-  const executeBenchmark = async (benchmarkId: string, models: string[], options: {
-    iterations?: number;
-    saveResults?: boolean;
-    streaming?: boolean;
-  } = {}) => {
-    const response = await fetch('/api/benchmark/execute', {
+  const startTest = async (benchmarkId: string, models: string[], estimatedDuration?: number) => {
+    const response = await fetch('/api/benchmark/pending', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        benchmarkId,
-        models,
-        iterations: options.iterations || 1,
-        saveResults: options.saveResults !== false
-      })
+      body: JSON.stringify({ benchmarkId, models, estimatedDuration })
     })
 
     if (!response.ok) {
-      throw new Error(`Erreur exécution benchmark: ${response.status}`)
+      throw new Error(`Erreur démarrage test: ${response.status}`)
     }
 
     return response.json()
   }
 
-  const executeBenchmarkStream = async (
-    benchmarkId: string, 
-    models: string[], 
-    onProgress?: (data: any) => void
-  ) => {
-    const response = await fetch('/api/benchmark/execute', {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Accept': 'text/event-stream'
-      },
-      body: JSON.stringify({
-        benchmarkId,
-        models,
-        streaming: true
-      })
+  const updateTest = async (testId: string, updates: {
+    progress?: any
+    status?: string
+    error?: string
+    results?: any
+  }) => {
+    const response = await fetch('/api/benchmark/pending', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ testId, ...updates })
     })
 
     if (!response.ok) {
-      throw new Error(`Erreur exécution benchmark stream: ${response.status}`)
+      throw new Error(`Erreur mise à jour test: ${response.status}`)
     }
 
-    const reader = response.body?.getReader()
-    const decoder = new TextDecoder()
-
-    if (reader) {
-      let result = null
-      
-      try {
-        while (true) {
-          const { done, value } = await reader.read()
-          if (done) break
-
-          const chunk = decoder.decode(value)
-          const lines = chunk.split('\n')
-
-          for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              try {
-                const data = JSON.parse(line.substring(6))
-                onProgress?.(data)
-                
-                if (data.type === 'complete') {
-                  result = data.result
-                }
-              } catch (e) {
-                // Ignorer les lignes mal formées
-              }
-            }
-          }
-        }
-      } finally {
-        reader.releaseLock()
-      }
-      
-      return result
-    }
-    
-    throw new Error('Impossible de lire le stream de réponse')
+    return response.json()
   }
 
-  return { executeBenchmark, executeBenchmarkStream }
+  const endTest = async (testId?: string, status: 'completed' | 'failed' | 'cancelled' = 'completed') => {
+    const params = new URLSearchParams()
+    if (testId) params.append('testId', testId)
+    params.append('status', status)
+
+    const response = await fetch(`/api/benchmark/pending?${params}`, {
+      method: 'DELETE'
+    })
+
+    if (!response.ok) {
+      throw new Error(`Erreur fin test: ${response.status}`)
+    }
+
+    return response.json()
+  }
+
+  const executeBenchmark = async (
+    benchmarkId: string, 
+    models: string[], 
+    options: {
+      streaming?: boolean
+      onProgress?: (data: any) => void
+      onError?: (error: any) => void
+    } = {}
+  ) => {
+    console.log(`🎯 [HOOK] Démarrage benchmark: ${benchmarkId} avec ${models.length} modèles`)
+    
+    try {
+      // 1. Démarrer le tracking
+      const { testId } = await startTest(benchmarkId, models)
+      console.log(`✅ [HOOK] Test tracké avec l'ID: ${testId}`)
+      
+      // 2. Lancer l'exécution via l'API
+      const response = await fetch('/api/benchmark/execute', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': options.streaming ? 'text/event-stream' : 'application/json'
+        },
+        body: JSON.stringify({
+          benchmarkId,
+          models,
+          streaming: options.streaming || false
+        })
+      })
+
+      if (!response.ok) {
+        await endTest(testId, 'failed')
+        throw new Error(`Erreur exécution: ${response.status}`)
+      }
+
+      // 3. Gestion streaming ou batch
+      if (options.streaming && response.body) {
+        return await handleStreamingResponse(response, testId, options.onProgress, updateTest, endTest)
+      } else {
+        const result = await response.json()
+        await endTest(testId, 'completed')
+        return result
+      }
+      
+    } catch (error) {
+      console.error('❌ [HOOK] Erreur exécution:', error)
+      options.onError?.(error)
+      throw error
+    }
+  }
+
+  return { 
+    executeBenchmark, 
+    startTest, 
+    updateTest, 
+    endTest 
+  }
 }
 
 /**
- * �📈 Hook pour les opérations sur les benchmarks
+ * 📡 Gestion du streaming avec mise à jour du pending
+ */
+async function handleStreamingResponse(
+  response: Response,
+  testId: string,
+  onProgress?: (data: any) => void,
+  updateTest?: (testId: string, updates: any) => Promise<any>,
+  endTest?: (testId?: string, status?: 'completed' | 'failed' | 'cancelled') => Promise<any>
+) {
+  const reader = response.body?.getReader()
+  const decoder = new TextDecoder()
+  let finalResult = null
+
+  if (reader) {
+    try {
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        const chunk = decoder.decode(value)
+        const lines = chunk.split('\n')
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.substring(6))
+              
+              // Mise à jour du tracking
+              if (updateTest) {
+                await updateTest(testId, {
+                  progress: {
+                    currentModel: data.model,
+                    percentage: data.progress || 0
+                  }
+                })
+              }
+              
+              // Callback de progression
+              onProgress?.(data)
+              
+              if (data.type === 'complete') {
+                finalResult = data.results
+                if (endTest) {
+                  await endTest(testId, 'completed')
+                }
+              }
+              
+              if (data.type === 'error') {
+                if (endTest) {
+                  await endTest(testId, 'failed')
+                }
+                throw new Error(data.error)
+              }
+              
+            } catch (e) {
+              console.warn('Ligne SSE mal formée:', line)
+            }
+          }
+        }
+      }
+    } finally {
+      reader.releaseLock()
+    }
+  }
+
+  return finalResult
+}
+
+/**
+ * 📈 Hook pour les opérations sur les benchmarks
  */
 export function useBenchmarkOperations() {
   const addBenchmark = async (benchmarkData: any) => {
@@ -299,6 +410,37 @@ export function useBenchmarkOperations() {
 
     if (!response.ok) {
       throw new Error(`Erreur ajout benchmark: ${response.status}`)
+    }
+
+    return response.json()
+  }
+
+  const deleteBenchmark = async (benchmarkId: string, deleteFiles: boolean = false) => {
+    const params = new URLSearchParams()
+    params.append('id', benchmarkId)
+    if (deleteFiles) params.append('deleteFiles', 'true')
+
+    const response = await fetch(`/api/benchmark/history?${params}`, {
+      method: 'DELETE'
+    })
+
+    if (!response.ok) {
+      throw new Error(`Erreur suppression: ${response.status}`)
+    }
+
+    return response.json()
+  }
+
+  const deleteAllBenchmarks = async (deleteFiles: boolean = false) => {
+    const params = new URLSearchParams()
+    if (deleteFiles) params.append('deleteFiles', 'true')
+
+    const response = await fetch(`/api/benchmark/history?${params}`, {
+      method: 'DELETE'
+    })
+
+    if (!response.ok) {
+      throw new Error(`Erreur suppression totale: ${response.status}`)
     }
 
     return response.json()
@@ -318,31 +460,5 @@ export function useBenchmarkOperations() {
     return response.json()
   }
 
-  const deleteBenchmark = async (benchmarkId: string) => {
-    const response = await fetch(`/api/benchmark/history/${benchmarkId}`, {
-      method: 'DELETE'
-    })
-
-    if (!response.ok) {
-      throw new Error(`Erreur suppression: ${response.status}`)
-    }
-
-    return response.json()
-  }
-
-  const executeB = async (models: string[], questions: any[]) => {
-    const response = await fetch('/api/benchmark/execute', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ models, questions })
-    })
-
-    if (!response.ok) {
-      throw new Error(`Erreur exécution: ${response.status}`)
-    }
-
-    return response.json()
-  }
-
-  return { addBenchmark, addBenchmarkConfig, deleteBenchmark, executeBenchmark: executeB }
+  return { addBenchmark, deleteBenchmark, deleteAllBenchmarks, addBenchmarkConfig }
 }

@@ -13,7 +13,6 @@ interface ModelData {
   size: string
   type?: string
   displayName?: string
-  benchmarkScore?: number
   lastUsed?: string
   status: 'ready' | 'loading' | 'error'
   description?: string
@@ -89,7 +88,6 @@ export async function GET() {
         displayName: modelConfig.displayName || modelName,
         status: 'ready' as const,
         lastUsed: new Date().toISOString(),
-        benchmarkScore: Math.round(Math.random() * 40 + 60), // Score simulé
         description: modelConfig.description || `Modèle ${family} de taille ${size}`,
         capabilities: ['text-generation', 'conversation'],
         specialties: modelConfig.specialties || [],

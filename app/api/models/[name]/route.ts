@@ -24,7 +24,6 @@ interface ModelMetadata {
   notes?: string
   metrics?: Record<string, string>
   capabilities?: string[]
-  benchmarkScore?: number
   customMetadata?: Record<string, any>
   lastModified?: string
 }

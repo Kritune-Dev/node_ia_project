@@ -4,7 +4,7 @@
 import fs from 'fs'
 
 // Définir le chemin du fichier d'historique des benchmarks
-const HISTORY_FILE = './data/benchmarkHistory.json'
+const HISTORY_FILE = './data/benchmark/history.json'
 
 export interface ModelCompleteData {
   // Informations statiques

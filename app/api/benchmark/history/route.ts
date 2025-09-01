@@ -28,7 +28,9 @@ interface HistoryFile {
   benchmarks: BenchmarkHistoryItem[]
 }
 
-const BENCHMARK_DIR = path.join(process.cwd(), 'data', 'benchmark_results');
+const BENCHMARK_DIR = path.join(process.cwd(), 'data', 'benchmark');
+const RESULTS_DIR = path.join(BENCHMARK_DIR, 'results');
+const MODELS_DIR = path.join(BENCHMARK_DIR, 'models');
 const HISTORY_FILE = path.join(BENCHMARK_DIR, 'history.json');
 
 /**
@@ -36,7 +38,7 @@ const HISTORY_FILE = path.join(BENCHMARK_DIR, 'history.json');
  */
 function ensureBenchmarkDir() {
   if (!fs.existsSync(BENCHMARK_DIR)) {
-    console.log('📁 [HISTORY-API] Création du répertoire benchmark_results');
+    console.log('📁 [HISTORY-API] Création du répertoire benchmark');
     fs.mkdirSync(BENCHMARK_DIR, { recursive: true });
   }
 }
@@ -126,6 +128,82 @@ function saveHistoryFile(history: HistoryFile): void {
   } catch (error) {
     console.error('❌ [HISTORY-API] Erreur lors de la sauvegarde:', error);
     throw error;
+  }
+}
+
+/**
+ * 🧹 Nettoyer les fichiers de modèles en supprimant les entrées d'un benchmark
+ */
+function cleanModelFiles(benchmarkId: string): void {
+  try {
+    if (!fs.existsSync(MODELS_DIR)) {
+      console.log('📁 [HISTORY-API] Dossier models inexistant, rien à nettoyer');
+      return;
+    }
+
+    const modelFiles = fs.readdirSync(MODELS_DIR)
+      .filter(file => file.startsWith('model_') && file.endsWith('.json'));
+
+    let totalCleaned = 0;
+    
+    for (const file of modelFiles) {
+      const filePath = path.join(MODELS_DIR, file);
+      
+      try {
+        const modelData = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+        
+        if (modelData.history && Array.isArray(modelData.history)) {
+          const originalLength = modelData.history.length;
+          
+          // Supprimer toutes les entrées avec ce benchmarkId
+          modelData.history = modelData.history.filter((entry: any) => 
+            entry.benchmarkId !== benchmarkId
+          );
+          
+          const newLength = modelData.history.length;
+          const removed = originalLength - newLength;
+          
+          if (removed > 0) {
+            // Sauvegarder le fichier modifié
+            fs.writeFileSync(filePath, JSON.stringify(modelData, null, 2));
+            console.log(`🧹 [HISTORY-API] ${file}: ${removed} entrée(s) supprimée(s)`);
+            totalCleaned += removed;
+          }
+        }
+        
+        // Nettoyer aussi le résumé si nécessaire
+        if (modelData.resultsSummary && typeof modelData.resultsSummary === 'object') {
+          let summaryModified = false;
+          
+          for (const [key, summary] of Object.entries(modelData.resultsSummary)) {
+            if (summary && typeof summary === 'object' && 'historyIds' in summary) {
+              const historyIds = (summary as any).historyIds;
+              if (Array.isArray(historyIds)) {
+                const originalIds = historyIds.length;
+                (summary as any).historyIds = historyIds.filter((id: string) => id !== benchmarkId);
+                if ((summary as any).historyIds.length < originalIds) {
+                  summaryModified = true;
+                }
+              }
+            }
+          }
+          
+          if (summaryModified) {
+            fs.writeFileSync(filePath, JSON.stringify(modelData, null, 2));
+            console.log(`🧹 [HISTORY-API] ${file}: résumé mis à jour`);
+          }
+        }
+        
+      } catch (fileError) {
+        console.warn(`⚠️ [HISTORY-API] Erreur lors du nettoyage de ${file}:`, fileError);
+      }
+    }
+    
+    console.log(`✅ [HISTORY-API] Nettoyage terminé: ${totalCleaned} entrée(s) supprimée(s) dans ${modelFiles.length} fichier(s) de modèles`);
+    
+  } catch (error) {
+    console.error('❌ [HISTORY-API] Erreur lors du nettoyage des fichiers de modèles:', error);
+    // Ne pas faire échouer la suppression si le nettoyage des modèles échoue
   }
 }
 
@@ -242,50 +320,139 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * 🗑️ DELETE - Supprimer tous les benchmarks
+ * 🗑️ DELETE - Supprimer tous les benchmarks ou un benchmark spécifique
  */
 export async function DELETE(request: NextRequest) {
-  console.log('🎯 [HISTORY-API] Requête DELETE - Suppression de tous les benchmarks');
+  console.log('🎯 [HISTORY-API] Requête DELETE');
   
   try {
-    const history = loadHistoryFile();
-    const deletedCount = history.benchmarks.length;
-    
-    // Vider l'historique
-    history.benchmarks = [];
-    saveHistoryFile(history);
-
-    // Optionnel: supprimer aussi les fichiers de résultats
     const url = new URL(request.url);
+    const benchmarkId = url.searchParams.get('id');
     const deleteFiles = url.searchParams.get('deleteFiles') === 'true';
     
-    if (deleteFiles) {
-      try {
-        const files = fs.readdirSync(BENCHMARK_DIR);
-        const benchmarkFiles = files.filter(file => 
-          file.startsWith('benchmark_') && file.endsWith('.json') && file !== 'history.json'
-        );
-        
-        benchmarkFiles.forEach(file => {
-          const filePath = path.join(BENCHMARK_DIR, file);
-          fs.unlinkSync(filePath);
-        });
-        
-        console.log(`🗑️ [HISTORY-API] ${benchmarkFiles.length} fichiers de résultats supprimés`);
-      } catch (fileError) {
-        console.warn('⚠️ [HISTORY-API] Erreur lors de la suppression des fichiers:', fileError);
+    const history = loadHistoryFile();
+    
+    if (benchmarkId) {
+      // Suppression d'un benchmark spécifique
+      console.log(`🗑️ [HISTORY-API] Suppression du benchmark: ${benchmarkId}`);
+      
+      const initialCount = history.benchmarks.length;
+      history.benchmarks = history.benchmarks.filter(b => b.id !== benchmarkId);
+      const finalCount = history.benchmarks.length;
+      
+      if (initialCount === finalCount) {
+        return NextResponse.json({
+          success: false,
+          error: `Benchmark ${benchmarkId} non trouvé`
+        }, { status: 404 });
       }
+      
+      saveHistoryFile(history);
+      
+      // Nettoyer les fichiers de modèles (toujours fait)
+      cleanModelFiles(benchmarkId);
+      
+      // Optionnel: supprimer aussi le fichier de résultats correspondant
+      if (deleteFiles) {
+        try {
+          const resultFilePath = path.join(RESULTS_DIR, `${benchmarkId}.json`);
+          if (fs.existsSync(resultFilePath)) {
+            fs.unlinkSync(resultFilePath);
+            console.log(`🗑️ [HISTORY-API] Fichier de résultats supprimé: ${benchmarkId}.json`);
+          }
+        } catch (fileError) {
+          console.warn('⚠️ [HISTORY-API] Erreur lors de la suppression du fichier:', fileError);
+        }
+      }
+      
+      console.log(`✅ [HISTORY-API] Benchmark ${benchmarkId} supprimé`);
+      
+      return NextResponse.json({
+        success: true,
+        message: `Benchmark ${benchmarkId} supprimé`,
+        deletedId: benchmarkId,
+        fileDeleted: deleteFiles,
+        timestamp: new Date().toISOString()
+      });
+      
+    } else {
+      // Suppression de tous les benchmarks (comportement existant)
+      console.log('🗑️ [HISTORY-API] Suppression de tous les benchmarks');
+      
+      const deletedCount = history.benchmarks.length;
+      
+      // Vider l'historique
+      history.benchmarks = [];
+      saveHistoryFile(history);
+
+      // Nettoyer tous les fichiers de modèles (toujours fait)
+      try {
+        if (fs.existsSync(MODELS_DIR)) {
+          const modelFiles = fs.readdirSync(MODELS_DIR)
+            .filter(file => file.startsWith('model_') && file.endsWith('.json'));
+          
+          let totalCleaned = 0;
+          
+          for (const file of modelFiles) {
+            const filePath = path.join(MODELS_DIR, file);
+            
+            try {
+              const modelData = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+              
+              if (modelData.history && Array.isArray(modelData.history)) {
+                const originalLength = modelData.history.length;
+                modelData.history = []; // Vider complètement l'historique
+                totalCleaned += originalLength;
+              }
+              
+              // Vider aussi les résumés
+              if (modelData.resultsSummary) {
+                modelData.resultsSummary = {};
+              }
+              
+              fs.writeFileSync(filePath, JSON.stringify(modelData, null, 2));
+              console.log(`🧹 [HISTORY-API] ${file}: historique vidé`);
+              
+            } catch (fileError) {
+              console.warn(`⚠️ [HISTORY-API] Erreur lors du nettoyage de ${file}:`, fileError);
+            }
+          }
+          
+          console.log(`✅ [HISTORY-API] Nettoyage total: ${totalCleaned} entrée(s) supprimée(s) dans ${modelFiles.length} fichier(s) de modèles`);
+        }
+      } catch (cleanError) {
+        console.warn('⚠️ [HISTORY-API] Erreur lors du nettoyage des modèles:', cleanError);
+      }
+
+      // Optionnel: supprimer aussi les fichiers de résultats
+      if (deleteFiles) {
+        try {
+          const files = fs.readdirSync(RESULTS_DIR);
+          const benchmarkFiles = files.filter(file => 
+            file.startsWith('benchmark_') && file.endsWith('.json')
+          );
+          
+          benchmarkFiles.forEach(file => {
+            const filePath = path.join(RESULTS_DIR, file);
+            fs.unlinkSync(filePath);
+          });
+          
+          console.log(`🗑️ [HISTORY-API] ${benchmarkFiles.length} fichiers de résultats supprimés`);
+        } catch (fileError) {
+          console.warn('⚠️ [HISTORY-API] Erreur lors de la suppression des fichiers:', fileError);
+        }
+      }
+
+      console.log(`✅ [HISTORY-API] ${deletedCount} benchmarks supprimés`);
+
+      return NextResponse.json({
+        success: true,
+        message: `${deletedCount} benchmarks supprimés`,
+        deletedCount,
+        filesDeleted: deleteFiles,
+        timestamp: new Date().toISOString()
+      });
     }
-
-    console.log(`✅ [HISTORY-API] ${deletedCount} benchmarks supprimés`);
-
-    return NextResponse.json({
-      success: true,
-      message: `${deletedCount} benchmarks supprimés`,
-      deletedCount,
-      filesDeleted: deleteFiles,
-      timestamp: new Date().toISOString()
-    });
 
   } catch (error) {
     console.error('❌ [HISTORY-API] Erreur DELETE:', error);
