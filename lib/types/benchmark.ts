@@ -125,6 +125,42 @@ export interface BenchmarkResult {
   evaluatedBy?: string; // 'auto' | 'manual' | evaluator name
 }
 
+export interface BenchmarkConfigItem {
+  id: string;
+  name: string;
+  description: string;
+  estimatedTime: number; // en secondes
+  questionCount: number;
+  difficulty: DifficultyLevel;
+  category: string;
+  version: string;
+  testTypes: BenchmarkTestType[];
+  parameters: {
+    temperature: number;
+    seed: number;
+    timeout: number;
+    maxTokens: number;
+    topP: number;
+    frequencyPenalty?: number;
+    presencePenalty?: number;
+  };
+  prompts: {
+    system: string;
+    evaluation: string;
+  };
+  questions: Array<{
+    id: string;
+    text: string;
+    category: string;
+    expectedType: string;
+    difficulty: DifficultyLevel;
+    expectedResponse?: string;
+    keywords: string[];
+    maxResponseLength: number;
+  }>;
+  scoring: Record<string, number>;
+}
+
 export interface BenchmarkSuite {
   id: string;
   name: string;

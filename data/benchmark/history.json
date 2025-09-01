@@ -1,59 +1,57 @@
 {
   "version": "3.0.0",
-  "lastUpdated": "2025-09-01T00:55:27.457Z",
+  "lastUpdated": "2025-09-01T01:57:36.935Z",
   "benchmarks": [
     {
-      "id": "benchmark_1756687871585_2au5cogcy",
-      "name": "Test Rapide (Smoke)",
-      "timestamp": "2025-09-01T00:51:16.548Z",
-      "duration": 4909,
+      "id": "benchmark_1756690810617_u21sa2044",
+      "name": "Suite: Test Rapide (Smoke) + Tests de Programmation + Connaissances Générales + Tests Médicaux",
+      "timestamp": "2025-09-01T01:40:55.880Z",
+      "duration": 45254,
       "successRate": 100,
       "status": "completed",
       "modelsDisplayNames": [
-        "gemma3:270m",
         "qwen3:0.6b"
+      ],
+      "testSeriesNames": [
+        "Test Rapide (Smoke)",
+        "Tests de Programmation",
+        "Connaissances Générales",
+        "Tests Médicaux"
+      ],
+      "modelCount": 1,
+      "questionCount": 10
+    },
+    {
+      "id": "benchmark_1756691836195_bs2riujmv",
+      "name": "Test Rapide (Smoke)",
+      "timestamp": "2025-09-01T01:57:17.123Z",
+      "duration": 924,
+      "successRate": 100,
+      "status": "completed",
+      "modelsDisplayNames": [
+        "gemma3:270m"
       ],
       "testSeriesNames": [
         "Test Rapide (Smoke)"
       ],
-      "modelCount": 2,
-      "questionCount": 6
+      "modelCount": 1,
+      "questionCount": 3
     },
     {
-      "id": "benchmark_1756687880413_8dayh4b36",
-      "name": "Suite: Test Rapide (Smoke) + Tests Médicaux",
-      "timestamp": "2025-09-01T00:51:56.692Z",
-      "duration": 36263,
+      "id": "benchmark_1756691839109_v00yjl0rf",
+      "name": "Tests Médicaux",
+      "timestamp": "2025-09-01T01:57:36.935Z",
+      "duration": 17821,
       "successRate": 100,
       "status": "completed",
       "modelsDisplayNames": [
-        "gemma3:270m",
-        "qwen3:0.6b"
+        "gemma3:270m"
       ],
       "testSeriesNames": [
-        "Test Rapide (Smoke)",
         "Tests Médicaux"
       ],
-      "modelCount": 2,
-      "questionCount": 12
-    },
-    {
-      "id": "benchmark_1756688025981_s5n05kd7w",
-      "name": "Suite: Test Rapide (Smoke) + Tests Médicaux",
-      "timestamp": "2025-09-01T00:55:27.457Z",
-      "duration": 101460,
-      "successRate": 100,
-      "status": "completed",
-      "modelsDisplayNames": [
-        "gemma3:1b",
-        "qwen3:1.7b"
-      ],
-      "testSeriesNames": [
-        "Test Rapide (Smoke)",
-        "Tests Médicaux"
-      ],
-      "modelCount": 2,
-      "questionCount": 12
+      "modelCount": 1,
+      "questionCount": 3
     }
   ]
 }

@@ -4,6 +4,10 @@
       "id": "smoke_test",
       "name": "Test Rapide (Smoke)",
       "description": "Tests de base pour vérifier le fonctionnement des modèles IA",
+      "estimatedTime": 30,
+      "questionCount": 3,
+      "difficulty": "easy",
+      "category": "smoke",
       "version": "1.0.0",
       "testTypes": [
         "smoke"
@@ -75,6 +79,10 @@
       "id": "medical_test",
       "name": "Tests Médicaux",
       "description": "Évaluation des connaissances médicales des modèles IA",
+      "estimatedTime": 60,
+      "questionCount": 3,
+      "difficulty": "easy",
+      "category": "qualitative",
       "version": "1.0.0",
       "testTypes": [
         "qualitative"
@@ -150,6 +158,10 @@
       "id": "general_knowledge",
       "name": "Connaissances Générales",
       "description": "Tests de culture générale et raisonnement",
+      "estimatedTime": 45,
+      "questionCount": 2,
+      "difficulty": "easy",
+      "category": "qualitative",
       "version": "1.0.0",
       "testTypes": [
         "qualitative"
@@ -208,6 +220,10 @@
       "id": "coding_test",
       "name": "Tests de Programmation",
       "description": "Évaluation des capacités de génération de code",
+      "estimatedTime": 90,
+      "questionCount": 2,
+      "difficulty": "easy",
+      "category": "qualitative",
       "version": "1.0.0",
       "testTypes": [
         "qualitative"

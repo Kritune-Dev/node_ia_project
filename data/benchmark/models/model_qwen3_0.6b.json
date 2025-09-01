@@ -5,43 +5,60 @@
     "generale": ""
   },
   "resultsSummary": {
-    "test_rapide__smoke_": {
+    "suite__test_rapide__smoke____tests_de_programmation___connaissances_g_n_rales___tests_m_dicaux": {
       "lastScore": 100,
-      "lastExecution": "2025-09-01T00:51:56.680Z",
+      "lastExecution": "2025-09-01T01:40:55.872Z",
       "historyIds": [
-        "benchmark_1756687880413_8dayh4b36",
-        "benchmark_1756687871585_2au5cogcy"
+        "benchmark_1756690810617_u21sa2044"
       ]
     },
-    "suite__test_rapide__smoke____tests_m_dicaux": {
+    "test_rapide__smoke_": {
       "lastScore": 100,
-      "lastExecution": "2025-09-01T00:51:56.680Z",
+      "lastExecution": "2025-09-01T01:40:55.872Z",
       "historyIds": [
-        "benchmark_1756687880413_8dayh4b36"
+        "benchmark_1756690810617_u21sa2044"
+      ]
+    },
+    "tests_de_programmation": {
+      "lastScore": 100,
+      "lastExecution": "2025-09-01T01:40:55.872Z",
+      "historyIds": [
+        "benchmark_1756690810617_u21sa2044"
+      ]
+    },
+    "connaissances_g_n_rales": {
+      "lastScore": 100,
+      "lastExecution": "2025-09-01T01:40:55.872Z",
+      "historyIds": [
+        "benchmark_1756690810617_u21sa2044"
       ]
     },
     "tests_m_dicaux": {
       "lastScore": 100,
-      "lastExecution": "2025-09-01T00:51:56.680Z",
+      "lastExecution": "2025-09-01T01:40:55.872Z",
       "historyIds": [
-        "benchmark_1756687880413_8dayh4b36"
+        "benchmark_1756690810617_u21sa2044"
       ]
     }
   },
   "history": [
     {
-      "benchmarkId": "benchmark_1756687880413_8dayh4b36",
-      "name": "Suite: Test Rapide (Smoke) + Tests Médicaux",
-      "timestamp": "2025-09-01T00:51:56.680Z",
-      "duration": 21535,
+      "benchmarkId": "benchmark_1756690810617_u21sa2044",
+      "name": "Suite: Test Rapide (Smoke) + Tests de Programmation + Connaissances Générales + Tests Médicaux",
+      "timestamp": "2025-09-01T01:40:55.872Z",
+      "duration": 45139,
       "successRate": 100,
       "isCombinedBenchmark": true,
       "includedBenchmarks": [
         "smoke_test",
+        "coding_test",
+        "general_knowledge",
         "medical_test"
       ],
       "includedBenchmarkNames": [
         "Test Rapide (Smoke)",
+        "Tests de Programmation",
+        "Connaissances Générales",
         "Tests Médicaux"
       ],
       "questions": [
@@ -50,99 +67,100 @@
           "question": "Peux-tu me dire si tu fonctionnes correctement ? Réponds simplement par 'Oui, je fonctionne correcte...",
           "category": "basic",
           "difficulty": "easy",
-          "response": "<think>\nOkay, the user is asking if I'm functioning correctly and wants a simple answer. Let me start by confirming that I'm functioning correctly. I should respond with \"Oui, je fonctionne correcteme...",
+          "response": "<think>\nOkay, the user is asking if I function properly, and I need to respond with \"Oui, je fonctionne correctement\". Let me make sure I understand their request correctly. They want a simple affirma...",
           "success": true,
-          "responseTime": 1106,
-          "tokensPerSecond": 120.71
+          "responseTime": 1972,
+          "tokensPerSecond": 59.96
         },
         {
           "id": "smoke_test_french_communication",
           "question": "Peux-tu me parler en français ? Écris une phrase simple en français pour confirmer que tu comprends ...",
           "category": "basic",
           "difficulty": "easy",
-          "response": "<think>\nOkay, the user wants me to write a simple French sentence to confirm understanding. Let me think... A common way to do that is \"Je comprends la langue.\" That's pretty straightforward and natur...",
+          "response": "<think>\nOkay, the user wants me to write a simple French phrase to confirm understanding. Let me start by recalling the basics. In French, to confirm understanding, a common phrase is \"Je comprends\". ...",
           "success": true,
-          "responseTime": 1183,
-          "tokensPerSecond": 117.71
+          "responseTime": 976,
+          "tokensPerSecond": 139.34
         },
         {
           "id": "smoke_test_simple_math",
           "question": "Combien font 2+2 ? Réponds uniquement avec le chiffre....",
           "category": "basic",
           "difficulty": "easy",
-          "response": "<think>\nOkay, the user is asking how many 2+2 make. Let me think. So 2 plus 2, that's 4. But wait, the question says \"Réponds uniquement avec le chiffre,\" which means only with the number. So I need t...",
+          "response": "<think>\nOkay, the user is asking how many 2s make up 2+2. Let me think. So 2 plus 2 equals 4. But the question says to respond only with the digit. So the answer is 4. I should make sure there's no tr...",
           "success": true,
-          "responseTime": 1029,
-          "tokensPerSecond": 107.63
+          "responseTime": 705,
+          "tokensPerSecond": 108.51
+        },
+        {
+          "id": "coding_test_fibonacci_python",
+          "question": "Écrivez une fonction Python qui calcule la suite de Fibonacci pour n termes....",
+          "category": "coding",
+          "difficulty": "medium",
+          "response": "<think>\nOkay, I need to write a Python function that calculates the Fibonacci sequence for a given number of terms. Let me think about how to approach this.\n\nFirst, the Fibonacci sequence starts with ...",
+          "success": true,
+          "responseTime": 7277,
+          "tokensPerSecond": 101.52
+        },
+        {
+          "id": "coding_test_logical_reasoning",
+          "question": "Si tous les A sont B, et tous les B sont C, que peut-on dire des A par rapport aux C ? Expliquez vot...",
+          "category": "reasoning",
+          "difficulty": "medium",
+          "response": "<think>\nOkay, let's try to figure out this logic problem. So, the question says that all A are B, and all B are C. Then, we need to determine what can be said about A relative to C. Hmm, let me break ...",
+          "success": true,
+          "responseTime": 5569,
+          "tokensPerSecond": 108.05
+        },
+        {
+          "id": "general_knowledge_climate_change",
+          "question": "Quelles sont les causes principales du réchauffement climatique ?...",
+          "category": "general",
+          "difficulty": "medium",
+          "response": "<think>\nOkay, the user is asking about the main causes of climate warming. Let me start by recalling the key points. First, the primary causes are a combination of natural and human-induced factors. N...",
+          "success": true,
+          "responseTime": 3516,
+          "tokensPerSecond": 130.83
+        },
+        {
+          "id": "general_knowledge_artificial_intelligence",
+          "question": "Expliquez le concept d'intelligence artificielle et ses applications principales....",
+          "category": "general",
+          "difficulty": "medium",
+          "response": "<think>\nOkay, so I need to explain the concept of artificial intelligence and its main applications. Let me start by recalling what I know. AI is the science of machines that can perform tasks that re...",
+          "success": true,
+          "responseTime": 8650,
+          "tokensPerSecond": 121.07
         },
         {
           "id": "medical_test_hypertension_symptoms",
           "question": "Quels sont les symptômes principaux de l'hypertension artérielle ?...",
           "category": "medical",
           "difficulty": "medium",
-          "response": "<think>\nOkay, so the user is asking about the main symptoms of arterial hypertension. Let me start by recalling the basic information I know about hypertension. First, it's a condition where blood pre...",
+          "response": "<think>\nOkay, I need to list the main symptoms of arterial hypertension. Let me start by recalling what I know. Hypertension is when blood pressure is too high. Common symptoms include chest pain, diz...",
           "success": true,
-          "responseTime": 3735,
-          "tokensPerSecond": 129.72
+          "responseTime": 3327,
+          "tokensPerSecond": 124.59
         },
         {
           "id": "medical_test_ace_inhibitors",
           "question": "Expliquez le mécanisme d'action des inhibiteurs de l'ECA dans le traitement de l'hypertension....",
           "category": "medical",
           "difficulty": "hard",
-          "response": "<think>\nOkay, I need to explain the mechanism of action of ACE inhibitors in treating hypertension. Let me start by recalling what I know about ACE inhibitors. They are drugs that block the conversion...",
+          "response": "<think>\nOkay, the user wants me to explain the mechanism of action of ECA inhibitors in treating hypertension. First, I need to recall what ECA is. I think ECA stands for Erythromycin, which is an ant...",
           "success": true,
-          "responseTime": 8075,
-          "tokensPerSecond": 109.38
+          "responseTime": 6265,
+          "tokensPerSecond": 129.65
         },
         {
           "id": "medical_test_glycolysis_steps",
           "question": "Décrivez les étapes principales de la glycolyse....",
           "category": "medical",
           "difficulty": "hard",
-          "response": "<think>\nOkay, the user is asking to describe the main steps of glycolysis. Let me start by recalling what I know about glycolysis. I remember it's the metabolic process that breaks down glucose into p...",
+          "response": "<think>\nOkay, so the user wants me to describe the main steps of glycolysis. Let me start by recalling what I know about glycolysis. From what I remember, it's the process in the cytoplasm that breaks...",
           "success": true,
-          "responseTime": 6407,
-          "tokensPerSecond": 96.46
-        }
-      ]
-    },
-    {
-      "benchmarkId": "benchmark_1756687871585_2au5cogcy",
-      "name": "Test Rapide (Smoke)",
-      "timestamp": "2025-09-01T00:51:16.495Z",
-      "duration": 3883,
-      "successRate": 100,
-      "questions": [
-        {
-          "id": "basic_functionality",
-          "question": "Peux-tu me dire si tu fonctionnes correctement ? Réponds simplement par 'Oui, je fonctionne correcte...",
-          "category": "basic",
-          "difficulty": "easy",
-          "response": "<think>\nOkay, the user wants me to confirm if I function correctly by saying \"Oui, je fonctionne correctement.\" They're probably testing me. I need to respond politely. Let me make sure I'm not making...",
-          "success": true,
-          "responseTime": 1779,
-          "tokensPerSecond": 42.44
-        },
-        {
-          "id": "french_communication",
-          "question": "Peux-tu me parler en français ? Écris une phrase simple en français pour confirmer que tu comprends ...",
-          "category": "basic",
-          "difficulty": "easy",
-          "response": "<think>\nOkay, the user wants a simple French sentence to confirm they understand the language. Let me start by thinking about the correct way to say \"I understand\" in French. The standard expression i...",
-          "success": true,
-          "responseTime": 1200,
-          "tokensPerSecond": 136.88
-        },
-        {
-          "id": "simple_math",
-          "question": "Combien font 2+2 ? Réponds uniquement avec le chiffre....",
-          "category": "basic",
-          "difficulty": "easy",
-          "response": "<think>\nOkay, the user is asking, \"Combien font 2+2 ? Réponds uniquement avec le chiffre.\" So they want the answer in a single digit. Let me think.\n\nFirst, 2 plus 2 equals 4. That's straightforward. S...",
-          "success": true,
-          "responseTime": 904,
-          "tokensPerSecond": 112.28
+          "responseTime": 6882,
+          "tokensPerSecond": 104.95
         }
       ]
     }

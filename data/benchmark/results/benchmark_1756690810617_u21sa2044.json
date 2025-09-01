@@ -1,0 +1,183 @@
+{
+  "id": "benchmark_1756690810617_u21sa2044",
+  "displayName": "Suite: Test Rapide (Smoke) + Tests de Programmation + Connaissances Générales + Tests Médicaux",
+  "testSeries": "Suite: Test Rapide (Smoke) + Tests de Programmation + Connaissances Générales + Tests Médicaux",
+  "benchmarkIds": [
+    "smoke_test",
+    "coding_test",
+    "general_knowledge",
+    "medical_test"
+  ],
+  "benchmarkNames": [
+    "Test Rapide (Smoke)",
+    "Tests de Programmation",
+    "Connaissances Générales",
+    "Tests Médicaux"
+  ],
+  "timestamp": "2025-09-01T01:40:10.617Z",
+  "startTime": 1756690810617,
+  "summary": {
+    "total_tests": 10,
+    "successful_tests": 10,
+    "failed_tests": 0,
+    "total_models": 1,
+    "average_response_time": 4513.9,
+    "average_tokens_per_second": 112.84700000000001,
+    "total_duration": 45254,
+    "categories_tested": [
+      "basic",
+      "coding",
+      "reasoning",
+      "general",
+      "medical"
+    ],
+    "models_tested": [
+      "qwen3:0.6b"
+    ],
+    "total_questions": 10,
+    "benchmark_count": 4
+  },
+  "results": {
+    "qwen3:0.6b": {
+      "model_name": "qwen3:0.6b",
+      "service_url": "http://localhost:3000",
+      "total_response_time": 45139,
+      "average_response_time": 4513.9,
+      "total_tokens_per_second": 1128.47,
+      "average_tokens_per_second": 112.84700000000001,
+      "success_rate": 100,
+      "questions": {
+        "smoke_test_basic_functionality": {
+          "question": "Peux-tu me dire si tu fonctionnes correctement ? Réponds simplement par 'Oui, je fonctionne correctement'.",
+          "category": "basic",
+          "difficulty": "easy",
+          "series": "Test Rapide (Smoke)",
+          "seriesId": "smoke_test",
+          "success": true,
+          "response": "<think>\nOkay, the user is asking if I function properly, and I need to respond with \"Oui, je fonctionne correctement\". Let me make sure I understand their request correctly. They want a simple affirmation, so I should just say that. I need to keep it straightforward and polite. Let me check if there's any additional context needed, but since they didn't specify, this should be sufficient. Alright, time to deliver the response.\n</think>\n\nOui, je fonctionne correctement.",
+          "responseTime": 1972,
+          "tokensPerSecond": 59.96,
+          "model": "qwen3:0.6b",
+          "isTimeout": false
+        },
+        "smoke_test_french_communication": {
+          "question": "Peux-tu me parler en français ? Écris une phrase simple en français pour confirmer que tu comprends cette langue.",
+          "category": "basic",
+          "difficulty": "easy",
+          "series": "Test Rapide (Smoke)",
+          "seriesId": "smoke_test",
+          "success": true,
+          "response": "<think>\nOkay, the user wants me to write a simple French phrase to confirm understanding. Let me start by recalling the basics. In French, to confirm understanding, a common phrase is \"Je comprends\". That's straightforward and correct. I should make sure to use the correct spelling and structure. Maybe add a comma to make it flow better. Let me check if there's any nuance I need to consider, like formality. The phrase is simple and polite, which fits the context. Alright, I think that's all. Let me put it together.\n</think>\n\nJe comprends.",
+          "responseTime": 976,
+          "tokensPerSecond": 139.34,
+          "model": "qwen3:0.6b",
+          "isTimeout": false
+        },
+        "smoke_test_simple_math": {
+          "question": "Combien font 2+2 ? Réponds uniquement avec le chiffre.",
+          "category": "basic",
+          "difficulty": "easy",
+          "series": "Test Rapide (Smoke)",
+          "seriesId": "smoke_test",
+          "success": true,
+          "response": "<think>\nOkay, the user is asking how many 2s make up 2+2. Let me think. So 2 plus 2 equals 4. But the question says to respond only with the digit. So the answer is 4. I should make sure there's no trick here. It's straightforward addition. No need to consider anything else. Just the number 4.\n</think>\n\n4",
+          "responseTime": 705,
+          "tokensPerSecond": 108.51,
+          "model": "qwen3:0.6b",
+          "isTimeout": false
+        },
+        "coding_test_fibonacci_python": {
+          "question": "Écrivez une fonction Python qui calcule la suite de Fibonacci pour n termes.",
+          "category": "coding",
+          "difficulty": "medium",
+          "series": "Tests de Programmation",
+          "seriesId": "coding_test",
+          "success": true,
+          "response": "<think>\nOkay, I need to write a Python function that calculates the Fibonacci sequence for a given number of terms. Let me think about how to approach this.\n\nFirst, the Fibonacci sequence starts with 0 and 1, and each subsequent number is the sum of the two preceding ones. But wait, sometimes people start with 1 and 1, but that's not the case here. The question doesn't specify, so I should assume the standard definition where the first two terms are 0 and 1. However, maybe the user expects the first two terms to be 1 and 1. Let me check the problem statement again. The user says \"n termes\" which translates to \"n terms\". So if n is 0, the function should return 0. But maybe the problem expects that the function takes n as the number of terms and returns a list of those numbers.\n\nWait, the user's example might be for n=0. Let me make sure. The function is supposed to calculate the Fibonacci sequence for n terms. So for n=0, return [0], for n=1, return [0,1], and so on. So the function needs to accept n as an integer and return a list of length n.\n\nNow, how to implement this in Python. Let's think about the steps. The function can be called with n. The base case is n=0, return [0]. For n=1, return [0,1]. For n=2, [0,1], etc.\n\nSo the function could be something like:\n\ndef fibonacci(n):\n    if n == 0:\n        return [0]\n    elif n == 1:\n        return [0, 1]\n    else:\n        return [0, 1] + fibonacci(n-2)\n\nWait, but for n=2, the list is [0,1], which is correct. For n=3, [0,1,1], etc. That seems to work. But what if n is 1? The code returns [0,1], which is correct. So the function works as expected.\n\nBut wait, the problem says \"for n termes\". So if the user gives n=0, the function returns [0], which is correct. So this approach should work.\n\nAnother way is to use a list and build it step by step. Let me think. Initialize a list, and for each term up to n, add the sum of the previous two. But that would require O(n) time and space, which is acceptable.\n\nWait, but for n=0, the list is [0], which is correct. So the function as written should work. Let me test with some examples.\n\nTest case 1: n=0 → [0]. Correct.\n\nTest case 2: n=1 → [0,1]. Correct.\n\nTest case 3: n=2 → [0,1]. Correct.\n\nTest case 4: n=3 → [0,1,1]. Correct.\n\nYes, so this approach should work. Now, I can write the function as described. Also, need to handle edge cases, like n=0, 1, 2, etc. So the code is straightforward.\n</think>\n\nVoici une fonction Python qui calcule la suite de Fibonacci pour `n` termes :\n\n```python\ndef fibonacci(n):\n    if n == 0:\n        return [0]\n    elif n == 1:\n        return [0, 1]\n    else:\n        return [0, 1] + fibonacci(n - 2)\n```\n\n### Exemples :\n\n- `fibonacci(0)` → `[0]`\n- `fibonacci(1)` → `[0, 1]`\n- `fibonacci(2)` → `[0, 1]`\n- `fibonacci(3)` → `[0, 1, 1]`\n\nCette fonction calcule directement la suite de Fibonacci en utilisant une récurrence avec un taux d'allocatrices de `n` termes, ce qui est efficace et spéculatif.",
+          "responseTime": 7277,
+          "tokensPerSecond": 101.52,
+          "model": "qwen3:0.6b",
+          "isTimeout": false
+        },
+        "coding_test_logical_reasoning": {
+          "question": "Si tous les A sont B, et tous les B sont C, que peut-on dire des A par rapport aux C ? Expliquez votre raisonnement.",
+          "category": "reasoning",
+          "difficulty": "medium",
+          "series": "Tests de Programmation",
+          "seriesId": "coding_test",
+          "success": true,
+          "response": "<think>\nOkay, let's try to figure out this logic problem. So, the question says that all A are B, and all B are C. Then, we need to determine what can be said about A relative to C. Hmm, let me break this down.\n\nFirst, I remember that in logic, if all A are B, that means every element in the set A is also an element of B. Similarly, if all B are C, every element in B is also an element of C. So, starting with A → B and B → C. \n\nNow, if we have both A → B and B → C, does that mean A → C? Wait, that seems like a contrapositive. If all A are B and all B are C, then all A are C? Or maybe that's not the case. Wait, maybe I need to think in terms of sets. If A is a subset of B, and B is a subset of C, then A is a subset of C. Yes! Because if every A is B, and every B is C, then by the definition of set inclusion, A is a subset of C. So the conclusion would be that A is a subset of C. \n\nLet me check again. Suppose I have a set A, every element of A is in B. Then, every element of B is in C. So if I pick an element from A, it must be in B, and then since all elements of B are in C, this element must be in C. Therefore, A is a subset of C. That makes sense. So the answer should be that A is a subset of C. \n\nBut wait, let me make sure I didn't mix up the direction. The original statements are about A being a subset of B and B being a subset of C. So if all A are B, and all B are C, then A is a subset of C. Yes, that's right. So the conclusion is that A is a subset of C. \n\nAnother way to think about it: if A is a subset of B, and B is a subset of C, then A must be a subset of C. Because if you have A ⊆ B, and B ⊆ C, then by the definition of inclusion, A ⊆ C. So that's the same as saying A is a subset of C. \n\nI don't think there's any confusion here. It's a basic set theory problem, and the answer is straightforward. So the final answer should be that A is a subset of C.\n</think>\n\nSi tous les A sont B, et tous les B sont C, alors tous les A sont également C. Cette conclusion découle de la relation d'intersection entre les ensembles. En effet, si $ A \\subseteq B $ et $ B \\subseteq C $, alors $ A \\subseteq C $. Cela résulte de la définition des ensembles : tous les éléments de $ A $ sont également dans $ B $, et tous les éléments de $ B $ sont également dans $ C $. Ainsi, chaque élément de $ A $ appartient naturellement à $ C $. \n\n**Réponse finale :**  \nTous les A sont aussi C.",
+          "responseTime": 5569,
+          "tokensPerSecond": 108.05,
+          "model": "qwen3:0.6b",
+          "isTimeout": false
+        },
+        "general_knowledge_climate_change": {
+          "question": "Quelles sont les causes principales du réchauffement climatique ?",
+          "category": "general",
+          "difficulty": "medium",
+          "series": "Connaissances Générales",
+          "seriesId": "general_knowledge",
+          "success": true,
+          "response": "<think>\nOkay, the user is asking about the main causes of climate warming. Let me start by recalling the key points. First, the primary causes are a combination of natural and human-induced factors. Natural factors include volcanic activity and solar radiation, but those are part of the Earth's natural systems. The main human-induced cause is the burning of fossil fuels, which releases greenhouse gases like carbon dioxide and methane. Then there's deforestation, which reduces the number of trees that absorb CO2. Also, industrial processes and agriculture contribute to these emissions. It's important to mention that while some natural factors exist, they are negligible compared to human activities. I should structure the answer clearly, maybe divide into natural and human causes, and emphasize that human activities are the primary drivers. Need to make sure the explanation is straightforward and covers all main points without getting too technical.\n</think>\n\nLes causes principales du réchauffement climatique incluent :\n\n1. **Les activités humaines** :  \n   - **Le débarragement des combustibles fossiles** : L'accumulation de CO₂ et d'autres gaz thermiques (comme le méthane) via le transport, l'industrie, et l'agriculture.  \n   - **Les émissions industrielles** (comme l'éclairage à l'industrie, l'électricité, et l'air-fried) et les énergies renouvelables (solar, éolien, hygro-éolien).  \n   - **L'agriculture** : L'importance des émissions de CO₂ en dégrangeant la croissance des forêts.  \n\n2. **Les effets naturels** :  \n   - La **lumière solaire** et l'**activité volcanique** jouent un rôle dans le réchauffement, mais ces facteurs sont **minimes par rapport aux activités humaines**.  \n\nEn résumé, les réchauffements climatiques sont principalement causés par des actions humaines et non par des changements naturels.",
+          "responseTime": 3516,
+          "tokensPerSecond": 130.83,
+          "model": "qwen3:0.6b",
+          "isTimeout": false
+        },
+        "general_knowledge_artificial_intelligence": {
+          "question": "Expliquez le concept d'intelligence artificielle et ses applications principales.",
+          "category": "general",
+          "difficulty": "medium",
+          "series": "Connaissances Générales",
+          "seriesId": "general_knowledge",
+          "success": true,
+          "response": "<think>\nOkay, so I need to explain the concept of artificial intelligence and its main applications. Let me start by recalling what I know. AI is the science of machines that can perform tasks that require human intelligence. It's about machines making decisions, learning from data, and understanding patterns. So, main applications would be things like healthcare, finance, education, etc.\n\nFirst, healthcare. AI is used for diagnostics, like in cancer detection where machine learning helps identify tumors in X-rays. Also, personalized treatment plans based on patient data. That makes sense. Then, finance. Automated systems like credit scoring, fraud detection, and algorithmic trading. These use machine learning to make decisions without human intervention.\n\nEducation. Intelligent tutoring systems that adapt to student needs, personalized learning paths. AI also assists in language learning, like using AI to create customized programs. That's a main application.\n\nWait, are there other areas? Like in manufacturing, for example, using AI to optimize production lines. Or in logistics for route optimization. Also, in environmental science, like predicting weather patterns or managing resources. That's more general. Maybe mention specific examples in each field.\n\nI should structure it clearly. Start with the concept, then list applications with examples. Make sure to explain how AI enables these applications. Need to check if I'm missing any key points. Oh, right, AI can also help in data analysis and decision-making support. Also, ethical considerations might be important, but the question just asks applications, so maybe focus on those areas. Make sure the explanation flows well and is easy to understand.\n</think>\n\n**Concept d'intelligence artificielle (IA):**  \nL'intelligence artificielle est la science et la technologie qui permet aux machines de « penser » ou « réagir » en utilisant des modèles de données, des algorithmes et des connaissances humaines. Elle permet aux systèmes, humains ou machines de prendre des décisions basées sur l’analyse de données, l’expérience, et l’entraînement statistique. Son objectif principal est de créer des outils capables de réagir, d’optimiser, d’assurer la qualité des décisions, et de réduire les coûts humains.\n\n---\n\n**Applications principales de l’intelligence artificielle:**\n\n1. **Diagnostics et réanimation en santé:**  \n   - **Diagnostiquez des maladies** (ex. : analyse de images pour détecter des tumeurs en radiologie).  \n   - **Génériques personnalisés** : système d'assistance à la médecine qui adapte ses recommandations en fonction des besoins patients.  \n   - **Auto-échafaudage** en laboratoires pour réduire les erreurs humaines.\n\n2. **Finance et gestion des risques:**  \n   - **Calcul des crédits** (algorithmes pour évaluer la crédit d’impôts).  \n   - **Détection des fraudes** (ex. : analyse des transactions pour éviter les prêts frauduleux).  \n   - **Trading algorithmique** : systèmes de trading basés sur les prévisions statistiques pour le marché.\n\n3. **Éducation:**  \n   - **Systèmes d’assistant scolaire** adaptés aux besoins des étudiants.  \n   - **Apprentissage personnalisé** (ex. : apprentissage par apprentissage pour les élèves en difficulté).  \n   - **Langue de travail en ligne** (ex. : système d’accompagnement en français pour les étudiants).\n\n4. **Manufacturiéry et logistics:**  \n   - **Optimisation des marchés** (ex. : planning de production en temps réel pour réduire les coûts).  \n   - **Transport en ligne** (ex. : route de réduire le gaspillage via l'IA).\n\n5. **Environnement et science de la vie:**  \n   - **Prédictions des événements** (ex. : modélisation des précipitations pour la météorologie).  \n   - **Gestion des ressources environnementales** (ex. : planification des énergies renouvelables).\n\n6. **Entretien et gestion de projet:**  \n   - **Systèmes d’entretien** (ex. : assistants en temps réel pour le projet).  \n   - **Processus d’entretien automatisés**.\n\n---\n\n**Conclusion:**  \nL’intelligence artificielle permet de transformer des informations humaines en décisions optimales, en réduisant les erreurs humaines, et en améliorant la productivité. En combinant",
+          "responseTime": 8650,
+          "tokensPerSecond": 121.07,
+          "model": "qwen3:0.6b",
+          "isTimeout": false
+        },
+        "medical_test_hypertension_symptoms": {
+          "question": "Quels sont les symptômes principaux de l'hypertension artérielle ?",
+          "category": "medical",
+          "difficulty": "medium",
+          "series": "Tests Médicaux",
+          "seriesId": "medical_test",
+          "success": true,
+          "response": "<think>\nOkay, I need to list the main symptoms of arterial hypertension. Let me start by recalling what I know. Hypertension is when blood pressure is too high. Common symptoms include chest pain, dizziness, headaches, and nausea. Wait, are those all the main ones?\n\nI remember that chest pain is a classic symptom, especially if it's chest pain. But I should check if there are others. Also, dizziness or vertigo might happen if there's a blockage in the blood vessels. There's also fatigue and sleep issues. Oh, right, headaches, especially migraines, are common. And sometimes it can cause a feeling of weakness or fatigue. But I should make sure these are all the primary symptoms.\n\nWait, another thing is that some people might experience headaches without knowing they're related to the blood pressure. So I need to list them clearly. Let me structure this: chest pain, dizziness, headaches, fatigue, nausea, vertigo, and maybe confusion. That should cover the main symptoms.\n</think>\n\nLes symptômes principaux de l'hypertension artérielle incluent :  \n1. **Chest pain ou douleurs thoraciques** (plus de 50 % des patients).  \n2. **Douleurs de visage ou de torses** (vertigo, confusion).  \n3. **Douleurs de crampes ou de fatigue** (parfois associées au stress ou à l'insomnie).  \n4. **Douleurs de crampes ou de douloureux** (douleurs à l'œil ou à la tête).  \n5. **Douleurs de crampes ou de confusion** (souvent sans lien avec le sang ou la pression).  \n\nCes symptômes peuvent varier selon la gravité et la cause de l'insuffisance artérielle. Si vous avez des douleurs persistantes ou des symptômes graves, consultez un médecin pour un diagnostic précis.",
+          "responseTime": 3327,
+          "tokensPerSecond": 124.59,
+          "model": "qwen3:0.6b",
+          "isTimeout": false
+        },
+        "medical_test_ace_inhibitors": {
+          "question": "Expliquez le mécanisme d'action des inhibiteurs de l'ECA dans le traitement de l'hypertension.",
+          "category": "medical",
+          "difficulty": "hard",
+          "series": "Tests Médicaux",
+          "seriesId": "medical_test",
+          "success": true,
+          "response": "<think>\nOkay, the user wants me to explain the mechanism of action of ECA inhibitors in treating hypertension. First, I need to recall what ECA is. I think ECA stands for Erythromycin, which is an antibiotic. But wait, ECA inhibitors are part of the Erythromycin family. So maybe the question is a bit confusing. Let me verify.\n\nWait, the user mentioned ECA inhibitors. Oh, right, ECA inhibitors are a type of antibiotic used to treat infections. So the question is about how ECA inhibitors work in treating hypertension. But ECA itself isn't involved in hypertension. Maybe there's a translation or terminology mix-up here. Alternatively, maybe the user meant to refer to Erythromycin, but the term here is \"ECA.\" \n\nI need to clarify. If it's ECA inhibitors, perhaps the user made a typo. Let me check. If it's Erythromycin, then the mechanism would be as follows. Erythromycin works by inhibiting protein synthesis in bacteria, which is part of the Erythromycin family. But how does that relate to hypertension? Maybe the user is mixing up terms. Alternatively, perhaps they meant to refer to another compound, like a drug used for hypertension. But without more context, it's hard to say.\n\nAlternatively, maybe the user is referring to a different enzyme or mechanism. Wait, ECA inhibitors could be used in the context of a drug that affects a specific pathway. Let me think. If ECA inhibitors are part of the Erythromycin family, then their mechanism would be inhibiting bacterial growth. But how does that relate to hypertension? Maybe there's a misunderstanding here. Perhaps the user intended to ask about a different compound. Without clarification, it's challenging to provide a direct answer.\n\nBut since the user is asking about ECA inhibitors in hypertension treatment, and given the confusion, maybe the best approach is to point out the possible confusion and suggest that either the user intended to refer to a different compound or that there's a terminology mix-up. Alternatively, if ECA is a typo and should be Erythromycin, then proceed to explain how Erythromycin inhibits protein synthesis, which is a part of the Erythromycin family, and if that's related to hypertension, but I'm not sure. \n\nAlternatively, maybe the user is asking about a drug that targets a specific enzyme, like an ECA inhibitor, and their mechanism is inhibiting an enzyme involved in hypertension. But without knowing the specific compound, it's hard. I need to make sure to address the confusion and perhaps ask for clarification.\n</think>\n\nIl semble que vous avez un malentendu en termes de terminologie. Les inhibiteurs de la famille de l'Erythromycin (ou ECA) sont des médicaments utilisés pour inhiber l'production de protéines dans les bactéries, ce qui est un mécanisme principal dans leur action antinfectoire. Si vous avez une erreur de terminologie, veuillez préciser le nom exact de l'inhibiteur et l'objectif théorique, afin de fournir une réponse précise. En général, ces inhibiteurs agissent via des mécanismes comme l'inhibition de l'ARN ou l'intermédiaire de l'intermédiaire de synthèse, ce qui permet une suppression de la croissance des bactéries. Cependant, leur application dans le traitement de l'hypertension reste faible en ce sens.",
+          "responseTime": 6265,
+          "tokensPerSecond": 129.65,
+          "model": "qwen3:0.6b",
+          "isTimeout": false
+        },
+        "medical_test_glycolysis_steps": {
+          "question": "Décrivez les étapes principales de la glycolyse.",
+          "category": "medical",
+          "difficulty": "hard",
+          "series": "Tests Médicaux",
+          "seriesId": "medical_test",
+          "success": true,
+          "response": "<think>\nOkay, so the user wants me to describe the main steps of glycolysis. Let me start by recalling what I know about glycolysis. From what I remember, it's the process in the cytoplasm that breaks down glucose into pyruvate, producing ATP. But I need to make sure I'm not mixing things up. \n\nFirst, I think the main steps involve glucose being split into two molecules: one that forms pyruvate and the other that's converted to acetyl-CoA. Then, the pyruvate gets converted into acetyl-CoA, which is then converted into acetyl-CoA. Wait, but acetyl-CoA is already in the Krebs cycle. So maybe after that, the acetyl-CoA enters the Krebs cycle, starting the cycle. But how does that process work?\n\nLet me break it down step by step. First, glucose molecules are split into pyruvate and a molecule that's converted into acetyl-CoA. Then, the pyruvate is converted into acetyl-CoA. Then, acetyl-CoA is converted into acetyl-CoA, which then enters the Krebs cycle. The Krebs cycle itself produces a lot of ATP, right? And then some CO2 is produced, which is released. \n\nWait, but does the Krebs cycle actually start with acetyl-CoA? Yes, because once you have acetyl-CoA, it starts the cycle. So the overall steps are: glucose → pyruvate + acetyl-CoA → acetyl-CoA → Krebs cycle → CO2 production. \n\nI need to mention that glycolysis occurs in the cytoplasm, not in mitochondria. Also, it's a non-oxidative process, producing ATP directly. Let me make sure I'm not missing any key points. Are there any other steps? Like, does the pyruvate get converted into acetyl-CoA? Yes, that's the first step. And then the Krebs cycle takes over. \n\nWait, but in the Krebs cycle, the acetyl-CoA starts the cycle, so the steps are: glucose → pyruvate + acetyl-CoA → acetyl-CoA → Krebs cycle. So the main steps are splitting glucose into pyruvate, converting pyruvate into acetyl-CoA, and then the Krebs cycle. \n\nI think that's all. Let me structure this in a clear, step-by-step manner. Make sure to mention the cytoplasm, non-oxidative, and the production of ATP. Also, include the final products like CO2. Double-check if I missed any key points. Okay, I think that's it.\n</think>\n\nLes étapes principales de la **glycolyse** sont les suivantes :  \n\n1. **La glycolyse est un processus réactionnel en milieu cytoplasmique**.  \n2. **Le glucose est converti en deux acides aminés (pyruvate et acétyl-CoA)**, grâce à la **splitting de la glucose** en deux molécules.  \n3. **Le pyruvate est converti en acétyl-CoA** :  \n   - L’acétyl-CoA est ensuite **converti en acétyl-CoA** (dans le cycle de Krebs).  \n4. **Le cycle de Krebs commence avec l’acétyl-CoA**.  \n5. **Le cycle de Krebs produit des **ATP** et des **CO₂**, ce qui permet à la glycolyse de générer de l’ATP.  \n\n**Finalement**, la **glycolyse donne un équilibre de CO₂** et de **ATP** à l’organisme, ce qui est utilisé pour la **méthode de Krebs**.",
+          "responseTime": 6882,
+          "tokensPerSecond": 104.95,
+          "model": "qwen3:0.6b",
+          "isTimeout": false
+        }
+      }
+    }
+  }
+}

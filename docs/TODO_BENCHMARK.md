@@ -17,7 +17,7 @@
 
 ## 🔧 Interface Utilisateur
 
-- [ ] **Refaire le Modal des modèles** : Revoir complètement l'interface du modal de détails des modèles
+- [x] **Refaire le Modal des modèles** : Revoir complètement l'interface du modal de détails des modèles
 - [ ] **Automatisation des notations** : Automatiser les notations pour les tests (smoke tests par exemple)
 
 ## 📈 Historique API

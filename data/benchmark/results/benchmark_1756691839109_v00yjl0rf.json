@@ -1,0 +1,76 @@
+{
+  "id": "benchmark_1756691839109_v00yjl0rf",
+  "displayName": "Tests Médicaux",
+  "testSeries": "Tests Médicaux",
+  "benchmarkIds": [
+    "medical_test"
+  ],
+  "benchmarkNames": [
+    "Tests Médicaux"
+  ],
+  "timestamp": "2025-09-01T01:57:19.109Z",
+  "startTime": 1756691839109,
+  "summary": {
+    "total_tests": 3,
+    "successful_tests": 3,
+    "failed_tests": 0,
+    "total_models": 1,
+    "average_response_time": 5934.666666666667,
+    "average_tokens_per_second": 164.42333333333332,
+    "total_duration": 17821,
+    "categories_tested": [
+      "medical"
+    ],
+    "models_tested": [
+      "gemma3:270m"
+    ],
+    "total_questions": 3,
+    "benchmark_count": 1
+  },
+  "results": {
+    "gemma3:270m": {
+      "model_name": "gemma3:270m",
+      "service_url": "http://localhost:3000",
+      "total_response_time": 17804,
+      "average_response_time": 5934.666666666667,
+      "total_tokens_per_second": 493.27,
+      "average_tokens_per_second": 164.42333333333332,
+      "success_rate": 100,
+      "questions": {
+        "hypertension_symptoms": {
+          "question": "Quels sont les symptômes principaux de l'hypertension artérielle ?",
+          "category": "medical",
+          "difficulty": "medium",
+          "success": true,
+          "response": "Les symptômes principaux de l'hypertension artérielle sont :\n\n*   **Douleur thoracique:** C'est le symptôme le plus courant.\n*   **Douleur thoracique intense:** Elle peut se développer en présence de facteurs de stress, de maladies cardiaques, de blessures, ou de problèmes de santé général.\n*   **Douleur thoracique persistante:** Elle peut être causée par une maladie chronique, une surdose, ou par des facteurs environnementaux.\n*   **Douleur thoracique en fréquence:** Elle peut se manifester par une douleur constante ou une augmentation de la fréquence.\n*   **Douleur thoracique en profondeur:** Elle peut se manifester par une douleur profonde et intense, qui peut être difficile à gérer.\n*   **Douleur thoracique dans les zones du corps:** Elle peut se manifester dans les zones du corps, comme les jambes, les bras, les jambes, les pieds, les poumons, les épaules, les bras, les chevilles, les tendons, les muscles, les os, les articulations, les tendons, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les muscles, les parasites, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies cardiaques, les maladies",
+          "responseTime": 6181,
+          "tokensPerSecond": 189.57,
+          "model": "gemma3:270m",
+          "isTimeout": false
+        },
+        "ace_inhibitors": {
+          "question": "Expliquez le mécanisme d'action des inhibiteurs de l'ECA dans le traitement de l'hypertension.",
+          "category": "medical",
+          "difficulty": "hard",
+          "success": true,
+          "response": "Le mécanisme d'action des inhibiteurs de l'ECA (inhibiteurs de l'acétylcholine carboxylase) dans le traitement de l'hypertension est complexe et implique plusieurs étapes clés. Voici une explication détaillée :\n\n**1. L'acétylcholine carboxylase (ACE):**\n\n*   **Fonction principale :** L'ACE est une enzyme essentielle à la synthèse de l'acétylcholine (AC).  Elle joue un rôle crucial dans la liaison de l'acétylcholine à l'acide nucléaire (AC).  L'AC est un acide aminé essentiel pour la production d'une large gamme de composés organiques, notamment :\n    *   **Les protéines :**  Les protéines sont des structures chimiques importantes qui maintiennent les liaisons de l'AC dans l'organisme.\n    *   **Les lipides :**  Les lipides sont des molécules organiques qui sont essentielles pour la transport et la liaison de l'AC.\n    *   **Les composés organiques :**  Les composés organiques, comme les glucides et les graisses, sont des molécules organiques qui sont essentielles pour la transport et la liaison de l'AC.\n    *   **Les médicaments :**  Les médicaments sont des molécules organiques qui sont essentielles pour la transport et la liaison de l'AC.\n\n*   **Fonctionnement :** L'ACE est une enzyme qui se trouve dans plusieurs régions du corps, notamment les régions de l'hémocortex (par exemple, dans les neurones et les cellules cérébrales).  Elle peut activer ou inhiber l'activité de l'AC, ce qui conduit à une interaction spécifique avec l'AC.\n\n**2.  L'inhibiteur de l'ACE :**\n\n*   **Fonction principale :**  L'inhibiteur de l'ACE est une molécule qui bloque la liaison de l'AC avec l'AC.  Cela signifie que l'AC est moins facilement fixé à l'AC, ce qui réduit la concentration de l'AC dans l'organisme.\n*   **Types d'inhibiteurs :** Il existe différents types d'inhibiteurs de l'ACE, chacun ayant des propriétés différentes :\n    *   **Inhibiteurs de l'ACE activés :**  Ces inhibiteurs activent l'AC, ce qui signifie que l'AC est plus facilement fixé à l'AC.  Ils sont souvent utilisés pour traiter les maladies cardiovasculaires, les maladies des reins, les maladies du foie, et d'autres conditions où l'AC est difficile à fixer.\n    *   **Inhibiteurs de l'ACE inhibés :**  Ces inhibiteurs inhibent l'activité de l'AC, ce qui signifie que l'AC est moins facilement fixé à l'AC.  Ils sont souvent utilisés pour traiter les maladies cardiovasculaires, les maladies des reins, les maladies du foie, et d'autres conditions où l'AC est difficile à fixer.\n    *   **Inhibiteurs de l'ACE non activés :**  Ces inhibiteurs ne sont pas activés et ne peuvent pas activer l'AC.  Ils sont souvent utilisés pour traiter les maladies cardiovasculaires, les maladies des reins, les maladies du foie, et d'autres conditions où l'AC est difficile à fixer.\n\n**3.  La liaison de l'AC à l'AC :**\n\n*   **Fonction principale :**  La liaison de l'AC à l'AC est la principale étape dans le mécanisme d'action des inhibiteurs de l'ACE.  Elle est une interaction complexe qui implique la formation d'une liaison covalente entre l'AC et l'AC.\n*   **Mécanisme :**  L'AC est plus facilement fixé à l'AC par l'ACE.  Par conséquent, l'AC est moins facilement fixé à l'AC par l'ACE, ce qui réduit la concentration de l'AC dans l'organisme.  La liaison de l'AC à l'AC est une liaison covalente, et la liaison de l'AC à l'AC est une liaison covalente.\n\n**4.  La  réduction de la concentration de l'AC :**\n\n*   **Fonction principale :**  La liaison de l'AC à l'AC réduit la concentration de l'AC dans l'organisme.  Cela signifie que l'AC est moins facilement fixé à l'AC, ce qui réduit la quantité d'AC que l'organisme doit transporter et transporter.\n*   **Effets sur les systèmes biologiques :**  La réduction de la concentration de l'AC réduit la capacité de l'organisme à transporter et transporter l'AC, ce qui entraîne une diminution de la",
+          "responseTime": 5872,
+          "tokensPerSecond": 162.81,
+          "model": "gemma3:270m",
+          "isTimeout": false
+        },
+        "glycolysis_steps": {
+          "question": "Décrivez les étapes principales de la glycolyse.",
+          "category": "medical",
+          "difficulty": "hard",
+          "success": true,
+          "response": "Les étapes principales de la glycolyse sont les suivantes :\n\n1. **Décomposition du glucose (c'est-à-dire l'oxydation du glucose) :**\n\n   * **Réaction :** Le glucose est converti en une molécule d'acide glycolique (glycérine) et en une molécule d'eau.\n   * **Conditions :** Cette réaction est généralement effectuée dans un solvant organique (par exemple, l'éthanol, le méthanol, le chlorure de butane) à une température comprise entre 20°C et 100°C.\n   * **Réactifs :** Les réactifs principaux sont :\n      * **Glucose (C₆H₁₂O₆) :** C'est le principal réactif.\n      * **Eau (H₂O) :**  C'est le solvant.\n      * **Acide Glycolique (Glycerol) :**  C'est l'oxydant.\n      * **Acide Acide (H₂CO₃) :**  C'est le réactif de base.\n      * **Agents de dégradation :**  Certains agents de dégradation peuvent être utilisés, comme le chlorure de thionyle (SOCl₂) ou le chlorure de phosphore (PCl₅).\n\n2. **Décomposition de l'acide glycolique :**\n\n   * **Réaction :** L'acide glycolique est décomposé en un dérivé de glycol, généralement le glycol de sucrose (sucrose) ou le glycol de fructose.\n   * **Conditions :** Cette réaction est généralement effectuée dans un solvant organique (par exemple, l'éthanol, le méthanol, le chlorure de butane) à une température comprise entre 20°C et 100°C.\n   * **Réactifs :** Les réactifs principaux sont :\n      * **Acide Glycolique (Glycerol) :** C'est l'oxydant.\n      * **Eau (H₂O) :** C'est le solvant.\n      * **Acide Acide (H₂CO₃) :** C'est le réactif de base.\n      * **Agents de dégradation :** Certains agents de dégradation peuvent être utilisés, comme le chlorure de thionyle (SOCl₂) ou le chlorure de phosphore (PCl₅).\n\n3. **Réduction de l'eau :**\n\n   * **Réaction :** L'eau est réduite en un gaz (par exemple, l'hydrogène) et en un produit chimique, généralement un dérivé de glycol, appelé glycol de l'eau.\n   * **Conditions :** Cette réaction est généralement effectuée dans un solvant organique (par exemple, l'éthanol, le méthanol, le chlorure de butane) à une température comprise entre 20°C et 100°C.\n   * **Réactifs :** Les réactifs principaux sont :\n      * **Eau (H₂O) :** C'est le solvant.\n      * **Acide Acide (H₂CO₃) :** C'est le réactif de base.\n      * **Agents de dégradation :** Certains agents de dégradation peuvent être utilisés, comme le chlorure de thionyle (SOCl₂) ou le chlorure de phosphore (PCl₅).\n\n4. **Formation du glycol de l'eau (glycérine) :**\n\n   * **Réaction :**  Le glycol de l'eau est converti en un dérivé de glycol, généralement le glycol de l'eau.\n   * **Conditions :** Cette réaction est généralement effectuée dans un solvant organique (par exemple, l'éthanol, le méthanol, le chlorure de butane) à une température comprise entre 20°C et 100°C.\n   * **Réactifs :** Les réactifs principaux sont :\n      * **Eau (H₂O) :** C'est le solvant.\n      * **Acide Acide (H₂CO₃) :** C'est le réactif de base.\n      * **Agents de dégradation :** Certains agents de dégradation peuvent être utilisés, comme le chlorure de thionyle (SOCl₂) ou le chlorure de phosphore (PCl₅).\n\n5. **Décomposition du glycol de l'eau :**\n\n   * **Réaction :** Le glycol de l'eau est décomposé en un dérivé de glycol, généralement le glycol de sucrose (sucrose) ou le glycol de fructose.\n   * **",
+          "responseTime": 5751,
+          "tokensPerSecond": 140.89,
+          "model": "gemma3:270m",
+          "isTimeout": false
+        }
+      }
+    }
+  }
+}

@@ -398,6 +398,55 @@ async function handleStreamingResponse(
 }
 
 /**
+ * 🎯 Hook pour récupérer les données benchmark d'un modèle
+ */
+// Hook pour les données de benchmark d'un modèle spécifique
+export const useModelBenchmarkData = (modelName: string) => {
+  const { data, error, isLoading, mutate } = useSWR(
+    modelName ? `/api/models/${encodeURIComponent(modelName)}/benchmark` : null,
+    fetcher,
+    {
+      refreshInterval: 0,
+      revalidateOnFocus: false,
+    }
+  )
+
+  const updateNotes = async (notes: any) => {
+    try {
+      const response = await fetch(`/api/models/${encodeURIComponent(modelName)}/benchmark`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ notes }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la mise à jour des notes')
+      }
+
+      const result = await response.json()
+      
+      // Revalider les données
+      mutate()
+      
+      return result
+    } catch (error) {
+      console.error('Erreur updateNotes:', error)
+      throw error
+    }
+  }
+
+  return {
+    data: data?.data || null,
+    error,
+    isLoading,
+    updateNotes,
+    mutate
+  }
+}
+
+/**
  * 📈 Hook pour les opérations sur les benchmarks
  */
 export function useBenchmarkOperations() {
