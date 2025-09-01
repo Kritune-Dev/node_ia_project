@@ -1,9 +1,40 @@
 import { NextResponse } from 'next/server'
 
 /**
- * 🏥 HEALTH API v3.0.0 - Service de monitoring
- * GET /api/health - Vérification de l'état des services
+ * 🏥 HEALTH API v3.2.1 - Service de monitoring avancé
+ * GET /api/health - Vérification complète de l'état des services et APIs
  */
+
+interface ApiEndpoint {
+  path: string
+  description: string
+  version: string
+  methods: string[]
+  status: 'healthy' | 'unhealthy' | 'unknown'
+  responseTime?: number
+  error?: string
+}
+
+interface HealthResponse {
+  status: 'healthy' | 'unhealthy' | 'partial'
+  services: {
+    ollama: {
+      healthy: boolean
+      url: string
+      error?: string
+      models: number
+      type: string
+    }
+  }
+  apis: ApiEndpoint[]
+  summary: {
+    total: number
+    healthy: number
+    unhealthy: number
+    avgResponseTime: number
+  }
+  timestamp: string
+}
 
 // Helper function pour tester une connexion avec une détection d'erreur stricte
 async function testConnection(url: string, serviceName: string): Promise<{ healthy: boolean, error: string | null, models?: number }> {
@@ -67,29 +98,167 @@ async function testConnection(url: string, serviceName: string): Promise<{ healt
   }
 }
 
+// Helper function pour tester les APIs internes
+async function testInternalApi(path: string, expectedMethods: string[] = ['GET']): Promise<{ 
+  status: 'healthy' | 'unhealthy' | 'unknown'
+  responseTime: number
+  error?: string 
+}> {
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000'
+  const startTime = Date.now()
+  
+  try {
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 3000)
+    
+    // Test avec le premier method disponible (généralement GET)
+    const response = await fetch(`${baseUrl}${path}`, {
+      method: expectedMethods[0],
+      headers: { 'Content-Type': 'application/json' },
+      signal: controller.signal
+    })
+    
+    clearTimeout(timeoutId)
+    const responseTime = Date.now() - startTime
+    
+    // Considérer 2xx, 4xx comme "healthy" (API répond), mais pas 5xx
+    if (response.status >= 200 && response.status < 500) {
+      return { status: 'healthy', responseTime }
+    } else {
+      return { 
+        status: 'unhealthy', 
+        responseTime,
+        error: `HTTP ${response.status}` 
+      }
+    }
+    
+  } catch (error: any) {
+    const responseTime = Date.now() - startTime
+    
+    if (error.name === 'AbortError') {
+      return { status: 'unhealthy', responseTime, error: 'Timeout' }
+    }
+    
+    return { 
+      status: 'unhealthy', 
+      responseTime,
+      error: error.message || 'Connection failed' 
+    }
+  }
+}
+
+// Définition des APIs à tester (excluant self pour éviter la récursion)
+const API_ENDPOINTS: Omit<ApiEndpoint, 'status' | 'responseTime' | 'error'>[] = [
+  {
+    path: '/api/models',
+    description: 'Gestion des modèles LLM disponibles',
+    version: '3.2.0',
+    methods: ['GET']
+  },
+  {
+    path: '/api/models/config',
+    description: 'Configuration globale des modèles',
+    version: '3.2.0',
+    methods: ['GET', 'PUT']
+  },
+  {
+    path: '/api/benchmark/configs',
+    description: 'Configurations de benchmarks disponibles',
+    version: '3.2.0',
+    methods: ['GET']
+  },
+  {
+    path: '/api/benchmark/history',
+    description: 'Historique des tests et résultats',
+    version: '3.2.0',
+    methods: ['GET', 'POST']
+  },
+  {
+    path: '/api/ollama',
+    description: 'Interface native avec Ollama',
+    version: '1.0.0',
+    methods: ['GET']
+  },
+  {
+    path: '/api/ollama/health',
+    description: 'Health check spécifique Ollama',
+    version: '1.0.0',
+    methods: ['GET']
+  }
+]
+
 export async function GET() {
-  console.log('🏥 [HEALTH-API] Vérification de l\'état des services')
+  console.log('🏥 [HEALTH-API] Vérification complète de l\'état des services et APIs')
   
   // URL pour Ollama natif
   const ollamaUrl = process.env.OLLAMA_BASE_URL || 'http://localhost:11436'
   
-  // Test de la connexion
+  // Test de la connexion Ollama
   const ollamaResult = await testConnection(ollamaUrl, 'Ollama')
+
+  // Test de toutes les APIs internes
+  console.log('🔍 [HEALTH-API] Test des APIs internes...')
+  const apiResults: ApiEndpoint[] = []
+  
+  for (const apiDef of API_ENDPOINTS) {
+    console.log(`🧪 [HEALTH-API] Test ${apiDef.path}...`)
+    const result = await testInternalApi(apiDef.path, apiDef.methods)
+    
+    apiResults.push({
+      ...apiDef,
+      status: result.status,
+      responseTime: result.responseTime,
+      error: result.error
+    })
+  }
+
+  // Calcul des statistiques
+  const healthyApis = apiResults.filter(api => api.status === 'healthy').length
+  const unhealthyApis = apiResults.filter(api => api.status === 'unhealthy').length
+  const avgResponseTime = Math.round(
+    apiResults.reduce((sum, api) => sum + (api.responseTime || 0), 0) / apiResults.length
+  )
+
+  // Détermination du statut global
+  let globalStatus: 'healthy' | 'unhealthy' | 'partial'
+  if (!ollamaResult.healthy) {
+    globalStatus = 'unhealthy'
+  } else if (unhealthyApis === 0) {
+    globalStatus = 'healthy'
+  } else {
+    globalStatus = 'partial'
+  }
+
+  const response: HealthResponse = {
+    status: globalStatus,
+    services: {
+      ollama: {
+        healthy: ollamaResult.healthy,
+        url: ollamaUrl,
+        error: ollamaResult.error || undefined,
+        models: ollamaResult.models || 0,
+        type: 'native'
+      }
+    },
+    apis: apiResults,
+    summary: {
+      total: apiResults.length,
+      healthy: healthyApis,
+      unhealthy: unhealthyApis,
+      avgResponseTime
+    },
+    timestamp: new Date().toISOString()
+  }
+
+  // Log du résumé
+  console.log(`📊 [HEALTH-API] Résumé: ${healthyApis}/${apiResults.length} APIs opérationnelles, temps moyen: ${avgResponseTime}ms`)
 
   // Si Ollama n'est pas accessible, retourner 503
   if (!ollamaResult.healthy) {
     console.log('🚨 [HEALTH-API] Service indisponible - Ollama non accessible')
     return NextResponse.json(
       {
-        status: 'unhealthy',
-        service: {
-          ollama: {
-            healthy: false,
-            url: ollamaUrl,
-            error: ollamaResult.error,
-            models: 0,
-          }
-        },
+        ...response,
         message: 'Service Ollama non accessible',
         recommendations: {
           instructions: [
@@ -98,28 +267,14 @@ export async function GET() {
             '3. Vérifier les modèles: ollama list',
             '4. Actualiser cette page'
           ]
-        },
-        timestamp: new Date().toISOString(),
+        }
       },
       { status: 503 }
     )
   }
 
-  // Réponse normale
-  console.log(`✅ [HEALTH-API] Tous les services opérationnels - ${ollamaResult.models} modèles disponibles`)
+  // Réponse normale avec détails complets
+  console.log(`✅ [HEALTH-API] Système opérationnel - ${ollamaResult.models} modèles, ${healthyApis}/${apiResults.length} APIs`)
   
-  return NextResponse.json({
-    status: 'healthy',
-    service: {
-      ollama: {
-        healthy: ollamaResult.healthy,
-        url: ollamaUrl,
-        error: ollamaResult.error,
-        models: ollamaResult.models || 0,
-        type: 'native'
-      }
-    },
-    performance_recommendation: 'Utilisation d\'Ollama natif - Performances optimales',
-    timestamp: new Date().toISOString(),
-  })
+  return NextResponse.json(response)
 }

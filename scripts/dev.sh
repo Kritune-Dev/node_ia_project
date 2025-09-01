@@ -21,6 +21,66 @@ log_success() {
     echo -e "${GREEN}✅ $1${NC}"
 }
 
+# Fonction pour récupérer le status des APIs
+get_apis_status() {
+    local base_url="${1:-http://localhost:3000}"
+    
+    # Tenter de récupérer le health check
+    local health_response=$(curl -s "$base_url/api/health" 2>/dev/null)
+    
+    if [ $? -eq 0 ] && [ -n "$health_response" ]; then
+        # Parser les informations avec jq si disponible
+        if command -v jq &> /dev/null; then
+            local status=$(echo "$health_response" | jq -r '.status // "unknown"')
+            local total=$(echo "$health_response" | jq -r '.summary.total // 0')
+            local healthy=$(echo "$health_response" | jq -r '.summary.healthy // 0')
+            local avg_time=$(echo "$health_response" | jq -r '.summary.avgResponseTime // 0')
+            local ollama_models=$(echo "$health_response" | jq -r '.services.ollama.models // 0')
+            
+            echo ""
+            log_info "🏥 Status des APIs:"
+            
+            case "$status" in
+                "healthy")
+                    echo "🟢 Système: Tous les services opérationnels"
+                    ;;
+                "partial")
+                    echo "🟡 Système: Fonctionnement partiel"
+                    ;;
+                "unhealthy")
+                    echo "🔴 Système: Services indisponibles"
+                    ;;
+                *)
+                    echo "⚪ Système: Status inconnu"
+                    ;;
+            esac
+            
+            echo "📊 APIs: $healthy/$total opérationnelles (avg: ${avg_time}ms)"
+            echo "🤖 Modèles Ollama: $ollama_models disponibles"
+            
+            # Afficher le détail des APIs si possible
+            echo ""
+            echo "📋 Détail des APIs:"
+            echo "$health_response" | jq -r '.apis[] | 
+                if .status == "healthy" then
+                    "  🟢 \(.path) (v\(.version)) - \(.description) [\(.methods | join(","))] \(.responseTime)ms"
+                elif .status == "unhealthy" then
+                    "  🔴 \(.path) (v\(.version)) - \(.description) [\(.methods | join(","))] \(.error // "Error")"
+                else
+                    "  ⚪ \(.path) (v\(.version)) - \(.description) [\(.methods | join(","))] Unknown"
+                end'
+        else
+            echo ""
+            log_info "🏥 Status des APIs: (installer 'jq' pour plus de détails)"
+            echo "📊 Health check: ✅ Accessible"
+        fi
+    else
+        echo ""
+        log_warning "🏥 Status des APIs: ❌ Non accessible"
+        echo "💡 Démarrez le serveur avec './scripts/dev.sh start'"
+    fi
+}
+
 log_warning() {
     echo -e "${YELLOW}⚠️  $1${NC}"
 }
@@ -44,7 +104,8 @@ show_help() {
     echo "  clean          - Nettoyer les fichiers de build"
     echo "  setup          - Configuration initiale du projet"
     echo "  check          - Vérifications complètes (lint + build + test)"
-    echo "  status         - Status git et informations projet"
+    echo "  status         - Status git et informations projet avec APIs"
+    echo "  health         - Health check détaillé des services et APIs"
     echo "  help           - Afficher cette aide"
     echo ""
     echo "Exemples:"
@@ -206,6 +267,26 @@ case $COMMAND in
             echo "⚙️  .env.local: ✅"
         else
             echo "⚙️  .env.local: ❌ (utilisez './scripts/dev.sh setup')"
+        fi
+        
+        # Status des APIs
+        get_apis_status
+        ;;
+    
+    "health")
+        log_info "🏥 Vérification complète de la santé du système..."
+        
+        # Vérifier si le serveur tourne
+        if curl -s http://localhost:3000/api/health > /dev/null 2>&1; then
+            log_success "Serveur de développement accessible"
+            
+            # Afficher le health check détaillé
+            echo ""
+            log_info "📊 Rapport de santé détaillé:"
+            curl -s http://localhost:3000/api/health | jq '.' 2>/dev/null || curl -s http://localhost:3000/api/health
+        else
+            log_error "Serveur de développement non accessible"
+            echo "💡 Démarrez-le avec './scripts/dev.sh start'"
         fi
         ;;
     

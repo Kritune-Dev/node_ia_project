@@ -7,18 +7,21 @@ Cette PR introduit la **version 3.2.0** avec un système de scoring complet et u
 ## ✨ Nouvelles fonctionnalités principales
 
 ### 🎯 Système de scoring avancé
+
 - **Notation 0-10** avec commentaires personnalisés pour chaque série de benchmarks
 - **Interface inline** : édition/suppression directe des scores dans le modal
 - **Persistance** : scores sauvegardés dans les fichiers de données des modèles
 - **API unifiée** : intégration dans l'endpoint existant `/api/models/[name]/benchmark`
 
 ### 📊 Modal redesigné (4 onglets)
+
 - **Informations** : métadonnées complètes du modèle
 - **Benchmarks** : tests disponibles + système de scoring intégré
 - **Historique** : chronologie détaillée des exécutions
 - **Configuration** : paramètres et options du modèle
 
 ### ⚡ Améliorations UX
+
 - **Lancement direct** : exécution de benchmarks depuis le modal
 - **Données enrichies** : timing, métadonnées et statuts visuels
 - **Feedback temps réel** : indicateurs de progression et d'état
@@ -26,12 +29,14 @@ Cette PR introduit la **version 3.2.0** avec un système de scoring complet et u
 ## 🔧 Améliorations techniques
 
 ### 🏗️ Architecture
+
 - **API consolidée** : réduction des appels via endpoints unifiés
 - **Structure de données** : scores intégrés dans fichiers modèles existants
 - **TypeScript complet** : interfaces exhaustives pour le scoring
 - **Composants modulaires** : `SeriesScoreDisplay` réutilisable
 
 ### 📁 Fichiers principaux modifiés
+
 ```
 app/api/models/[name]/benchmark/route.ts    # API PUT/DELETE pour scores
 components/Modal/ModelDetailModal.tsx       # Modal 4 onglets redesigné
@@ -43,11 +48,13 @@ hooks/useApi.ts                             # Hooks optimisés
 ## 🧹 Nettoyage et optimisations
 
 ### ❌ Supprimé
+
 - Système de notes obsolète (remplacé par scoring)
 - Composants redondants
 - Appels API dupliqués
 
 ### ✅ Optimisé
+
 - Performance des re-renders
 - Gestion d'état avec hooks personnalisés
 - Structure de fichiers plus cohérente
@@ -55,24 +62,27 @@ hooks/useApi.ts                             # Hooks optimisés
 ## 📚 Documentation
 
 ### 📖 Nouveaux fichiers
+
 - `README.md` : documentation complète du projet
 - `CHANGELOG.md` : historique détaillé de la version 3.2.0
 - `docs/MODELS_CONFIG.md` : documentation mise à jour avec scoring
 
 ### 🎯 Structure des scores
+
 ```typescript
 interface SeriesScore {
-  score: number        // 0-10
-  comment: string      // Commentaire utilisateur
-  timestamp: string    // Date de notation
-  scoredBy: string     // Identifiant utilisateur
-  scoredAt: string     // Date de création
+  score: number // 0-10
+  comment: string // Commentaire utilisateur
+  timestamp: string // Date de notation
+  scoredBy: string // Identifiant utilisateur
+  scoredAt: string // Date de création
 }
 ```
 
 ## 🧪 Tests et validation
 
 ### ✅ Testé
+
 - [x] Interface de scoring (ajout/modification/suppression)
 - [x] Modal 4 onglets avec navigation fluide
 - [x] API endpoints PUT/DELETE pour scores
@@ -80,6 +90,7 @@ interface SeriesScore {
 - [x] Lancement de benchmarks depuis le modal
 
 ### 🔒 Rétrocompatibilité
+
 - ✅ Données existantes préservées
 - ✅ Aucun breaking change API
 - ✅ Migration automatique vers nouveau système
@@ -87,11 +98,13 @@ interface SeriesScore {
 ## 📊 Impact
 
 ### 👥 Utilisateurs
+
 - Expérience de notation intuitive et rapide
 - Vision d'ensemble améliorée des performances
 - Interface plus réactive et informative
 
 ### 🔧 Développeurs
+
 - Code plus maintenable et modulaire
 - API simplifiée avec moins d'endpoints
 - Documentation complète et à jour
@@ -99,11 +112,13 @@ interface SeriesScore {
 ## 🚀 Déploiement
 
 ### 📋 Prérequis
+
 - Node.js 18+
 - Next.js 14+
 - TypeScript 5+
 
 ### 📦 Migration
+
 ```bash
 # Aucune migration nécessaire
 # Les données existantes sont automatiquement compatibles
@@ -114,10 +129,12 @@ npm run build  # Build de production
 ## 📸 Captures d'écran
 
 ### Modal redesigné
-![Modal avec onglets]() *Interface 4 onglets avec système de scoring*
+
+![Modal avec onglets]() _Interface 4 onglets avec système de scoring_
 
 ### Système de scoring
-![Scoring interface]() *Notation inline avec commentaires*
+
+![Scoring interface]() _Notation inline avec commentaires_
 
 ---
 
@@ -134,6 +151,7 @@ npm run build  # Build de production
 ## 🎯 Prochaines étapes
 
 Après merge vers `main` :
+
 1. Tag de version `v3.2.0`
 2. Release GitHub avec notes
 3. Déploiement en production

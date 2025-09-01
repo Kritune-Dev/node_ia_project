@@ -32,18 +32,20 @@ npm run dev
 ## 📖 Utilisation
 
 ### Interface principale
+
 1. **Page d'accueil** : Vue d'ensemble des modèles disponibles
 2. **Modal détaillé** : Clic sur un modèle pour ouvrir l'interface complète
 3. **Onglet Benchmarks** : Voir et exécuter les tests, noter les performances
 4. **Onglet Historique** : Suivre l'évolution des résultats
 
 ### Système de scoring
+
 ```typescript
 // Structure des scores
 interface SeriesScore {
-  score: number        // 0-10
-  comment: string      // Commentaire utilisateur
-  timestamp: string    // Date de notation
+  score: number // 0-10
+  comment: string // Commentaire utilisateur
+  timestamp: string // Date de notation
 }
 ```
 
@@ -96,22 +98,26 @@ lib/
 ### Modal redesigné (4 onglets)
 
 #### 1. **Informations**
+
 - Métadonnées du modèle
 - Configuration service
 - Statut et performance
 
 #### 2. **Benchmarks**
+
 - Liste des tests disponibles
 - **Scoring intégré** : Noter directement chaque série
 - Lancement d'exécution en un clic
 - Statuts visuels (testé/non testé)
 
 #### 3. **Historique**
+
 - Chronologie des exécutions
 - Évolution des scores
 - Détails des sessions passées
 
 #### 4. **Configuration**
+
 - Paramètres du modèle
 - Options de personnalisation
 - Gestion des préférences
@@ -132,6 +138,7 @@ lib/
 ## 🔧 Configuration
 
 ### Variables d'environnement
+
 ```bash
 # .env.local
 NEXT_PUBLIC_API_BASE_URL=http://localhost:3000
@@ -162,12 +169,14 @@ MODEL_CONFIGS_PATH=./data/models-config.json
 ## 📊 Métriques et scoring
 
 ### Échelle de notation
+
 - **0-3** : Performance insuffisante
 - **4-6** : Performance acceptable
 - **7-8** : Bonne performance
 - **9-10** : Excellente performance
 
 ### Critères de scoring
+
 - Précision des réponses
 - Rapidité d'exécution
 - Pertinence clinique
@@ -176,6 +185,7 @@ MODEL_CONFIGS_PATH=./data/models-config.json
 ## 🚀 Développement
 
 ### Scripts disponibles
+
 ```bash
 npm run dev          # Développement
 npm run build        # Build production
@@ -185,6 +195,7 @@ npm run test         # Tests unitaires
 ```
 
 ### Structure de développement
+
 ```bash
 # Branches principales
 main                 # Production stable
