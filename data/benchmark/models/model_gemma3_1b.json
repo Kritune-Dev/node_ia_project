@@ -1,0 +1,275 @@
+{
+  "modelId": "gemma3:1b",
+  "displayName": "gemma3:1b",
+  "notes": {
+    "generale": ""
+  },
+  "resultsSummary": {
+    "suite__test_rapide__smoke____tests_m_dicaux_ost_opathie___tests_multilingues___connaissances_g_n_rales___tests_i_o_json___tests_de_programmation___tests_m_dicaux": {
+      "lastScore": 100,
+      "lastExecution": "2025-09-01T09:40:11.857Z",
+      "historyIds": [
+        "benchmark_1756718779408_h0vxykcq2"
+      ]
+    },
+    "test_rapide__smoke_": {
+      "lastScore": 100,
+      "lastExecution": "2025-09-01T09:40:11.857Z",
+      "historyIds": [
+        "benchmark_1756718779408_h0vxykcq2"
+      ]
+    },
+    "tests_m_dicaux_ost_opathie": {
+      "lastScore": 100,
+      "lastExecution": "2025-09-01T09:40:11.857Z",
+      "historyIds": [
+        "benchmark_1756718779408_h0vxykcq2"
+      ]
+    },
+    "tests_multilingues": {
+      "lastScore": 100,
+      "lastExecution": "2025-09-01T09:40:11.857Z",
+      "historyIds": [
+        "benchmark_1756718779408_h0vxykcq2"
+      ]
+    },
+    "connaissances_g_n_rales": {
+      "lastScore": 100,
+      "lastExecution": "2025-09-01T09:40:11.857Z",
+      "historyIds": [
+        "benchmark_1756718779408_h0vxykcq2"
+      ]
+    },
+    "tests_i_o_json": {
+      "lastScore": 100,
+      "lastExecution": "2025-09-01T09:40:11.857Z",
+      "historyIds": [
+        "benchmark_1756718779408_h0vxykcq2"
+      ]
+    },
+    "tests_de_programmation": {
+      "lastScore": 100,
+      "lastExecution": "2025-09-01T09:40:11.857Z",
+      "historyIds": [
+        "benchmark_1756718779408_h0vxykcq2"
+      ]
+    },
+    "tests_m_dicaux": {
+      "lastScore": 100,
+      "lastExecution": "2025-09-01T09:40:11.857Z",
+      "historyIds": [
+        "benchmark_1756718779408_h0vxykcq2"
+      ]
+    }
+  },
+  "history": [
+    {
+      "benchmarkId": "benchmark_1756718779408_h0vxykcq2",
+      "name": "Suite: Test Rapide (Smoke) + Tests Médicaux Ostéopathie + Tests Multilingues + Connaissances Générales + Tests I/O JSON + Tests de Programmation + Tests Médicaux",
+      "timestamp": "2025-09-01T09:40:11.857Z",
+      "duration": 122226,
+      "successRate": 100,
+      "isCombinedBenchmark": true,
+      "includedBenchmarks": [
+        "smoke_test",
+        "osteopathy_test",
+        "multilingual_test",
+        "general_knowledge",
+        "json_io_test",
+        "coding_test",
+        "medical_test"
+      ],
+      "includedBenchmarkNames": [
+        "Test Rapide (Smoke)",
+        "Tests Médicaux Ostéopathie",
+        "Tests Multilingues",
+        "Connaissances Générales",
+        "Tests I/O JSON",
+        "Tests de Programmation",
+        "Tests Médicaux"
+      ],
+      "questions": [
+        {
+          "id": "smoke_test_basic_functionality",
+          "question": "Peux-tu me dire si tu fonctionnes correctement ? Réponds simplement par 'Oui, je fonctionne correcte...",
+          "category": "basic",
+          "difficulty": "easy",
+          "response": "Oui, je fonctionne correctement.\n...",
+          "success": true,
+          "responseTime": 1101,
+          "tokensPerSecond": 7.49
+        },
+        {
+          "id": "smoke_test_french_communication",
+          "question": "Peux-tu me parler en français ? Écris une phrase simple en français pour confirmer que tu comprends ...",
+          "category": "basic",
+          "difficulty": "easy",
+          "response": "Oui, bien sûr ! \n\nJe comprends le français. \n\n**Je comprends.**\n...",
+          "success": true,
+          "responseTime": 382,
+          "tokensPerSecond": 41.88
+        },
+        {
+          "id": "smoke_test_simple_math",
+          "question": "Combien font 2+2 ? Réponds uniquement avec le chiffre....",
+          "category": "basic",
+          "difficulty": "easy",
+          "response": "4...",
+          "success": true,
+          "responseTime": 155,
+          "tokensPerSecond": 1.61
+        },
+        {
+          "id": "osteopathy_test_ankle_sprain_management",
+          "question": "Que faire face à une entorse de cheville récente de grade I ou II en ostéopathie ?...",
+          "category": "osteopathy",
+          "difficulty": "medium",
+          "response": "Il est important de noter que l'ostéopathie n'est pas un traitement de première intention pour une entorse de cheville de grade I ou II. Cependant, elle peut apporter un soutien et une relaxation qui ...",
+          "success": true,
+          "responseTime": 12641,
+          "tokensPerSecond": 78.51
+        },
+        {
+          "id": "osteopathy_test_opportunity_test_low_back",
+          "question": "Quels tests d’opportunité sont pertinents avant de traiter une lombalgie en ostéopathie ?...",
+          "category": "osteopathy",
+          "difficulty": "hard",
+          "response": "Avant de traiter une lombalgie en ostéopathie, il est crucial d'effectuer un ensemble de tests d'opportunité pour évaluer la cause sous-jacente et déterminer si l'ostéopathie est appropriée. Voici une...",
+          "success": true,
+          "responseTime": 13466,
+          "tokensPerSecond": 71.96
+        },
+        {
+          "id": "osteopathy_test_cervical_pain_safety",
+          "question": "Quels examens ou tests de sécurité sont indispensables avant un traitement manipulatifs des cervical...",
+          "category": "osteopathy",
+          "difficulty": "hard",
+          "response": "Avant de procéder à un traitement manipulatif des cervicales, il est crucial de réaliser plusieurs examens et tests de sécurité pour évaluer l'état du patient, identifier les risques potentiels et gar...",
+          "success": true,
+          "responseTime": 13154,
+          "tokensPerSecond": 78.02
+        },
+        {
+          "id": "multilingual_test_french_question",
+          "question": "Écris une phrase simple en français sur la météo....",
+          "category": "language",
+          "difficulty": "easy",
+          "response": "Il pleut aujourd'hui....",
+          "success": true,
+          "responseTime": 212,
+          "tokensPerSecond": 24.76
+        },
+        {
+          "id": "multilingual_test_english_question",
+          "question": "Write a simple sentence in English about a sport you like....",
+          "category": "language",
+          "difficulty": "easy",
+          "response": "I really enjoy playing basketball....",
+          "success": true,
+          "responseTime": 198,
+          "tokensPerSecond": 42.93
+        },
+        {
+          "id": "multilingual_test_spanish_question",
+          "question": "Escribe una frase sencilla en español sobre la comida....",
+          "category": "language",
+          "difficulty": "easy",
+          "response": "¡La comida es lo mejor!...",
+          "success": true,
+          "responseTime": 221,
+          "tokensPerSecond": 26.02
+        },
+        {
+          "id": "general_knowledge_climate_change",
+          "question": "Quelles sont les causes principales du réchauffement climatique ?...",
+          "category": "general",
+          "difficulty": "medium",
+          "response": "Le réchauffement climatique est un problème complexe causé par une combinaison de facteurs, mais voici les causes principales, regroupées par catégories :\n\n**1. Les Gaz à Effet de Serre (GES) :**\n\n* *...",
+          "success": true,
+          "responseTime": 12129,
+          "tokensPerSecond": 74.78
+        },
+        {
+          "id": "general_knowledge_artificial_intelligence",
+          "question": "Expliquez le concept d'intelligence artificielle et ses applications principales....",
+          "category": "general",
+          "difficulty": "medium",
+          "response": "Absolument ! Voici une explication du concept d'intelligence artificielle (IA) et de ses applications principales, décomposée en termes compréhensibles :\n\n**1. Qu'est-ce que l'Intelligence Artificiell...",
+          "success": true,
+          "responseTime": 13915,
+          "tokensPerSecond": 74.09
+        },
+        {
+          "id": "json_io_test_list_to_json",
+          "question": "Transforme cette liste [1,2,3] en JSON avec les clés 'a','b','c'....",
+          "category": "json",
+          "difficulty": "easy",
+          "response": "```json\n{\n  \"a\": 1,\n  \"b\": 2,\n  \"c\": 3\n}\n```\n\nC'est une représentation JSON valide de la liste `[1, 2, 3]` avec les clés 'a', 'b', et 'c'.\n...",
+          "success": true,
+          "responseTime": 1053,
+          "tokensPerSecond": 33
+        },
+        {
+          "id": "json_io_test_nested_json",
+          "question": "Crée un JSON représentant un patient avec nom='Dupont', âge=35, et une liste de consultations [{'dat...",
+          "category": "json",
+          "difficulty": "medium",
+          "response": "```json\n{\n  \"patient\": {\n    \"nom\": \"Dupont\",\n    \"age\": 35\n  },\n  \"consultations\": [\n    {\n      \"date\": \"2025-01-01\",\n      \"motif\": \"lombalgie\"\n    }\n  ]\n}\n```\n\n**Explication:**\n\n* **`{ \"patient\": ...",
+          "success": true,
+          "responseTime": 4333,
+          "tokensPerSecond": 49.16
+        },
+        {
+          "id": "coding_test_fibonacci_python",
+          "question": "Écrivez une fonction Python qui calcule la suite de Fibonacci pour n termes....",
+          "category": "coding",
+          "difficulty": "medium",
+          "response": "```python\ndef fibonacci(n):\n  \"\"\"\n  Calcule la suite de Fibonacci pour n termes.\n\n  Args:\n    n: Le nombre de termes de la suite à calculer.\n\n  Returns:\n    Une liste contenant les n premiers termes d...",
+          "success": true,
+          "responseTime": 11035,
+          "tokensPerSecond": 56.52
+        },
+        {
+          "id": "coding_test_logical_reasoning",
+          "question": "Si tous les A sont B, et tous les B sont C, que peut-on dire des A par rapport aux C ? Expliquez vot...",
+          "category": "reasoning",
+          "difficulty": "medium",
+          "response": "Voici le raisonnement qui nous permet de conclure que les A sont tous des C :\n\n* **\"Tous les A sont B\"** signifie que l'ensemble des A est entièrement contenu dans l'ensemble des B. En d'autres termes...",
+          "success": true,
+          "responseTime": 3026,
+          "tokensPerSecond": 59.9
+        },
+        {
+          "id": "medical_test_hypertension_symptoms",
+          "question": "Quels sont les symptômes principaux de l'hypertension artérielle ?...",
+          "category": "medical",
+          "difficulty": "medium",
+          "response": "L'hypertension artérielle, ou hypertension, est une condition où la pression artérielle est trop élevée. Il est important de noter que l'hypertension peut se développer progressivement et souvent sans...",
+          "success": true,
+          "responseTime": 11094,
+          "tokensPerSecond": 72.47
+        },
+        {
+          "id": "medical_test_ace_inhibitors",
+          "question": "Expliquez le mécanisme d'action des inhibiteurs de l'ECA dans le traitement de l'hypertension....",
+          "category": "medical",
+          "difficulty": "hard",
+          "response": "Absolument ! Voici une explication du mécanisme d'action des inhibiteurs de l'ECA (Époxyde de l'Angiotensine-II) dans le traitement de l'hypertension, décomposée en plusieurs points clés :\n\n**1. Le pr...",
+          "success": true,
+          "responseTime": 12781,
+          "tokensPerSecond": 68.66
+        },
+        {
+          "id": "medical_test_glycolysis_steps",
+          "question": "Décrivez les étapes principales de la glycolyse....",
+          "category": "medical",
+          "difficulty": "hard",
+          "response": "La glycolyse est un processus métabolique crucial qui se produit dans le cytosol des cellules et est essentielle pour la production d'énergie, en particulier pour les cellules qui nécessitent une éner...",
+          "success": true,
+          "responseTime": 11330,
+          "tokensPerSecond": 56.13
+        }
+      ]
+    }
+  ]
+}

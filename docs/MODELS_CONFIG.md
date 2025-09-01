@@ -1,13 +1,19 @@
-# Configuration des Modèles LLM
+# Configuration des Modèles LLM v3.2.0
 
-Ce document explique comment utiliser le système de configuration JSON pour personnaliser les informations des modèles LLM dans l'application.
+Ce document explique comment utiliser le système de configuration JSON pour personnaliser les informations des modèles LLM dans l'application, incluant le nouveau système de scoring.
 
-## 📁 Fichier de Configuration
+## 📁 Fichiers de Configuration
 
-Le fichier de configuration principal se trouve dans :
-
+### Configuration principale
 ```
-data/models-config.json
+data/models-config.json          # Configuration des modèles
+```
+
+### Données des modèles (avec scores v3.2.0)
+```
+data/benchmark/models/           # Données par modèle
+├── model_example.json           # Résultats + scores
+└── [autres modèles].json
 ```
 
 ## 🏗️ Structure de la Configuration
@@ -162,6 +168,65 @@ Avec la configuration JSON, l'API retourne :
 
 Le champ `configLoaded` indique si la configuration JSON a été chargée avec succès.
 
+## 🎯 Système de Scoring v3.2.0
+
+### Structure des données avec scores
+
+```json
+{
+  "modelName": "example_model",
+  "resultsSummary": {
+    "smoke_test": {
+      "testCount": 10,
+      "lastScore": 85.5,
+      "lastExecution": "2025-01-01T12:00:00Z"
+    }
+  },
+  "scores": {
+    "smoke_test": {
+      "score": 8.5,
+      "comment": "Excellent sur les tests rapides, quelques hésitations sur les cas complexes",
+      "timestamp": "2025-01-01T12:30:00Z",
+      "scoredBy": "user",
+      "scoredAt": "2025-01-01T12:30:00Z"
+    }
+  },
+  "history": [...]
+}
+```
+
+### Interface de scoring
+
+Les scores sont gérés directement dans l'onglet "Benchmarks" du modal de détail du modèle :
+
+1. **Affichage** : Les scores existants apparaissent à côté du titre de chaque série
+2. **Édition** : Clic sur l'icône d'édition pour modifier un score
+3. **Ajout** : Bouton "Noter" pour ajouter un nouveau score
+4. **Suppression** : Icône de suppression pour retirer un score
+
+### API de gestion des scores
+
+```typescript
+// Ajouter/Modifier un score
+PUT /api/models/[name]/benchmark
+{
+  "type": "scores",
+  "scores": {
+    "seriesId": {
+      "score": 8.5,
+      "comment": "Commentaire utilisateur"
+    }
+  }
+}
+
+// Supprimer un score
+DELETE /api/models/[name]/benchmark
+{
+  "type": "scores",
+  "seriesId": "smoke_test"
+}
+```
+
 ## 🚨 Notes Importantes
 
 1. **Format JSON** : Respectez la syntaxe JSON (guillemets doubles, virgules)
@@ -169,6 +234,7 @@ Le champ `configLoaded` indique si la configuration JSON a été chargée avec s
 3. **Sauvegarde** : Sauvegardez le fichier avant les modifications importantes
 4. **Validation** : Utilisez `node scripts/manage-models-config.js validate` après modifications
 5. **Redémarrage** : Les modifications sont prises en compte immédiatement (pas de redémarrage nécessaire)
+6. **🆕 Scores** : Les scores sont automatiquement sauvegardés et persistés
 
 ## 📋 Exemple Complet
 

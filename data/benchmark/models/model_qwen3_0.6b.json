@@ -14,34 +14,274 @@
     },
     "test_rapide__smoke_": {
       "lastScore": 100,
-      "lastExecution": "2025-09-01T01:40:55.872Z",
+      "lastExecution": "2025-09-01T09:40:11.858Z",
       "historyIds": [
+        "benchmark_1756718779408_h0vxykcq2",
         "benchmark_1756690810617_u21sa2044"
       ]
     },
     "tests_de_programmation": {
       "lastScore": 100,
-      "lastExecution": "2025-09-01T01:40:55.872Z",
+      "lastExecution": "2025-09-01T09:40:11.858Z",
       "historyIds": [
+        "benchmark_1756718779408_h0vxykcq2",
         "benchmark_1756690810617_u21sa2044"
       ]
     },
     "connaissances_g_n_rales": {
       "lastScore": 100,
-      "lastExecution": "2025-09-01T01:40:55.872Z",
+      "lastExecution": "2025-09-01T09:40:11.858Z",
       "historyIds": [
+        "benchmark_1756718779408_h0vxykcq2",
         "benchmark_1756690810617_u21sa2044"
       ]
     },
     "tests_m_dicaux": {
       "lastScore": 100,
-      "lastExecution": "2025-09-01T01:40:55.872Z",
+      "lastExecution": "2025-09-01T09:40:11.858Z",
       "historyIds": [
+        "benchmark_1756718779408_h0vxykcq2",
         "benchmark_1756690810617_u21sa2044"
+      ]
+    },
+    "suite__test_rapide__smoke____tests_m_dicaux_ost_opathie___tests_multilingues___connaissances_g_n_rales___tests_i_o_json___tests_de_programmation___tests_m_dicaux": {
+      "lastScore": 100,
+      "lastExecution": "2025-09-01T09:40:11.858Z",
+      "historyIds": [
+        "benchmark_1756718779408_h0vxykcq2"
+      ]
+    },
+    "tests_m_dicaux_ost_opathie": {
+      "lastScore": 100,
+      "lastExecution": "2025-09-01T09:40:11.858Z",
+      "historyIds": [
+        "benchmark_1756718779408_h0vxykcq2"
+      ]
+    },
+    "tests_multilingues": {
+      "lastScore": 100,
+      "lastExecution": "2025-09-01T09:40:11.858Z",
+      "historyIds": [
+        "benchmark_1756718779408_h0vxykcq2"
+      ]
+    },
+    "tests_i_o_json": {
+      "lastScore": 100,
+      "lastExecution": "2025-09-01T09:40:11.858Z",
+      "historyIds": [
+        "benchmark_1756718779408_h0vxykcq2"
       ]
     }
   },
   "history": [
+    {
+      "benchmarkId": "benchmark_1756718779408_h0vxykcq2",
+      "name": "Suite: Test Rapide (Smoke) + Tests Médicaux Ostéopathie + Tests Multilingues + Connaissances Générales + Tests I/O JSON + Tests de Programmation + Tests Médicaux",
+      "timestamp": "2025-09-01T09:40:11.858Z",
+      "duration": 106143,
+      "successRate": 100,
+      "isCombinedBenchmark": true,
+      "includedBenchmarks": [
+        "smoke_test",
+        "osteopathy_test",
+        "multilingual_test",
+        "general_knowledge",
+        "json_io_test",
+        "coding_test",
+        "medical_test"
+      ],
+      "includedBenchmarkNames": [
+        "Test Rapide (Smoke)",
+        "Tests Médicaux Ostéopathie",
+        "Tests Multilingues",
+        "Connaissances Générales",
+        "Tests I/O JSON",
+        "Tests de Programmation",
+        "Tests Médicaux"
+      ],
+      "questions": [
+        {
+          "id": "smoke_test_basic_functionality",
+          "question": "Peux-tu me dire si tu fonctionnes correctement ? Réponds simplement par 'Oui, je fonctionne correcte...",
+          "category": "basic",
+          "difficulty": "easy",
+          "response": "<think>\nOkay, the user wants me to confirm if I function correctly and respond with \"Oui, je fonctionne correctement\". I need to make sure I'm following the exact phrasing. Let me check the instructio...",
+          "success": true,
+          "responseTime": 1640,
+          "tokensPerSecond": 62.96
+        },
+        {
+          "id": "smoke_test_french_communication",
+          "question": "Peux-tu me parler en français ? Écris une phrase simple en français pour confirmer que tu comprends ...",
+          "category": "basic",
+          "difficulty": "easy",
+          "response": "<think>\nOkay, the user wants me to write a simple French sentence to confirm understanding. Let me start by recalling the basics. In French, the most common way to confirm understanding is to say \"Je ...",
+          "success": true,
+          "responseTime": 1031,
+          "tokensPerSecond": 122.94
+        },
+        {
+          "id": "smoke_test_simple_math",
+          "question": "Combien font 2+2 ? Réponds uniquement avec le chiffre....",
+          "category": "basic",
+          "difficulty": "easy",
+          "response": "<think>\nOkay, the user is asking, \"Combien font 2+2 ?\" which translates to \"How many do 2+2?\" and they want the answer in a single digit. Let me think about this.\n\nFirst, I need to calculate 2 plus 2....",
+          "success": true,
+          "responseTime": 1624,
+          "tokensPerSecond": 80.36
+        },
+        {
+          "id": "osteopathy_test_ankle_sprain_management",
+          "question": "Que faire face à une entorse de cheville récente de grade I ou II en ostéopathie ?...",
+          "category": "osteopathy",
+          "difficulty": "medium",
+          "response": "<think>\nOkay, the user is asking what to do when they have a recent grade I or II shoulder dislocation in osteopathy. Let me start by understanding the context. Grade I and II shoulder dislocations ar...",
+          "success": true,
+          "responseTime": 7406,
+          "tokensPerSecond": 97.42
+        },
+        {
+          "id": "osteopathy_test_opportunity_test_low_back",
+          "question": "Quels tests d’opportunité sont pertinents avant de traiter une lombalgie en ostéopathie ?...",
+          "category": "osteopathy",
+          "difficulty": "hard",
+          "response": "<think>\nOkay, so I need to figure out the right tests for a lombalgie in osteopathy before treatment. Let me start by recalling what I know about osteopathy. Osteopathy is about treating musculoskelet...",
+          "success": true,
+          "responseTime": 10566,
+          "tokensPerSecond": 89.56
+        },
+        {
+          "id": "osteopathy_test_cervical_pain_safety",
+          "question": "Quels examens ou tests de sécurité sont indispensables avant un traitement manipulatifs des cervical...",
+          "category": "osteopathy",
+          "difficulty": "hard",
+          "response": "<think>\nOkay, the user is asking about the mandatory exams or safety tests before handling reproductive organs, specifically cervical tissue. First, I need to make sure I understand the context. They'...",
+          "success": true,
+          "responseTime": 8743,
+          "tokensPerSecond": 104.37
+        },
+        {
+          "id": "multilingual_test_french_question",
+          "question": "Écris une phrase simple en français sur la météo....",
+          "category": "language",
+          "difficulty": "easy",
+          "response": "<think>\nOkay, the user wants a simple French weather statement. Let me start by recalling common weather phrases. Maybe \"Le temps est bon aujourd'hui\" is straightforward. Wait, is that correct? Let me...",
+          "success": true,
+          "responseTime": 2113,
+          "tokensPerSecond": 100.45
+        },
+        {
+          "id": "multilingual_test_english_question",
+          "question": "Write a simple sentence in English about a sport you like....",
+          "category": "language",
+          "difficulty": "easy",
+          "response": "<think>\nOkay, the user wants me to write a simple sentence in English about a sport I like. Let me start by thinking about what makes a sport interesting. Maybe something like swimming or soccer? Both...",
+          "success": true,
+          "responseTime": 4020,
+          "tokensPerSecond": 104.29
+        },
+        {
+          "id": "multilingual_test_spanish_question",
+          "question": "Escribe una frase sencilla en español sobre la comida....",
+          "category": "language",
+          "difficulty": "easy",
+          "response": "<think>\nOkay, the user wants a simple Spanish sentence about food. Let me start by thinking of a basic and straightforward statement. Maybe something like, \"La comida es la comida, no es un concepto.\"...",
+          "success": true,
+          "responseTime": 1495,
+          "tokensPerSecond": 108.03
+        },
+        {
+          "id": "general_knowledge_climate_change",
+          "question": "Quelles sont les causes principales du réchauffement climatique ?...",
+          "category": "general",
+          "difficulty": "medium",
+          "response": "<think>\nOkay, the user is asking about the main causes of climate change. Let me start by recalling the key factors. First, human activities are definitely the main driver. The burning of fossil fuels...",
+          "success": true,
+          "responseTime": 8307,
+          "tokensPerSecond": 87.28
+        },
+        {
+          "id": "general_knowledge_artificial_intelligence",
+          "question": "Expliquez le concept d'intelligence artificielle et ses applications principales....",
+          "category": "general",
+          "difficulty": "medium",
+          "response": "<think>\nOkay, the user wants me to explain artificial intelligence and its main applications. Let me start by breaking down the concept. AI is the technology that allows machines to perform tasks that...",
+          "success": true,
+          "responseTime": 9265,
+          "tokensPerSecond": 88.94
+        },
+        {
+          "id": "json_io_test_list_to_json",
+          "question": "Transforme cette liste [1,2,3] en JSON avec les clés 'a','b','c'....",
+          "category": "json",
+          "difficulty": "easy",
+          "response": "<think>\nOkay, I need to transform the list [1,2,3] into JSON with the keys 'a','b','c'. Let me think about how to approach this.\n\nFirst, JSON is a format that uses curly braces {} to enclose the list,...",
+          "success": true,
+          "responseTime": 3061,
+          "tokensPerSecond": 81.67
+        },
+        {
+          "id": "json_io_test_nested_json",
+          "question": "Crée un JSON représentant un patient avec nom='Dupont', âge=35, et une liste de consultations [{'dat...",
+          "category": "json",
+          "difficulty": "medium",
+          "response": "<think>\nOkay, so I need to create a JSON object for a patient based on the given information. The patient's name is 'Dupont', and they are 35 years old. Also, there's a list of consultations with one ...",
+          "success": true,
+          "responseTime": 5579,
+          "tokensPerSecond": 64.98
+        },
+        {
+          "id": "coding_test_fibonacci_python",
+          "question": "Écrivez une fonction Python qui calcule la suite de Fibonacci pour n termes....",
+          "category": "coding",
+          "difficulty": "medium",
+          "response": "<think>\nOkay, I need to write a Python function that calculates the Fibonacci sequence for a given number of terms. Let me think about how to approach this.\n\nFirst, I remember that the Fibonacci seque...",
+          "success": true,
+          "responseTime": 11022,
+          "tokensPerSecond": 73.94
+        },
+        {
+          "id": "coding_test_logical_reasoning",
+          "question": "Si tous les A sont B, et tous les B sont C, que peut-on dire des A par rapport aux C ? Expliquez vot...",
+          "category": "reasoning",
+          "difficulty": "medium",
+          "response": "<think>\nOkay, so the problem says that all A are B, and all B are C. Then, we need to figure out what can be said about A regarding C. Hmm, let's think. \n\nFirst, if all A are B, that means every eleme...",
+          "success": true,
+          "responseTime": 4415,
+          "tokensPerSecond": 87.26
+        },
+        {
+          "id": "medical_test_hypertension_symptoms",
+          "question": "Quels sont les symptômes principaux de l'hypertension artérielle ?...",
+          "category": "medical",
+          "difficulty": "medium",
+          "response": "<think>\nOkay, so I need to figure out the main symptoms of arterial hypertension. Let me start by recalling what I know. Hypertension is when blood pressure is too high. The main symptoms I remember a...",
+          "success": true,
+          "responseTime": 6985,
+          "tokensPerSecond": 89.58
+        },
+        {
+          "id": "medical_test_ace_inhibitors",
+          "question": "Expliquez le mécanisme d'action des inhibiteurs de l'ECA dans le traitement de l'hypertension....",
+          "category": "medical",
+          "difficulty": "hard",
+          "response": "<think>\nOkay, so I need to explain the mechanism of action of ECA inhibitors in treating hypertension. Let me start by recalling what I know about ECA. ECA stands for Erythritol, right? It's a type of...",
+          "success": true,
+          "responseTime": 9958,
+          "tokensPerSecond": 85.74
+        },
+        {
+          "id": "medical_test_glycolysis_steps",
+          "question": "Décrivez les étapes principales de la glycolyse....",
+          "category": "medical",
+          "difficulty": "hard",
+          "response": "<think>\nOkay, the user is asking about the main steps of glycolysis. Let me start by recalling what glycolysis is. From what I remember, it's the process in the mitochondria that breaks down glucose i...",
+          "success": true,
+          "responseTime": 8913,
+          "tokensPerSecond": 75.28
+        }
+      ]
+    },
     {
       "benchmarkId": "benchmark_1756690810617_u21sa2044",
       "name": "Suite: Test Rapide (Smoke) + Tests de Programmation + Connaissances Générales + Tests Médicaux",

@@ -3,11 +3,17 @@
 import { useState } from 'react'
 import { 
   X, FileText, Settings, Brain, Globe, Zap, Star, Calendar, Target, 
-  Github, ExternalLink, Clock, Trophy, BarChart3, StickyNote, 
-  CheckCircle, AlertCircle, Play, History, TestTube 
+  Github, ExternalLink, Clock, Trophy, BarChart3, 
+  CheckCircle, AlertCircle, Play, History, TestTube, Award, Plus
 } from 'lucide-react'
 import { useModel, useModelBenchmarkData, useBenchmarkConfigs } from '../../hooks/useApi'
 import { useModelConfig } from '../../hooks/useModelConfig'
+
+interface SeriesScore {
+  score: number
+  comment: string
+  timestamp: string
+}
 
 interface ModelDetailModalProps {
   model: any
@@ -15,10 +21,104 @@ interface ModelDetailModalProps {
   onClose: () => void
 }
 
+// Composant pour afficher et éditer le score d'une série
+function SeriesScoreDisplay({ 
+  seriesId, 
+  score, 
+  isEditing, 
+  onEdit, 
+  onSave, 
+  onCancel,
+  onDelete 
+}: {
+  seriesId: string
+  score?: SeriesScore
+  isEditing: boolean
+  onEdit: () => void
+  onSave: (score: number, comment: string) => void
+  onCancel: () => void
+  onDelete: () => void
+}) {
+  const [tempScore, setTempScore] = useState(score?.score || 0)
+  const [tempComment, setTempComment] = useState(score?.comment || '')
+
+  if (isEditing) {
+    return (
+      <div className="flex items-center gap-2 text-sm">
+        <input
+          type="number"
+          min="0"
+          max="10"
+          step="0.1"
+          value={tempScore}
+          onChange={(e) => setTempScore(parseFloat(e.target.value) || 0)}
+          className="w-16 px-2 py-1 border border-gray-300 rounded text-center"
+        />
+        <span>/10</span>
+        <input
+          type="text"
+          placeholder="Commentaire..."
+          value={tempComment}
+          onChange={(e) => setTempComment(e.target.value)}
+          className="w-32 px-2 py-1 border border-gray-300 rounded"
+        />
+        <button
+          onClick={() => onSave(tempScore, tempComment)}
+          className="px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700"
+        >
+          ✓
+        </button>
+        <button
+          onClick={onCancel}
+          className="px-2 py-1 bg-gray-500 text-white text-xs rounded hover:bg-gray-600"
+        >
+          ✕
+        </button>
+      </div>
+    )
+  }
+
+  if (score) {
+    return (
+      <div className="flex items-center gap-2 text-sm">
+        <div className="flex items-center gap-1">
+          <Star className="h-3 w-3 text-yellow-500" />
+          <span className="font-medium text-yellow-600">{score.score}/10</span>
+        </div>
+        {score.comment && (
+          <span className="text-gray-600 italic text-xs">"{score.comment}"</span>
+        )}
+        <button
+          onClick={onEdit}
+          className="text-blue-600 hover:text-blue-800 text-xs"
+        >
+          ✏️
+        </button>
+        <button
+          onClick={onDelete}
+          className="text-red-600 hover:text-red-800 text-xs"
+        >
+          🗑️
+        </button>
+      </div>
+    )
+  }
+
+  return (
+    <button
+      onClick={onEdit}
+      className="flex items-center gap-1 text-xs text-gray-400 hover:text-blue-600"
+    >
+      <Plus className="h-3 w-3" />
+      Noter
+    </button>
+  )
+}
+
 export default function ModelDetailModalSimple({ model, isVisible, onClose }: ModelDetailModalProps) {
-  const [activeTab, setActiveTab] = useState<'infos' | 'benchmarks' | 'history' | 'notes' | 'config'>('infos')
-  const [editingNotes, setEditingNotes] = useState<{ [key: string]: string | undefined }>({})
+  const [activeTab, setActiveTab] = useState<'infos' | 'benchmarks' | 'history' | 'config'>('infos')
   const [runningBenchmarks, setRunningBenchmarks] = useState<Set<string>>(new Set())
+  const [scoringMode, setScoringMode] = useState<{ [key: string]: boolean }>({}) // Pour gérer l'affichage du formulaire de score
 
   const { model: completeData, isLoading: loading, error } = useModel(
     isVisible && model ? model.name : null
@@ -28,11 +128,62 @@ export default function ModelDetailModalSimple({ model, isVisible, onClose }: Mo
     data: benchmarkData, 
     isLoading: benchmarkLoading, 
     error: benchmarkError,
-    updateNotes,
     mutate: refreshBenchmarkData
   } = useModelBenchmarkData(isVisible && model ? model.name : null)
 
   const { configs: benchmarkConfigs } = useBenchmarkConfigs()
+
+  // Fonctions pour gérer les scores (intégrées dans l'API benchmark)
+  const updateScore = async (seriesId: string, score: number, comment: string) => {
+    if (!model?.name) return
+
+    const response = await fetch(`/api/models/${encodeURIComponent(model.name)}/benchmark`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: 'scores',
+        scores: {
+          [seriesId]: {
+            score,
+            comment,
+            isAutomatic: false,
+            scoredBy: 'user',
+            scoredAt: new Date().toISOString()
+          }
+        }
+      })
+    })
+
+    if (!response.ok) {
+      throw new Error(`Erreur mise à jour score: ${response.status}`)
+    }
+
+    const result = await response.json()
+    
+    // Rafraîchir les données
+    refreshBenchmarkData()
+    
+    return result
+  }
+
+  const deleteScore = async (seriesId: string) => {
+    if (!model?.name) return
+
+    const response = await fetch(`/api/models/${encodeURIComponent(model.name)}/benchmark?series=${encodeURIComponent(seriesId)}`, {
+      method: 'DELETE'
+    })
+
+    if (!response.ok) {
+      throw new Error(`Erreur suppression score: ${response.status}`)
+    }
+
+    const result = await response.json()
+    
+    // Rafraîchir les données
+    refreshBenchmarkData()
+    
+    return result
+  }
 
   const { 
     config: modelConfig, 
@@ -42,24 +193,6 @@ export default function ModelDetailModalSimple({ model, isVisible, onClose }: Mo
   } = useModelConfig(isVisible && model ? model.name : null)
 
   if (!isVisible || !model) return null
-
-  const handleSaveNotes = async (category: string) => {
-    try {
-      const noteValue = editingNotes[category]
-      if (noteValue !== undefined) {
-        const updatedNotes = { [category]: noteValue }
-        await updateNotes(updatedNotes)
-        setEditingNotes(prev => {
-          const newState = { ...prev }
-          delete newState[category]
-          return newState
-        })
-        refreshBenchmarkData()
-      }
-    } catch (error) {
-      console.error('Erreur sauvegarde notes:', error)
-    }
-  }
 
   const getServiceIcon = (service: any) => {
     if (service?.isNative) {
@@ -106,7 +239,6 @@ export default function ModelDetailModalSimple({ model, isVisible, onClose }: Mo
     { id: 'infos', label: 'Informations', icon: FileText },
     { id: 'benchmarks', label: 'Benchmarks', icon: TestTube },
     { id: 'history', label: 'Historique', icon: History },
-    { id: 'notes', label: 'Notes', icon: StickyNote },
     { id: 'config', label: 'Configuration', icon: Settings }
   ]
 
@@ -359,56 +491,79 @@ export default function ModelDetailModalSimple({ model, isVisible, onClose }: Mo
                         
                         const matchingResult = findMatchingResult()
                         const hasBeenTested = !!matchingResult
+                        const currentScore = benchmarkData?.scores?.[config.id] || null
+                        const isShowingScoreForm = scoringMode[config.id] || false
                         
                         return (
-                          <div key={config.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-3 mb-2">
-                                {hasBeenTested ? (
-                                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
-                                ) : (
-                                  <AlertCircle className="w-5 h-5 text-gray-400 flex-shrink-0" />
-                                )}
-                                <div>
-                                  <h5 className="font-medium text-gray-900">{config.name}</h5>
-                                  <p className="text-sm text-gray-600">{config.description}</p>
+                          <div key={config.id} className="border border-gray-200 rounded-lg overflow-hidden">
+                            <div className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-2">
+                                  {hasBeenTested ? (
+                                    <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+                                  ) : (
+                                    <AlertCircle className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                                  )}
+                                  <div>
+                                    <h5 className="font-medium text-gray-900">{config.name}</h5>
+                                    <p className="text-sm text-gray-600">{config.description}</p>
+                                  </div>
+                                </div>
+                                
+                                <div className="flex items-center gap-6 text-sm text-gray-500 ml-8">
+                                  <span className="flex items-center gap-1">
+                                    <TestTube className="w-4 h-4" />
+                                    {config.questions?.length || config.questionCount || 0} questions
+                                  </span>
+                                  <span className="flex items-center gap-1">
+                                    <Clock className="w-4 h-4" />
+                                    ~{config.estimatedTime || 0}s
+                                  </span>
+                                  
+                                  {/* Composant de scoring intégré */}
+                                  {hasBeenTested && (
+                                    <SeriesScoreDisplay
+                                      seriesId={config.id}
+                                      score={currentScore}
+                                      isEditing={isShowingScoreForm}
+                                      onEdit={() => setScoringMode(prev => ({ ...prev, [config.id]: true }))}
+                                      onSave={async (score, comment) => {
+                                        await updateScore(config.id, score, comment)
+                                        setScoringMode(prev => ({ ...prev, [config.id]: false }))
+                                      }}
+                                      onCancel={() => setScoringMode(prev => ({ ...prev, [config.id]: false }))}
+                                      onDelete={async () => {
+                                        await deleteScore(config.id)
+                                      }}
+                                    />
+                                  )}
+                                  
+                                  {hasBeenTested && matchingResult && (
+                                    <>
+                                      <span className="flex items-center gap-1">
+                                        <Trophy className="w-4 h-4 text-green-500" />
+                                        Dernier test: <strong className="text-green-600">{matchingResult.data?.lastScore || 'N/A'}%</strong>
+                                      </span>
+                                      <span className="flex items-center gap-1">
+                                        <Calendar className="w-4 h-4" />
+                                        {matchingResult.data?.lastExecution 
+                                          ? formatDate(matchingResult.data.lastExecution)
+                                          : 'N/A'
+                                        }
+                                      </span>
+                                    </>
+                                  )}
                                 </div>
                               </div>
-                              
-                              <div className="flex items-center gap-6 text-sm text-gray-500 ml-8">
-                                <span className="flex items-center gap-1">
-                                  <TestTube className="w-4 h-4" />
-                                  {config.questions?.length || config.questionCount || 0} questions
-                                </span>
-                                <span className="flex items-center gap-1">
-                                  <Clock className="w-4 h-4" />
-                                  ~{config.estimatedTime || 0}s
-                                </span>
-                                {hasBeenTested && matchingResult && (
-                                  <>
-                                    <span className="flex items-center gap-1">
-                                      <Trophy className="w-4 h-4 text-green-500" />
-                                      Dernier score: <strong className="text-green-600">{matchingResult.data?.lastScore || 'N/A'}%</strong>
-                                    </span>
-                                    <span className="flex items-center gap-1">
-                                      <Calendar className="w-4 h-4" />
-                                      {matchingResult.data?.lastExecution 
-                                        ? formatDate(matchingResult.data.lastExecution)
-                                        : 'N/A'
-                                      }
-                                    </span>
-                                  </>
-                                )}
-                              </div>
-                            </div>
 
-                            <div className="flex items-center gap-2 ml-4">
-                              {hasBeenTested && (
-                                <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">
-                                  Testé
-                                </span>
-                              )}
-                              <button
+                              <div className="flex items-center gap-2 ml-4">
+                                {hasBeenTested && (
+                                  <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">
+                                    Testé
+                                  </span>
+                                )}
+                                
+                                <button
                                 onClick={async () => {
                                   console.log(`Lancement du benchmark: ${config.id} pour le modèle: ${model.name}`)
                                   
@@ -487,6 +642,66 @@ export default function ModelDetailModalSimple({ model, isVisible, onClose }: Mo
                               </button>
                             </div>
                           </div>
+                          
+                          {/* Formulaire de scoring (affiché quand activé) */}
+                          {isShowingScoreForm && (
+                            <div className="border-t border-gray-200 p-4 bg-gray-50">
+                              <div className="space-y-4">
+                                <div>
+                                  <h4 className="font-medium text-gray-900 mb-2">Noter : {config.name}</h4>
+                                  <div className="flex items-center gap-2 mb-3">
+                                    <span className="text-sm text-gray-700">Score :</span>
+                                    {[1,2,3,4,5,6,7,8,9,10].map((star) => (
+                                      <button
+                                        key={star}
+                                        type="button"
+                                        className={`w-6 h-6 transition-colors ${
+                                          star <= (currentScore?.score || 0)
+                                            ? 'text-yellow-400 hover:text-yellow-500' 
+                                            : 'text-gray-300 hover:text-yellow-300'
+                                        }`}
+                                        onClick={() => {
+                                          const newScore = star === currentScore?.score ? 0 : star
+                                          updateScore(config.id, newScore, currentScore?.comment || '')
+                                            .then(() => setScoringMode(prev => ({ ...prev, [config.id]: false })))
+                                            .catch(console.error)
+                                        }}
+                                      >
+                                        <Star 
+                                          className="w-full h-full" 
+                                          fill={star <= (currentScore?.score || 0) ? 'currentColor' : 'none'}
+                                        />
+                                      </button>
+                                    ))}
+                                    <span className="ml-2 text-sm font-medium">
+                                      {currentScore?.score || 0}/10
+                                    </span>
+                                  </div>
+                                  <textarea
+                                    placeholder="Commentaire (optionnel)..."
+                                    className="w-full px-3 py-2 border border-gray-300 rounded text-sm resize-none"
+                                    rows={2}
+                                    defaultValue={currentScore?.comment || ''}
+                                    onBlur={(e) => {
+                                      if (currentScore?.score) {
+                                        updateScore(config.id, currentScore.score, e.target.value)
+                                          .catch(console.error)
+                                      }
+                                    }}
+                                  />
+                                  <div className="flex justify-end gap-2 mt-3">
+                                    <button
+                                      onClick={() => setScoringMode(prev => ({ ...prev, [config.id]: false }))}
+                                      className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800"
+                                    >
+                                      Annuler
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
                         )
                       })}
                     </div>
@@ -599,148 +814,6 @@ export default function ModelDetailModalSimple({ model, isVisible, onClose }: Mo
                       <div className="text-sm text-gray-500">
                         Ce modèle n'a pas encore d'historique de tests enregistré
                       </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Onglet Notes */}
-              {activeTab === 'notes' && (
-                <div className="space-y-6">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold">Notes du modèle</h3>
-                  </div>
-
-                  {benchmarkLoading && (
-                    <div className="flex items-center justify-center py-8">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-                      <span className="ml-2 text-gray-600">Chargement...</span>
-                    </div>
-                  )}
-
-                  {!benchmarkLoading && (
-                    <div className="space-y-4">
-                      {/* Note générale */}
-                      <div className="border border-gray-200 rounded-lg p-4">
-                        <div className="flex items-center justify-between mb-3">
-                          <h4 className="font-medium">Note générale</h4>
-                          <button
-                            onClick={() => setEditingNotes(prev => ({ 
-                              ...prev, 
-                              generale: benchmarkData?.notes?.generale || '' 
-                            }))}
-                            className="text-blue-600 hover:text-blue-800 text-sm"
-                          >
-                            Modifier
-                          </button>
-                        </div>
-                        
-                        {editingNotes.generale !== undefined ? (
-                          <div className="space-y-2">
-                            <textarea
-                              value={editingNotes.generale}
-                              onChange={(e) => setEditingNotes(prev => ({ ...prev, generale: e.target.value }))}
-                              placeholder="Ajoutez vos notes générales sur ce modèle..."
-                              className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                              rows={4}
-                            />
-                            <div className="flex gap-2">
-                              <button
-                                onClick={() => handleSaveNotes('generale')}
-                                className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
-                              >
-                                Sauvegarder
-                              </button>
-                              <button
-                                onClick={() => setEditingNotes(prev => {
-                                  const newState = { ...prev }
-                                  delete newState.generale
-                                  return newState
-                                })}
-                                className="px-3 py-1 bg-gray-300 text-gray-700 text-sm rounded hover:bg-gray-400"
-                              >
-                                Annuler
-                              </button>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="text-gray-600">
-                            {benchmarkData?.notes?.generale || 'Aucune note générale ajoutée'}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Notes par série de tests */}
-                      {benchmarkData?.resultsSummary && Object.keys(benchmarkData.resultsSummary).length > 0 && (
-                        <div>
-                          <h4 className="font-medium mb-3">Notes par série de tests</h4>
-                          <div className="space-y-3">
-                            {Object.entries(benchmarkData.resultsSummary).map(([seriesKey, seriesData]) => {
-                              const seriesName = seriesKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
-                              return (
-                                <div key={seriesKey} className="border border-gray-200 rounded-lg p-4">
-                                  <div className="flex items-center justify-between mb-2">
-                                    <h5 className="font-medium">{seriesName}</h5>
-                                    <button
-                                      onClick={() => setEditingNotes(prev => ({ 
-                                        ...prev, 
-                                        [seriesKey]: benchmarkData?.notes?.[seriesKey] || '' 
-                                      }))}
-                                      className="text-blue-600 hover:text-blue-800 text-sm"
-                                    >
-                                      Modifier
-                                    </button>
-                                  </div>
-                                  
-                                  {editingNotes[seriesKey] !== undefined ? (
-                                    <div className="space-y-2">
-                                      <textarea
-                                        value={editingNotes[seriesKey]}
-                                        onChange={(e) => setEditingNotes(prev => ({ ...prev, [seriesKey]: e.target.value }))}
-                                        placeholder={`Notes spécifiques pour ${seriesName}...`}
-                                        className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        rows={3}
-                                      />
-                                      <div className="flex gap-2">
-                                        <button
-                                          onClick={() => handleSaveNotes(seriesKey)}
-                                          className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
-                                        >
-                                          Sauvegarder
-                                        </button>
-                                        <button
-                                          onClick={() => setEditingNotes(prev => {
-                                            const newState = { ...prev }
-                                            delete newState[seriesKey]
-                                            return newState
-                                          })}
-                                          className="px-3 py-1 bg-gray-300 text-gray-700 text-sm rounded hover:bg-gray-400"
-                                        >
-                                          Annuler
-                                        </button>
-                                      </div>
-                                    </div>
-                                  ) : (
-                                    <div className="text-gray-600 text-sm">
-                                      {benchmarkData?.notes?.[seriesKey] || `Aucune note pour ${seriesName}`}
-                                    </div>
-                                  )}
-                                </div>
-                              )
-                            })}
-                          </div>
-                        </div>
-                      )}
-
-                      {!benchmarkData?.notes && !benchmarkData?.resultsSummary && (
-                        <div className="text-center py-8">
-                          <StickyNote className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                          <div className="text-gray-600 mb-2">Aucune note disponible</div>
-                          <div className="text-sm text-gray-500">
-                            Ajoutez des notes pour documenter les performances et observations de ce modèle
-                          </div>
-                        </div>
-                      )}
                     </div>
                   )}
                 </div>

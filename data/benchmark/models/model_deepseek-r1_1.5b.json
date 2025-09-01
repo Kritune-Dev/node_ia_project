@@ -1,0 +1,275 @@
+{
+  "modelId": "deepseek-r1:1.5b",
+  "displayName": "deepseek-r1:1.5b",
+  "notes": {
+    "generale": ""
+  },
+  "resultsSummary": {
+    "suite__test_rapide__smoke____tests_m_dicaux_ost_opathie___tests_multilingues___connaissances_g_n_rales___tests_i_o_json___tests_de_programmation___tests_m_dicaux": {
+      "lastScore": 100,
+      "lastExecution": "2025-09-01T09:40:11.859Z",
+      "historyIds": [
+        "benchmark_1756718779408_h0vxykcq2"
+      ]
+    },
+    "test_rapide__smoke_": {
+      "lastScore": 100,
+      "lastExecution": "2025-09-01T09:40:11.859Z",
+      "historyIds": [
+        "benchmark_1756718779408_h0vxykcq2"
+      ]
+    },
+    "tests_m_dicaux_ost_opathie": {
+      "lastScore": 100,
+      "lastExecution": "2025-09-01T09:40:11.859Z",
+      "historyIds": [
+        "benchmark_1756718779408_h0vxykcq2"
+      ]
+    },
+    "tests_multilingues": {
+      "lastScore": 100,
+      "lastExecution": "2025-09-01T09:40:11.859Z",
+      "historyIds": [
+        "benchmark_1756718779408_h0vxykcq2"
+      ]
+    },
+    "connaissances_g_n_rales": {
+      "lastScore": 100,
+      "lastExecution": "2025-09-01T09:40:11.859Z",
+      "historyIds": [
+        "benchmark_1756718779408_h0vxykcq2"
+      ]
+    },
+    "tests_i_o_json": {
+      "lastScore": 100,
+      "lastExecution": "2025-09-01T09:40:11.859Z",
+      "historyIds": [
+        "benchmark_1756718779408_h0vxykcq2"
+      ]
+    },
+    "tests_de_programmation": {
+      "lastScore": 100,
+      "lastExecution": "2025-09-01T09:40:11.859Z",
+      "historyIds": [
+        "benchmark_1756718779408_h0vxykcq2"
+      ]
+    },
+    "tests_m_dicaux": {
+      "lastScore": 100,
+      "lastExecution": "2025-09-01T09:40:11.859Z",
+      "historyIds": [
+        "benchmark_1756718779408_h0vxykcq2"
+      ]
+    }
+  },
+  "history": [
+    {
+      "benchmarkId": "benchmark_1756718779408_h0vxykcq2",
+      "name": "Suite: Test Rapide (Smoke) + Tests Médicaux Ostéopathie + Tests Multilingues + Connaissances Générales + Tests I/O JSON + Tests de Programmation + Tests Médicaux",
+      "timestamp": "2025-09-01T09:40:11.859Z",
+      "duration": 221967,
+      "successRate": 100,
+      "isCombinedBenchmark": true,
+      "includedBenchmarks": [
+        "smoke_test",
+        "osteopathy_test",
+        "multilingual_test",
+        "general_knowledge",
+        "json_io_test",
+        "coding_test",
+        "medical_test"
+      ],
+      "includedBenchmarkNames": [
+        "Test Rapide (Smoke)",
+        "Tests Médicaux Ostéopathie",
+        "Tests Multilingues",
+        "Connaissances Générales",
+        "Tests I/O JSON",
+        "Tests de Programmation",
+        "Tests Médicaux"
+      ],
+      "questions": [
+        {
+          "id": "smoke_test_basic_functionality",
+          "question": "Peux-tu me dire si tu fonctionnes correctement ? Réponds simplement par 'Oui, je fonctionne correcte...",
+          "category": "basic",
+          "difficulty": "easy",
+          "response": "<think>\nOkay, so I just got this message that says, \"Peux-tu me dire si tu fonctionnes correctement ?\" Hmm, that's a bit confusing. Let me try to break it down.\n\nFirst, the user is asking if I can tel...",
+          "success": true,
+          "responseTime": 7195,
+          "tokensPerSecond": 42.95
+        },
+        {
+          "id": "smoke_test_french_communication",
+          "question": "Peux-tu me parler en français ? Écris une phrase simple en français pour confirmer que tu comprends ...",
+          "category": "basic",
+          "difficulty": "easy",
+          "response": "<think>\nOkay, the user is asking if I can speak French and to write a simple English phrase to confirm my knowledge of it.\n\nI need to respond by saying yes, then provide a sentence in English that cle...",
+          "success": true,
+          "responseTime": 3378,
+          "tokensPerSecond": 49.22
+        },
+        {
+          "id": "smoke_test_simple_math",
+          "question": "Combien font 2+2 ? Réponds uniquement avec le chiffre....",
+          "category": "basic",
+          "difficulty": "easy",
+          "response": "<think>\nPour répondre à la question de combien font 2+2, je commence par identifier chaque nombre involved : il y a un 2 et un autre 2.\n\nEnsuite, j'ajoute ces deux nombres de manière ordinaire, ce qui...",
+          "success": true,
+          "responseTime": 3278,
+          "tokensPerSecond": 39.51
+        },
+        {
+          "id": "osteopathy_test_ankle_sprain_management",
+          "question": "Que faire face à une entorse de cheville récente de grade I ou II en ostéopathie ?...",
+          "category": "osteopathy",
+          "difficulty": "medium",
+          "response": "<think>\nOkay, so the user is asking about how to treat a recent lamellar fracture of grade I or II in orthopedics. Hmm, I need to figure out what they're referring to. First off, a lamellar fracture i...",
+          "success": true,
+          "responseTime": 21508,
+          "tokensPerSecond": 47.92
+        },
+        {
+          "id": "osteopathy_test_opportunity_test_low_back",
+          "question": "Quels tests d’opportunité sont pertinents avant de traiter une lombalgie en ostéopathie ?...",
+          "category": "osteopathy",
+          "difficulty": "hard",
+          "response": "<think>\nOkay, so I'm trying to figure out the right tests to check for Lombalgie in osteopathy before treating it. I remember that Lombalgie is a condition where there's an abnormal blood flow through...",
+          "success": true,
+          "responseTime": 21826,
+          "tokensPerSecond": 52.95
+        },
+        {
+          "id": "osteopathy_test_cervical_pain_safety",
+          "question": "Quels examens ou tests de sécurité sont indispensables avant un traitement manipulatifs des cervical...",
+          "category": "osteopathy",
+          "difficulty": "hard",
+          "response": "<think>\nOkay, so I'm trying to figure out what security exams or tests are needed before treating mental illness. Hmm, that's a bit tricky because it's not like most things we deal with every day. Let...",
+          "success": true,
+          "responseTime": 20230,
+          "tokensPerSecond": 60.7
+        },
+        {
+          "id": "multilingual_test_french_question",
+          "question": "Écris une phrase simple en français sur la météo....",
+          "category": "language",
+          "difficulty": "easy",
+          "response": "<think>\nAlright, the user asked me to write a simple French weather forecast. I need to make sure it's clear and straightforward.\n\nI should start with \"Il fait\" which means \"It is raining.\" That sets ...",
+          "success": true,
+          "responseTime": 3756,
+          "tokensPerSecond": 49.59
+        },
+        {
+          "id": "multilingual_test_english_question",
+          "question": "Write a simple sentence in English about a sport you like....",
+          "category": "language",
+          "difficulty": "easy",
+          "response": "<think>\nOkay, so I need to write a simple sentence in English about a sport I like. Hmm, let me think. First, what's something that gets me excited? Maybe something related to exercise or physical act...",
+          "success": true,
+          "responseTime": 4447,
+          "tokensPerSecond": 54.53
+        },
+        {
+          "id": "multilingual_test_spanish_question",
+          "question": "Escribe una frase sencilla en español sobre la comida....",
+          "category": "language",
+          "difficulty": "easy",
+          "response": "<think>\nOkay, so I need to write a simple Spanish phrase about food. Let me think about how to approach this.\n\nFirst, the user provided an example: \"Me encanta servir la fruta.\" That's pretty straight...",
+          "success": true,
+          "responseTime": 5507,
+          "tokensPerSecond": 52.12
+        },
+        {
+          "id": "general_knowledge_climate_change",
+          "question": "Quelles sont les causes principales du réchauffement climatique ?...",
+          "category": "general",
+          "difficulty": "medium",
+          "response": "<think>\n\n</think>\n\nLes causes principales du réchauffement climatique incluent la composition alterne des matières terrestres, l'augmentation de la température moyenne sur le globe, et la concentratio...",
+          "success": true,
+          "responseTime": 3040,
+          "tokensPerSecond": 49.34
+        },
+        {
+          "id": "general_knowledge_artificial_intelligence",
+          "question": "Expliquez le concept d'intelligence artificielle et ses applications principales....",
+          "category": "general",
+          "difficulty": "medium",
+          "response": "<think>\nOkay, I need to explain the concept of artificial intelligence (AI) and its main applications. Let me start by breaking down what AI is all about.\n\nFirst, I know that AI refers to systems that...",
+          "success": true,
+          "responseTime": 20657,
+          "tokensPerSecond": 62.71
+        },
+        {
+          "id": "json_io_test_list_to_json",
+          "question": "Transforme cette liste [1,2,3] en JSON avec les clés 'a','b','c'....",
+          "category": "json",
+          "difficulty": "easy",
+          "response": "<think>\nAlright, let me try to figure out how to transform the list [1,2,3] into JSON with keys 'a', 'b', and 'c'. Hmm, okay, so JSON is a data format that's pretty common in web applications. I remem...",
+          "success": true,
+          "responseTime": 12418,
+          "tokensPerSecond": 46.61
+        },
+        {
+          "id": "json_io_test_nested_json",
+          "question": "Crée un JSON représentant un patient avec nom='Dupont', âge=35, et une liste de consultations [{'dat...",
+          "category": "json",
+          "difficulty": "medium",
+          "response": "<think>\nOkay, I need to create a JSON representation of a patient with specific details. Let me break down what the user provided and think through how to approach this.\n\nFirst, the user wants a JSON ...",
+          "success": true,
+          "responseTime": 10391,
+          "tokensPerSecond": 49.75
+        },
+        {
+          "id": "coding_test_fibonacci_python",
+          "question": "Écrivez une fonction Python qui calcule la suite de Fibonacci pour n termes....",
+          "category": "coding",
+          "difficulty": "medium",
+          "response": "<think>\nOkay, I need to write a Python function that calculates the nth term of the Fibonacci sequence. Let me think about how to approach this.\n\nFirst, I should understand what the Fibonacci sequence...",
+          "success": true,
+          "responseTime": 21517,
+          "tokensPerSecond": 45.01
+        },
+        {
+          "id": "coding_test_logical_reasoning",
+          "question": "Si tous les A sont B, et tous les B sont C, que peut-on dire des A par rapport aux C ? Expliquez vot...",
+          "category": "reasoning",
+          "difficulty": "medium",
+          "response": "<think>\nPour déterminer la relation entre les éléments A et C, nous pourrons suivre les étapes suivantes :\n\n1. **Analyse des Relations Individuelles**:\n   - Tous les éléments de l'ensemble A sont élém...",
+          "success": true,
+          "responseTime": 12657,
+          "tokensPerSecond": 38.16
+        },
+        {
+          "id": "medical_test_hypertension_symptoms",
+          "question": "Quels sont les symptômes principaux de l'hypertension artérielle ?...",
+          "category": "medical",
+          "difficulty": "medium",
+          "response": "<think>\nOkay, so I need to figure out the main symptoms of primary hypertension in the arteries. From what I know, hypertension is high blood pressure, and when it's too high in the arteries, that can...",
+          "success": true,
+          "responseTime": 13028,
+          "tokensPerSecond": 59.93
+        },
+        {
+          "id": "medical_test_ace_inhibitors",
+          "question": "Expliquez le mécanisme d'action des inhibiteurs de l'ECA dans le traitement de l'hypertension....",
+          "category": "medical",
+          "difficulty": "hard",
+          "response": "<think>\nOkay, so I need to explain the mechanism of how antihistamines are used in treating hypertension. Hmm, where do I start? Well, I know that both antihistamines and hypertension are important he...",
+          "success": true,
+          "responseTime": 15163,
+          "tokensPerSecond": 59.11
+        },
+        {
+          "id": "medical_test_glycolysis_steps",
+          "question": "Décrivez les étapes principales de la glycolyse....",
+          "category": "medical",
+          "difficulty": "hard",
+          "response": "<think>\nOkay, so I need to describe the main steps of glycolysis in my biology class. Hmm, where do I even start? I remember that glycolysis is this process by which glucose gets broken down into pyru...",
+          "success": true,
+          "responseTime": 21971,
+          "tokensPerSecond": 44.07
+        }
+      ]
+    }
+  ]
+}

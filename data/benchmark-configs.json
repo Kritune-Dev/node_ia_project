@@ -279,6 +279,173 @@
         "incorrect": 2,
         "noCode": 0
       }
+    },
+    "multilingual_test": {
+      "id": "multilingual_test",
+      "name": "Tests Multilingues",
+      "description": "Évaluation de la capacité à comprendre et répondre dans plusieurs langues (FR, EN, ES).",
+      "estimatedTime": 45,
+      "questionCount": 3,
+      "difficulty": "medium",
+      "category": "qualitative",
+      "version": "1.0.0",
+      "testTypes": ["qualitative"],
+      "parameters": {
+        "temperature": 0.4,
+        "seed": 321,
+        "timeout": 45000,
+        "maxTokens": 200,
+        "topP": 0.9
+      },
+      "prompts": {
+        "system": "Tu es un assistant multilingue. Réponds dans la langue de la question, sans traduire.",
+        "evaluation": "Évalue la justesse linguistique, la grammaire et la pertinence culturelle sur une échelle de 1 à 10."
+      },
+      "questions": [
+        {
+          "id": "french_question",
+          "text": "Écris une phrase simple en français sur la météo.",
+          "category": "language",
+          "expectedType": "french_sentence",
+          "difficulty": "easy",
+          "keywords": ["météo", "pluie", "soleil"],
+          "maxResponseLength": 50
+        },
+        {
+          "id": "english_question",
+          "text": "Write a simple sentence in English about a sport you like.",
+          "category": "language",
+          "expectedType": "english_sentence",
+          "difficulty": "easy",
+          "keywords": ["football", "running", "basketball"],
+          "maxResponseLength": 50
+        },
+        {
+          "id": "spanish_question",
+          "text": "Escribe una frase sencilla en español sobre la comida.",
+          "category": "language",
+          "expectedType": "spanish_sentence",
+          "difficulty": "easy",
+          "keywords": ["comida", "pan", "arroz"],
+          "maxResponseLength": 50
+        }
+      ],
+      "scoring": {
+        "perfect": 10,
+        "minorMistakes": 8,
+        "basic": 6,
+        "incorrect": 2,
+        "noResponse": 0
+      }
+    },
+    "json_io_test": {
+      "id": "json_io_test",
+      "name": "Tests I/O JSON",
+      "description": "Évaluation de la capacité à générer et manipuler du JSON valide.",
+      "estimatedTime": 40,
+      "questionCount": 2,
+      "difficulty": "medium",
+      "category": "api_io",
+      "version": "1.0.0",
+      "testTypes": ["api_io"],
+      "parameters": {
+        "temperature": 0.2,
+        "seed": 654,
+        "timeout": 60000,
+        "maxTokens": 300,
+        "topP": 0.9
+      },
+      "prompts": {
+        "system": "Tu es un assistant qui doit toujours répondre avec un JSON valide, sans texte autour.",
+        "evaluation": "Évalue si la réponse est un JSON bien formé, structuré et parsable."
+      },
+      "questions": [
+        {
+          "id": "list_to_json",
+          "text": "Transforme cette liste [1,2,3] en JSON avec les clés 'a','b','c'.",
+          "category": "json",
+          "expectedType": "json_object",
+          "difficulty": "easy",
+          "expectedResponse": "{\"a\":1, \"b\":2, \"c\":3}",
+          "keywords": ["a", "b", "c"],
+          "maxResponseLength": 100
+        },
+        {
+          "id": "nested_json",
+          "text": "Crée un JSON représentant un patient avec nom='Dupont', âge=35, et une liste de consultations [{'date':'2025-01-01','motif':'lombalgie'}].",
+          "category": "json",
+          "expectedType": "json_object",
+          "difficulty": "medium",
+          "keywords": ["Dupont", "35", "lombalgie"],
+          "maxResponseLength": 300
+        }
+      ],
+      "scoring": {
+        "validJson": 10,
+        "almostValid": 7,
+        "syntaxError": 4,
+        "wrongFormat": 2,
+        "noResponse": 0
+      }
+    },
+    "osteopathy_test": {
+      "id": "osteopathy_test",
+      "name": "Tests Médicaux Ostéopathie",
+      "description": "Évaluation des connaissances pratiques en ostéopathie, notamment sur les entorses et les tests d'opportunité.",
+      "estimatedTime": 60,
+      "questionCount": 3,
+      "difficulty": "medium",
+      "category": "qualitative",
+      "version": "1.0.0",
+      "testTypes": ["qualitative"],
+      "parameters": {
+        "temperature": 0.3,
+        "seed": 987,
+        "timeout": 60000,
+        "maxTokens": 500,
+        "topP": 0.95
+      },
+      "prompts": {
+        "system": "Tu es un assistant expert en ostéopathie. Réponds avec rigueur clinique et mentionne les tests pertinents.",
+        "evaluation": "Évalue la précision ostéopathique, la pertinence clinique et la sécurité de la réponse sur une échelle de 1 à 10."
+      },
+      "questions": [
+        {
+          "id": "ankle_sprain_management",
+          "text": "Que faire face à une entorse de cheville récente de grade I ou II en ostéopathie ?",
+          "category": "osteopathy",
+          "expectedType": "management_plan",
+          "difficulty": "medium",
+          "keywords": ["repos", "glace", "mobilisation douce", "non manipulation aiguë"],
+          "maxResponseLength": 400
+        },
+        {
+          "id": "opportunity_test_low_back",
+          "text": "Quels tests d’opportunité sont pertinents avant de traiter une lombalgie en ostéopathie ?",
+          "category": "osteopathy",
+          "expectedType": "list",
+          "difficulty": "hard",
+          "keywords": ["Lasègue", "Lasègue contrarié", "sensibilité neurologique", "drapeaux rouges"],
+          "maxResponseLength": 400
+        },
+        {
+          "id": "cervical_pain_safety",
+          "text": "Quels examens ou tests de sécurité sont indispensables avant un traitement manipulatifs des cervicales ?",
+          "category": "osteopathy",
+          "expectedType": "safety_list",
+          "difficulty": "hard",
+          "keywords": ["artère vertébrale", "test de Klein", "drapeaux rouges"],
+          "maxResponseLength": 400
+        }
+      ],
+      "scoring": {
+        "excellent": 10,
+        "good": 8,
+        "average": 6,
+        "poor": 4,
+        "incorrect": 2,
+        "dangerous": 0
+      }
     }
   },
   "metadata": {

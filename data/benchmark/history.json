@@ -1,6 +1,6 @@
 {
   "version": "3.0.0",
-  "lastUpdated": "2025-09-01T01:57:36.935Z",
+  "lastUpdated": "2025-09-01T09:40:11.868Z",
   "benchmarks": [
     {
       "id": "benchmark_1756690810617_u21sa2044",
@@ -52,6 +52,33 @@
       ],
       "modelCount": 1,
       "questionCount": 3
+    },
+    {
+      "id": "benchmark_1756718779408_h0vxykcq2",
+      "name": "Suite: Test Rapide (Smoke) + Tests Médicaux Ostéopathie + Tests Multilingues + Connaissances Générales + Tests I/O JSON + Tests de Programmation + Tests Médicaux",
+      "timestamp": "2025-09-01T09:40:11.868Z",
+      "duration": 832445,
+      "successRate": 100,
+      "status": "completed",
+      "modelsDisplayNames": [
+        "tinyllama:1.1b",
+        "gemma3:270m",
+        "gemma3:1b",
+        "qwen3:1.7b",
+        "qwen3:0.6b",
+        "deepseek-r1:1.5b"
+      ],
+      "testSeriesNames": [
+        "Test Rapide (Smoke)",
+        "Tests Médicaux Ostéopathie",
+        "Tests Multilingues",
+        "Connaissances Générales",
+        "Tests I/O JSON",
+        "Tests de Programmation",
+        "Tests Médicaux"
+      ],
+      "modelCount": 6,
+      "questionCount": 108
     }
   ]
 }

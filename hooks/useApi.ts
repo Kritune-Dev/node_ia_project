@@ -1,4 +1,5 @@
 import useSWR from 'swr'
+import { SeriesScoreInput } from '../lib/types/scoring'
 
 /**
  * 🎯 HOOKS SIMPLES pour les API calls - Nouvelle architecture RESTful
@@ -398,9 +399,8 @@ async function handleStreamingResponse(
 }
 
 /**
- * 🎯 Hook pour récupérer les données benchmark d'un modèle
+ * 🎯 Hook pour récupérer les données benchmark d'un modèle (incluant scores)
  */
-// Hook pour les données de benchmark d'un modèle spécifique
 export const useModelBenchmarkData = (modelName: string) => {
   const { data, error, isLoading, mutate } = useSWR(
     modelName ? `/api/models/${encodeURIComponent(modelName)}/benchmark` : null,
@@ -418,7 +418,10 @@ export const useModelBenchmarkData = (modelName: string) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ notes }),
+        body: JSON.stringify({ 
+          type: 'notes',
+          notes 
+        }),
       })
 
       if (!response.ok) {
@@ -437,11 +440,88 @@ export const useModelBenchmarkData = (modelName: string) => {
     }
   }
 
+  const updateScore = async (scoreInput: SeriesScoreInput) => {
+    try {
+      const scoreData = {
+        [scoreInput.seriesId]: {
+          score: scoreInput.score,
+          isAutomatic: false,
+          comment: scoreInput.comment || '',
+          scoredBy: 'user' as const,
+          scoredAt: new Date().toISOString(),
+          benchmarkId: scoreInput.benchmarkId
+        }
+      }
+
+      const response = await fetch(`/api/models/${encodeURIComponent(modelName)}/benchmark`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          type: 'scores',
+          scores: scoreData 
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la mise à jour du score')
+      }
+
+      const result = await response.json()
+      
+      // Revalider les données
+      mutate()
+      
+      return result
+    } catch (error) {
+      console.error('Erreur updateScore:', error)
+      throw error
+    }
+  }
+
+  const deleteScore = async (seriesId: string) => {
+    try {
+      // Pour supprimer un score, on envoie undefined
+      const scoreData = {
+        [seriesId]: undefined
+      }
+
+      const response = await fetch(`/api/models/${encodeURIComponent(modelName)}/benchmark`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          type: 'scores',
+          scores: scoreData 
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la suppression du score')
+      }
+
+      const result = await response.json()
+      
+      // Revalider les données
+      mutate()
+      
+      return result
+    } catch (error) {
+      console.error('Erreur deleteScore:', error)
+      throw error
+    }
+  }
+
   return {
     data: data?.data || null,
+    scores: data?.data?.scores || {},
     error,
     isLoading,
     updateNotes,
+    updateScore,
+    deleteScore,
     mutate
   }
 }

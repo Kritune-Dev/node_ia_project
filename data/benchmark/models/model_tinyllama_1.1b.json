@@ -1,0 +1,275 @@
+{
+  "modelId": "tinyllama:1.1b",
+  "displayName": "tinyllama:1.1b",
+  "notes": {
+    "generale": ""
+  },
+  "resultsSummary": {
+    "suite__test_rapide__smoke____tests_m_dicaux_ost_opathie___tests_multilingues___connaissances_g_n_rales___tests_i_o_json___tests_de_programmation___tests_m_dicaux": {
+      "lastScore": 100,
+      "lastExecution": "2025-09-01T09:40:11.856Z",
+      "historyIds": [
+        "benchmark_1756718779408_h0vxykcq2"
+      ]
+    },
+    "test_rapide__smoke_": {
+      "lastScore": 100,
+      "lastExecution": "2025-09-01T09:40:11.856Z",
+      "historyIds": [
+        "benchmark_1756718779408_h0vxykcq2"
+      ]
+    },
+    "tests_m_dicaux_ost_opathie": {
+      "lastScore": 100,
+      "lastExecution": "2025-09-01T09:40:11.856Z",
+      "historyIds": [
+        "benchmark_1756718779408_h0vxykcq2"
+      ]
+    },
+    "tests_multilingues": {
+      "lastScore": 100,
+      "lastExecution": "2025-09-01T09:40:11.856Z",
+      "historyIds": [
+        "benchmark_1756718779408_h0vxykcq2"
+      ]
+    },
+    "connaissances_g_n_rales": {
+      "lastScore": 100,
+      "lastExecution": "2025-09-01T09:40:11.856Z",
+      "historyIds": [
+        "benchmark_1756718779408_h0vxykcq2"
+      ]
+    },
+    "tests_i_o_json": {
+      "lastScore": 100,
+      "lastExecution": "2025-09-01T09:40:11.856Z",
+      "historyIds": [
+        "benchmark_1756718779408_h0vxykcq2"
+      ]
+    },
+    "tests_de_programmation": {
+      "lastScore": 100,
+      "lastExecution": "2025-09-01T09:40:11.856Z",
+      "historyIds": [
+        "benchmark_1756718779408_h0vxykcq2"
+      ]
+    },
+    "tests_m_dicaux": {
+      "lastScore": 100,
+      "lastExecution": "2025-09-01T09:40:11.856Z",
+      "historyIds": [
+        "benchmark_1756718779408_h0vxykcq2"
+      ]
+    }
+  },
+  "history": [
+    {
+      "benchmarkId": "benchmark_1756718779408_h0vxykcq2",
+      "name": "Suite: Test Rapide (Smoke) + Tests Médicaux Ostéopathie + Tests Multilingues + Connaissances Générales + Tests I/O JSON + Tests de Programmation + Tests Médicaux",
+      "timestamp": "2025-09-01T09:40:11.856Z",
+      "duration": 43954,
+      "successRate": 100,
+      "isCombinedBenchmark": true,
+      "includedBenchmarks": [
+        "smoke_test",
+        "osteopathy_test",
+        "multilingual_test",
+        "general_knowledge",
+        "json_io_test",
+        "coding_test",
+        "medical_test"
+      ],
+      "includedBenchmarkNames": [
+        "Test Rapide (Smoke)",
+        "Tests Médicaux Ostéopathie",
+        "Tests Multilingues",
+        "Connaissances Générales",
+        "Tests I/O JSON",
+        "Tests de Programmation",
+        "Tests Médicaux"
+      ],
+      "questions": [
+        {
+          "id": "smoke_test_basic_functionality",
+          "question": "Peux-tu me dire si tu fonctionnes correctement ? Réponds simplement par 'Oui, je fonctionne correcte...",
+          "category": "basic",
+          "difficulty": "easy",
+          "response": "Je ne sais pas si c'est vraiment votre question et vous pouvez répondre dans votre langue de lecture. Si cela est le cas, 'Sure, I function correctly' (ou quelque chose similaire) est bien sûr la solu...",
+          "success": true,
+          "responseTime": 1342,
+          "tokensPerSecond": 43.96
+        },
+        {
+          "id": "smoke_test_french_communication",
+          "question": "Peux-tu me parler en français ? Écris une phrase simple en français pour confirmer que tu comprends ...",
+          "category": "basic",
+          "difficulty": "easy",
+          "response": "Sure, I'd be happy to speak French for you! Here's a simple sentence in French:\n\n\"Vous pouvez écouter moi ? Je comprends cette langue.\"...",
+          "success": true,
+          "responseTime": 422,
+          "tokensPerSecond": 79.98
+        },
+        {
+          "id": "smoke_test_simple_math",
+          "question": "Combien font 2+2 ? Réponds uniquement avec le chiffre....",
+          "category": "basic",
+          "difficulty": "easy",
+          "response": "Non, Combiefont est un nom de marque pour une collection d'outils professionnels destinés à l'édition et à la gestion de textes et documents. La suite Combine est un nom de marque pour un logiciel de ...",
+          "success": true,
+          "responseTime": 1199,
+          "tokensPerSecond": 110.09
+        },
+        {
+          "id": "osteopathy_test_ankle_sprain_management",
+          "question": "Que faire face à une entorse de cheville récente de grade I ou II en ostéopathie ?...",
+          "category": "osteopathy",
+          "difficulty": "medium",
+          "response": "Au cas d'une entorsé de cheville, il est nécessaire d'effectuer les opérations suivantes pour prévenir l'apparition d'un problème plus grave :\n1. La chirurgie de la percuté (tronc ou fracture) des os ...",
+          "success": true,
+          "responseTime": 3182,
+          "tokensPerSecond": 80.22
+        },
+        {
+          "id": "osteopathy_test_opportunity_test_low_back",
+          "question": "Quels tests d’opportunité sont pertinents avant de traiter une lombalgie en ostéopathie ?...",
+          "category": "osteopathy",
+          "difficulty": "hard",
+          "response": "Sure, Quels tests d'opportunité (differential diagnosis) are important before treating a limb girdle sprain in osteopathy. These tests can help to identify the source of your symptoms and determine if...",
+          "success": true,
+          "responseTime": 989,
+          "tokensPerSecond": 107.18
+        },
+        {
+          "id": "osteopathy_test_cervical_pain_safety",
+          "question": "Quels examens ou tests de sécurité sont indispensables avant un traitement manipulatifs des cervical...",
+          "category": "osteopathy",
+          "difficulty": "hard",
+          "response": "Surely, QUELS examens or tests of security are essential before a surgical intervention on the cervix. These exams can help to assess and manage potential risks associated with cervical manipulation p...",
+          "success": true,
+          "responseTime": 1386,
+          "tokensPerSecond": 128.61
+        },
+        {
+          "id": "multilingual_test_french_question",
+          "question": "Écris une phrase simple en français sur la météo....",
+          "category": "language",
+          "difficulty": "easy",
+          "response": "Il y a de l'orage à Paris...\n\nVoir le texte complet ici: https://fr.lyrics/ly-meteo/304596217/il-y-a-de-l-orage-a-paris.html...",
+          "success": true,
+          "responseTime": 613,
+          "tokensPerSecond": 50.57
+        },
+        {
+          "id": "multilingual_test_english_question",
+          "question": "Write a simple sentence in English about a sport you like....",
+          "category": "language",
+          "difficulty": "easy",
+          "response": "My favorite sport is tennis!...",
+          "success": true,
+          "responseTime": 99,
+          "tokensPerSecond": 70.71
+        },
+        {
+          "id": "multilingual_test_spanish_question",
+          "question": "Escribe una frase sencilla en español sobre la comida....",
+          "category": "language",
+          "difficulty": "easy",
+          "response": "\"La cocina es una fuente inolvidable de sensación.\"...",
+          "success": true,
+          "responseTime": 193,
+          "tokensPerSecond": 66.06
+        },
+        {
+          "id": "general_knowledge_climate_change",
+          "question": "Quelles sont les causes principales du réchauffement climatique ?...",
+          "category": "general",
+          "difficulty": "medium",
+          "response": "Les Queens sont des causes principales du réchaufflement climatique, ou changements de climat, qui se trouvent à l'origine de nombreux événements écologiques globaux. Les Queens sont les interactions ...",
+          "success": true,
+          "responseTime": 1297,
+          "tokensPerSecond": 100.81
+        },
+        {
+          "id": "general_knowledge_artificial_intelligence",
+          "question": "Expliquez le concept d'intelligence artificielle et ses applications principales....",
+          "category": "general",
+          "difficulty": "medium",
+          "response": "L'intelligence artificielle (IA) est une branche de la machine learning qui s'est développée dans les années 1950 pour améliorer l'expertise des machines en prenant en compte les comportements humains...",
+          "success": true,
+          "responseTime": 9181,
+          "tokensPerSecond": 91.63
+        },
+        {
+          "id": "json_io_test_list_to_json",
+          "question": "Transforme cette liste [1,2,3] en JSON avec les clés 'a','b','c'....",
+          "category": "json",
+          "difficulty": "easy",
+          "response": "Sure! Here's an example of how to transform the list `[1,2,3]` into a JSON string with keys `'a'` and `'b'` using Python:\n\n```python\nimport json\n\ninput_list = [1, 2, 3]\njson_output = json.dumps(input_...",
+          "success": true,
+          "responseTime": 1035,
+          "tokensPerSecond": 66.43
+        },
+        {
+          "id": "json_io_test_nested_json",
+          "question": "Crée un JSON représentant un patient avec nom='Dupont', âge=35, et une liste de consultations [{'dat...",
+          "category": "json",
+          "difficulty": "medium",
+          "response": "{\n  \"name\": \"<|user|>\",\n  \"age\": 35,\n  \"consultations\": [\n    {\n      \"date\": \"2025-01-01\",\n      \"motif\": \"lombalgie\"\n    }\n  ]\n}...",
+          "success": true,
+          "responseTime": 662,
+          "tokensPerSecond": 49.09
+        },
+        {
+          "id": "coding_test_fibonacci_python",
+          "question": "Écrivez une fonction Python qui calcule la suite de Fibonacci pour n termes....",
+          "category": "coding",
+          "difficulty": "medium",
+          "response": "Certainly! Here's a Python function that calculates the nth term of the Fibonacci sequence using recursion:\n\n```python\ndef fib(n):\n    if n == 0:\n        return 0\n    elif n == 1 or n == 2:\n        re...",
+          "success": true,
+          "responseTime": 4573,
+          "tokensPerSecond": 88.67
+        },
+        {
+          "id": "coding_test_logical_reasoning",
+          "question": "Si tous les A sont B, et tous les B sont C, que peut-on dire des A par rapport aux C ? Expliquez vot...",
+          "category": "reasoning",
+          "difficulty": "medium",
+          "response": "Si tout l'intégralité de l'inventaire est comprimé dans un seul groupe ou une seule classe, cela impliquerait qu'il n'y a pas d'élément qui diffère entre tous les autres. C'est-à-dire que tous les A s...",
+          "success": true,
+          "responseTime": 4156,
+          "tokensPerSecond": 98.35
+        },
+        {
+          "id": "medical_test_hypertension_symptoms",
+          "question": "Quels sont les symptômes principaux de l'hypertension artérielle ?...",
+          "category": "medical",
+          "difficulty": "medium",
+          "response": "Les queues (anglais: sponges) sont des symptômes cliniques principaux d’une hypertenseurie artérielle, c’est-à-dire les maladies qui surviennent lorsque l’impression systémique de la peau ou le systèm...",
+          "success": true,
+          "responseTime": 1485,
+          "tokensPerSecond": 89.73
+        },
+        {
+          "id": "medical_test_ace_inhibitors",
+          "question": "Expliquez le mécanisme d'action des inhibiteurs de l'ECA dans le traitement de l'hypertension....",
+          "category": "medical",
+          "difficulty": "hard",
+          "response": "Les inhibiteurs de la famille des epidémiocytes (ECAs) sont un groupe de molécules qui se trouvent à l'intérieur des cellules, et sont également appelés « récepteurs extracellulaires ». Ces molécules ...",
+          "success": true,
+          "responseTime": 7111,
+          "tokensPerSecond": 90.35
+        },
+        {
+          "id": "medical_test_glycolysis_steps",
+          "question": "Décrivez les étapes principales de la glycolyse....",
+          "category": "medical",
+          "difficulty": "hard",
+          "response": "Sure, here are the main steps involved in glucosylation:\n\n1. Accumulation of Glucose (Inorganic Phosphate): First, glucose is accumulated in the mitochondrial matrix, where it is stored as ATP-phospha...",
+          "success": true,
+          "responseTime": 5029,
+          "tokensPerSecond": 90.97
+        }
+      ]
+    }
+  ]
+}

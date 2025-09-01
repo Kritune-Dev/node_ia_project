@@ -90,44 +90,136 @@ export async function PUT(
 
     // Construire le chemin vers le fichier de données benchmark
     const benchmarkDir = path.join(process.cwd(), 'data', 'benchmark', 'models')
+    
+    // Assurer que le répertoire existe
+    if (!fs.existsSync(benchmarkDir)) {
+      fs.mkdirSync(benchmarkDir, { recursive: true })
+    }
+    
+    let benchmarkFile = findBenchmarkFile(benchmarkDir, modelName)
+    
+    // Si le fichier n'existe pas, créer le chemin avec la variante standard
+    if (!benchmarkFile) {
+      const cleanModelName = modelName.replace(/[^a-zA-Z0-9_-]/g, '_')
+      benchmarkFile = path.join(benchmarkDir, `model_${cleanModelName}.json`)
+    }
+
+    let currentData: any = {}
+    
+    // Charger les données existantes si le fichier existe
+    if (fs.existsSync(benchmarkFile)) {
+      const fileContent = fs.readFileSync(benchmarkFile, 'utf-8')
+      currentData = JSON.parse(fileContent)
+    } else {
+      // Initialiser avec une structure de base
+      currentData = {
+        modelId: modelName,
+        displayName: modelName,
+        notes: {},
+        scores: {}, // Nouveau champ pour les scores
+        resultsSummary: {},
+        history: []
+      }
+    }
+
+    // Gérer les différents types de mise à jour
+    if (body.type === 'notes' && body.notes) {
+      currentData.notes = { ...currentData.notes, ...body.notes }
+      console.log(`📝 [BENCHMARK-API] Notes mises à jour pour: ${modelName}`)
+    } else if (body.type === 'scores' && body.scores) {
+      // Nouvelle fonctionnalité: gestion des scores
+      if (!currentData.scores) {
+        currentData.scores = {}
+      }
+      currentData.scores = { ...currentData.scores, ...body.scores }
+      console.log(`🏆 [BENCHMARK-API] Scores mis à jour pour: ${modelName}`)
+    } else {
+      // Mise à jour générale des données
+      currentData = { ...currentData, ...body }
+    }
+
+    // Mettre à jour le timestamp de dernière modification
+    currentData.lastUpdated = new Date().toISOString()
+
+    // Sauvegarder le fichier
+    fs.writeFileSync(benchmarkFile, JSON.stringify(currentData, null, 2))
+
+    console.log(`✅ [BENCHMARK-API] Données sauvegardées pour: ${modelName}`)
+
+    return NextResponse.json({
+      success: true,
+      message: 'Données mises à jour avec succès',
+      data: currentData
+    })
+
+  } catch (error) {
+    console.error(`❌ [BENCHMARK-API] Erreur PUT pour le modèle ${params.name}:`, error)
+    
+    return NextResponse.json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Erreur inconnue'
+    }, { status: 500 })
+  }
+}
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: { name: string } }
+) {
+  try {
+    const modelName = decodeURIComponent(params.name)
+    const { searchParams } = new URL(request.url)
+    const seriesId = searchParams.get('series')
+    
+    console.log(`🗑️ [BENCHMARK-API] DELETE score pour le modèle: ${modelName}, série: ${seriesId}`)
+
+    if (!seriesId) {
+      return NextResponse.json({
+        success: false,
+        error: 'Le paramètre "series" est requis pour supprimer un score'
+      }, { status: 400 })
+    }
+
+    // Construire le chemin vers le fichier de données benchmark
+    const benchmarkDir = path.join(process.cwd(), 'data', 'benchmark', 'models')
     const benchmarkFile = findBenchmarkFile(benchmarkDir, modelName)
 
-    // Vérifier si le fichier existe
     if (!benchmarkFile) {
-      console.log(`❌ [BENCHMARK-API] Fichier non trouvé pour: ${modelName}`)
       return NextResponse.json({
         success: false,
         error: 'Aucune donnée benchmark trouvée pour ce modèle'
       }, { status: 404 })
     }
 
-    // Lire les données existantes
+    // Charger les données existantes
     const fileContent = fs.readFileSync(benchmarkFile, 'utf-8')
-    const existingData = JSON.parse(fileContent)
+    const currentData = JSON.parse(fileContent)
 
-    // Fusionner avec les nouvelles données (en priorité les nouvelles)
-    const updatedData = {
-      ...existingData,
-      ...body,
-      lastUpdated: new Date().toISOString()
+    // Vérifier si le score existe
+    if (!currentData.scores || !currentData.scores[seriesId]) {
+      return NextResponse.json({
+        success: false,
+        error: `Aucun score trouvé pour la série ${seriesId}`
+      }, { status: 404 })
     }
 
-    // Créer le répertoire s'il n'existe pas
-    fs.mkdirSync(benchmarkDir, { recursive: true })
+    // Supprimer le score
+    delete currentData.scores[seriesId]
+    currentData.lastUpdated = new Date().toISOString()
 
-    // Écrire les données mises à jour
-    fs.writeFileSync(benchmarkFile, JSON.stringify(updatedData, null, 2))
+    // Sauvegarder le fichier
+    fs.writeFileSync(benchmarkFile, JSON.stringify(currentData, null, 2))
 
-    console.log(`✅ [BENCHMARK-API] Données mises à jour pour: ${modelName}`)
+    console.log(`✅ [BENCHMARK-API] Score supprimé pour: ${modelName} - ${seriesId}`)
 
     return NextResponse.json({
       success: true,
-      data: updatedData,
-      message: 'Données benchmark mises à jour avec succès'
+      message: `Score supprimé pour ${seriesId}`,
+      data: currentData
     })
 
   } catch (error) {
-    console.error(`❌ [BENCHMARK-API] Erreur PUT pour le modèle ${params.name}:`, error)
+    console.error(`❌ [BENCHMARK-API] Erreur DELETE pour le modèle ${params.name}:`, error)
     
     return NextResponse.json({
       success: false,
