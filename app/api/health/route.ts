@@ -111,8 +111,15 @@ async function testInternalApi(path: string, expectedMethods: string[] = ['GET']
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 3000)
     
+    // Ajustements spécifiques pour certaines APIs
+    let testUrl = `${baseUrl}${path}`
+    if (path === '/api/models/config') {
+      // Cette API nécessite un paramètre model, utilisons un modèle test
+      testUrl += '?model=test'
+    }
+    
     // Test avec le premier method disponible (généralement GET)
-    const response = await fetch(`${baseUrl}${path}`, {
+    const response = await fetch(testUrl, {
       method: expectedMethods[0],
       headers: { 'Content-Type': 'application/json' },
       signal: controller.signal

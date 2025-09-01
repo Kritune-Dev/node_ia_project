@@ -20,7 +20,7 @@ export default function HomePage() {
       if (response.ok) {
         // Vérifier aussi le contenu de la réponse
         const data = await response.json()
-        if (data.status === 'healthy' && data.service?.ollama?.healthy) {
+        if (data.status === 'healthy' && data.services?.ollama?.healthy) {
           setSystemStatus('online')
         } else {
           setSystemStatus('offline')
